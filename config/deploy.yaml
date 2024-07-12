@@ -1,0 +1,9 @@
+db:
+  type: mysql
+  host: ${NEST_DB_HOST}
+  port: ${NEST_DB_PORT}
+  username: ${NEST_DB_USERNAME}
+  password: ${NEST_DB_PASSWORD}
+  database: ${NEST_DB_NAME}
+  synchronize: true
+  logging: true
