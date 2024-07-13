@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { getTypeOrmConfig } from 'config/dbconfig';
+import { getTypeOrmConfig } from 'src/dbConfig/dbconfig';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { loadYamlConfig } from "../config/yamlConfig";
+import { loadYamlConfig } from "./dbConfig/yamlConfig";
 
 dotenv.config();
 
 const ENV = process.env.NODE_ENV || 'dev';
-const configFilePath = `config/${ENV}.yaml`;
+const configFilePath = `src/dbConfig/${ENV}.yaml`;
 const config = loadYamlConfig(configFilePath);
 
 @Module({
@@ -26,8 +26,7 @@ const config = loadYamlConfig(configFilePath);
       }),
 
       inject: [ConfigService],
-
     }),
-      ]
+  ],
 })
 export class AppModule {}

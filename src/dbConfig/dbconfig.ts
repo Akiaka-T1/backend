@@ -1,8 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-
-export const getTypeOrmConfig = (configService: ConfigService): TypeOrmModuleOptions => {
+export const getTypeOrmConfig = (
+  configService: ConfigService,
+): TypeOrmModuleOptions => {
+  // yaml 의 'type' 으로 배포/개발 환경 구분
   const dbType = configService.get<'sqlite' | 'mysql'>('db.type');
   const commonOptions = {
     type: dbType,
@@ -12,7 +14,7 @@ export const getTypeOrmConfig = (configService: ConfigService): TypeOrmModuleOpt
     entities: [],
     autoLoadEntities: true,
   };
-
+  // 배포환경에서 필요한 추가 설정
   if (dbType === 'mysql') {
     return {
       ...commonOptions,
@@ -22,6 +24,6 @@ export const getTypeOrmConfig = (configService: ConfigService): TypeOrmModuleOpt
       password: configService.get<string>('db.password'),
     } as TypeOrmModuleOptions;
   }
-
-  return commonOptions as TypeOrmModuleOptions;
+  // 개발환경에서 공통 옵션 반환
+  else return commonOptions as TypeOrmModuleOptions;
 };
