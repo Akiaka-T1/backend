@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeOrmConfig } from 'src/dbConfig/dbconfig';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { loadYamlConfig } from "./dbConfig/yamlConfig";
+import {UserModule} from "./modules/user/module";
+import {DataModule} from "./modules/data/module";
+import {AuthModule} from "./auth/module";
 
 dotenv.config();
 
@@ -27,6 +30,8 @@ const config = loadYamlConfig(configFilePath);
 
       inject: [ConfigService],
     }),
+    DataModule,
+    UserModule, AuthModule
   ],
 })
 export class AppModule {}
