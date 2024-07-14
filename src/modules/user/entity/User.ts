@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, BeforeInsert } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import {Role} from "../../../auth/authorization/Role";
+import {Post} from "../../post/entity/Post";
 
 
 @Entity()
@@ -52,9 +53,9 @@ export class User {
     @Column({ type: 'int', default: 1 })
     categoryId: number;
 
-    // @OneToMany(() => Post, post => post.user)
-    // posts: Post[];
-    //
+    @OneToMany(() => Post, post => post.user)
+    posts: Post[];
+
     // @OneToMany(() => Comment, comment => comment.user)
     // comments: Comment[];
 }
