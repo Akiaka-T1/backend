@@ -6,7 +6,7 @@ export interface PaginationResult<T> {
   page: number;
   limit: number;
 }
-interface PaginationOptions {
+export interface PaginationOptions {
   page: number;
   limit: number;
   field?: string;

@@ -4,6 +4,8 @@ import { User } from "../entity/User";
 import { PostUserDto, ResponseUserDto, UpdateUserDto } from "../dto/UserDto";
 import { UserRepository } from "../repository/UserRepository";
 import { mapToDto } from "../../../utils/mapper/Mapper";
+import {PaginationDto} from "../../../utils/pagination/paginationDto";
+import {PaginationResult} from "../../../utils/pagination/pagination";
 
 @Injectable()
 export class UserService {
@@ -41,9 +43,15 @@ export class UserService {
         return await this.userRepository.findByEmail(email);
     }
 
-    async findAll(): Promise<ResponseUserDto[]> {
-        const users = await this.checkError(() => this.userRepository.find(), 'Failed to fetch users');
-        return users.map(user => mapToDto(user,ResponseUserDto));
+    async findAll(paginationDto: PaginationDto): Promise<PaginationResult<ResponseUserDto>> {
+        const { page, limit, field, order } = paginationDto;
+        const options = { page, limit, field, order };
+
+        const users = await this.userRepository.paginate(options);
+        return {
+            ...users,
+            data: users.data.map(user => mapToDto(user, ResponseUserDto)),
+        };
     }
 
     async update(id: number, updateUserDto: UpdateUserDto): Promise<ResponseUserDto> {

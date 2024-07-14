@@ -6,7 +6,7 @@ import {
     Param,
     ParseIntPipe,
     Patch,
-    Post,
+    Post, Query,
     Request,
     UseGuards,
     UsePipes,
@@ -18,6 +18,8 @@ import { AuthGuard } from "../../../auth/JwtAuthGuard/JwtAuthGuard";
 import { Role } from "../../../auth/authorization/Role";
 import { Roles } from "../../../auth/authorization/decorator";
 import { RolesGuard } from "../../../auth/authorization/RolesGuard";
+import {PaginationDto} from "../../../utils/pagination/paginationDto";
+import {PaginationResult} from "../../../utils/pagination/pagination";
 
 @Controller('api/users')
 @UsePipes(new ValidationPipe())
@@ -25,10 +27,10 @@ export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Get('all')
-    @UseGuards(AuthGuard,RolesGuard)
+    @UseGuards(AuthGuard, RolesGuard)
     @Roles(Role.Admin)
-    async findAll(): Promise<ResponseUserDto[]> {
-        return this.userService.findAll();
+    async findAll(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ResponseUserDto>> {
+        return this.userService.findAll(paginationDto);
     }
 
     @Post()
