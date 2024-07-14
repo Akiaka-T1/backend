@@ -10,13 +10,8 @@ export class PostPostDto {
   @IsString()
   content: string;
 
-  @Type(() => Number)
-  @IsInt()
-  movieId: number;
-
   @IsString()
   thumbnailURL: string;
-
 
 }
 
