@@ -30,10 +30,10 @@ export class PostUserDto {
     mbti: string;
 
     @IsString()
-    character: string;
+    characterId: number;
 
     @IsString()
-    voiceType: string;
+    voiceTypeId: number;
 
     @IsInt()
     categoryId: number;
@@ -56,11 +56,11 @@ export class UpdateUserDto {
 
     @IsOptional()
     @IsString()
-    character?: string;
+    characterId?: number;
 
     @IsOptional()
     @IsString()
-    voiceType?: string;
+    voiceTypeId?: number;
 
 }
 
@@ -87,10 +87,10 @@ export class ResponseUserDto {
     mbti: string;
 
     @Field
-    character: string;
+    characterId: number;
 
     @Field
-    voiceType: string;
+    voiceTypeId: number;
 
     @Field
     categoryId: number;
