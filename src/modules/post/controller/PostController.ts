@@ -23,7 +23,6 @@ import { Roles } from "../../../auth/authorization/decorator";
 import { Role } from "../../../auth/authorization/Role";
 
 @Controller('api/posts')
-@UsePipes(new ValidationPipe())
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
@@ -36,7 +35,6 @@ export class PostController {
   @Post()
   @UseGuards(AuthGuard,RolesGuard)
   @Roles(Role.Admin,Role.User)
-  @UsePipes(new ValidationPipe({ transform: true }))
   async create(@Body() postPostDto: PostPostDto, @Request() request: any): Promise<any> {
     return this.postService.create(postPostDto, request.user.id);
   }
