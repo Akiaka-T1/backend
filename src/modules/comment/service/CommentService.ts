@@ -24,8 +24,8 @@ export class CommentService {
   async create(createCommentDto: PostCommentDto,reqUserEmail:string): Promise<ResponseCommentDto> {
     const { postId, rating, comment } = createCommentDto;
 
-    const user = await this.userRepository.findByEmail(reqUserEmail);
-    const post = await this.postRepository.findById(postId);
+    const user = await this.userRepository.findByEmailWithSelectedFields(reqUserEmail);
+    const post = await this.postRepository.findByIdWithSelectedFields(postId);
 
     CommentService.ensureExists(user, post);
     await this.ensureUnique(user.id, post.id);
@@ -86,8 +86,8 @@ export class CommentService {
     }
   }
 
-  private async ensureUnique(userId: number, postId: number): Promise<void> {
-    const existingComment = await this.commentRepository.findOne({ where: { user: { id: userId }, post: { id: postId } } });
+  async ensureUnique(userId: number, postId: number): Promise<void> {
+    const existingComment = await this.commentRepository.findByUserAndPost(userId, postId);
     if (existingComment) {
       throw new ConflictException('User has already commented on this post');
     }
