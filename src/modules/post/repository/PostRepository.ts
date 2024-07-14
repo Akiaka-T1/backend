@@ -12,6 +12,13 @@ export class PostRepository extends Repository<Post> {
     return this.findOne({ where: { id }, relations: ['user'] });
   }
 
+  async findByIdWithSelectedFields(id: number): Promise<Post | undefined> {
+    return this.createQueryBuilder('post')
+        .where('post.id = :id', { id })
+        .select(['post.id', 'post.title'])
+        .getOne();
+  }
+
   async findByTitle(title: string): Promise<Post | undefined> {
     return this.findOne({ where: { title } });
   }

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import {DataSource, FindManyOptions, FindOptionsWhere, Repository} from "typeorm";
+import {DataSource, FindManyOptions, FindOneOptions, FindOptionsWhere, Repository} from "typeorm";
 import {Comment} from "../entity/Comment";
 
 
@@ -10,24 +10,39 @@ export class CommentRepository extends Repository<Comment> {
   }
 
   async findByPostId(postId: number): Promise<Comment[]> {
-    const options: FindManyOptions<Comment> = {
-      where: { post: { id: postId } } as FindOptionsWhere<Comment>,
-      relations: ['user', 'post'],
-    };
-    return this.find(options);
+    return this.createQueryBuilder('comment')
+        .innerJoin('comment.user', 'user')
+        .innerJoin('comment.post', 'post')
+        .where('post.id = :postId', { postId })
+        .select(['comment.id', 'comment.comment', 'comment.rating', 'user.id', 'user.nickname', 'post.id', 'post.title'])
+        .getMany();
   }
 
   async findByUserId(userId: number): Promise<Comment[]> {
-    const options: FindManyOptions<Comment> = {
-      where: { user: { id: userId } } as FindOptionsWhere<Comment>,
-      relations: ['user', 'post'],
-    };
-    return this.find(options);
+    return this.createQueryBuilder('comment')
+        .innerJoin('comment.user', 'user')
+        .innerJoin('comment.post', 'post')
+        .where('user.id = :userId', { userId })
+        .select(['comment.id', 'comment.comment', 'comment.rating', 'user.id', 'user.nickname', 'post.id', 'post.title'])
+        .getMany();
   }
+
   async findById(id: number): Promise<Comment | undefined> {
-    return this.findOne({
-      where: { id },
-      relations: ['user', 'post'],
-    });
+    return this.createQueryBuilder('comment')
+        .innerJoin('comment.user', 'user')
+        .innerJoin('comment.post', 'post')
+        .where('comment.id = :id', { id })
+        .select(['comment.id', 'comment.comment', 'comment.rating', 'user.id', 'user.nickname', 'post.id', 'post.title'])
+        .getOne();
+  }
+
+  async findByUserAndPost(userId: number, postId: number): Promise<Comment | undefined> {
+    return this.createQueryBuilder('comment')
+        .leftJoinAndSelect('comment.user', 'user')
+        .leftJoinAndSelect('comment.post', 'post')
+        .where('comment.userId = :userId', { userId })
+        .andWhere('comment.postId = :postId', { postId })
+        .select(['comment.id'])
+        .getOne();
   }
 }
