@@ -7,6 +7,7 @@ import { loadYamlConfig } from "./dbConfig/yamlConfig";
 import {UserModule} from "./modules/user/module";
 import {DataModule} from "./modules/data/module";
 import {AuthModule} from "./auth/module";
+import {PostModule} from "./modules/post/module";
 
 dotenv.config();
 
@@ -31,7 +32,9 @@ const config = loadYamlConfig(configFilePath);
       inject: [ConfigService],
     }),
     DataModule,
-    UserModule, AuthModule
+    UserModule, AuthModule,
+    PostModule
+
   ],
 })
 export class AppModule {}

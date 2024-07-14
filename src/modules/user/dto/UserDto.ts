@@ -98,3 +98,10 @@ export class ResponseUserDto {
     @Field
     role: Role;
 }
+
+export class AuthorUserDto {
+    @Field
+    id: number;
+    @Field
+    nickname: string;
+}
