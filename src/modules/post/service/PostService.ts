@@ -8,6 +8,7 @@ import { mapToDto } from "../../../utils/mapper/Mapper";
 import { UserService } from "../../user/service/UserService";
 import { PostRepository } from "../repository/PostRepository";
 import { User } from "../../user/entity/User";
+import {ResponseUserDto} from "../../user/dto/UserDto";
 
 @Injectable()
 export class PostService {
@@ -36,18 +37,14 @@ export class PostService {
     return mapToDto(post,ResponsePostDto);
   }
 
-  async findAll(paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+  async findAll(paginationDto: PaginationDto): Promise<PaginationResult<ResponsePostDto>> {
     const { page, limit, field, order } = paginationDto;
-    const result = await this.handleErrors(
-      () => paginate(this.postRepository, { page, limit, field, order }, { relations: ['user'] }),
-      'Failed to fetch posts',
-    );
+    const options = { page, limit, field, order };
 
+    const posts = await this.postRepository.paginate(options);
     return {
-      data: result.data.map(post => mapToDto(post,ShortPostDto)),
-      total: result.total,
-      page,
-      limit,
+      ...posts,
+      data: posts.data.map(post => mapToDto(post, ResponsePostDto)),
     };
   }
 
