@@ -7,6 +7,7 @@ import { PostPostDto, UpdatePostDto } from '../../src/modules/post/dto/PostDto';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { PaginationDto } from '../../src/utils/pagination/paginationDto';
 import { PaginationResult } from '../../src/utils/pagination/pagination';
+import {MockUser} from "../mockEntities/MockUser";
 
 const mockPostRepository = () => ({
     create: jest.fn(),
@@ -26,9 +27,11 @@ describe('PostService', () => {
     let postRepository;
     let userService;
     let mockPost;
+    let mockUser;
 
     beforeEach(async () => {
         mockPost = new MockPost();
+        mockUser = new MockUser();
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 PostService,
