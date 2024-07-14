@@ -16,6 +16,13 @@ export class UserRepository extends Repository<User> {
     async findByEmail(email: string): Promise<User | undefined> {
         return this.findOne({ where: { email } });
     }
+
+    async findByEmailWithSelectedFields(email: string): Promise<User | undefined> {
+        return this.createQueryBuilder('user')
+            .where('user.email = :email', { email })
+            .select(['user.id', 'user.nickname'])
+            .getOne();
+    }
     async paginate(options: PaginationOptions): Promise<PaginationResult<User>> {
         return paginate(this, options);
     }
