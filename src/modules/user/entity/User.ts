@@ -1,10 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, BeforeInsert } from "typeorm";
+import {Entity, Column, PrimaryGeneratedColumn, OneToMany, BeforeInsert, BaseEntity} from "typeorm";
 import * as bcrypt from 'bcrypt';
 import {Role} from "../../../auth/authorization/Role";
 
 
 @Entity()
-export class User {
+export class User extends BaseEntity{
     @PrimaryGeneratedColumn()
     id: number;
 
