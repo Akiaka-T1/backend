@@ -10,5 +10,4 @@ export class MockPost extends BaseEntity {
     thumbnailURL = 'http://example.com/thumbnail.jpg';
     createdAt = new Date();
     updatedAt = new Date();
-    user = { id: 1, email: 'test@example.com' } as User;
 }

@@ -9,6 +9,7 @@ import {
   OneToMany
 } from "typeorm";
 import { User } from '../../user/entity/User';
+import { Comment } from '../../comment/entity/Comment';
 
 @Entity()
 export class Post extends BaseEntity{
@@ -38,5 +39,8 @@ export class Post extends BaseEntity{
 
   @ManyToOne(() => User, user => user.posts)
   user: User;
+
+  @OneToMany(() => Comment, comment => comment.post)
+  comments: Comment[];
 
 }
