@@ -35,7 +35,7 @@ export class PostUserDto {
     @IsString()
     voiceTypeId: number;
 
-    @IsInt()
+    @IsString()
     categoryId: number;
 
 }

@@ -14,7 +14,9 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Token not found');
     }
     try {
-      request['user'] = await this.jwtService.verifyAsync(token);
+      request['user'] = await this.jwtService.verifyAsync(token,{
+        secret: process.env.JWT_SECRET_KEY
+      });
     } catch (error) {
       if (error instanceof TokenExpiredError) {
         throw new UnauthorizedException('Token expired');

@@ -25,8 +25,11 @@ export class AuthService {
     const { email, password } = loginDto;
     const user = await this.validateUser(email, password);
 
-    const payload = { email: user.email, sub: user.id, role: user.role };
-    const accessToken = this.jwtService.sign(payload);
+    const payload = { email: user.email,nickname:user.nickname, sub: user.id, role: user.role };
+    const accessToken = this.jwtService.sign(payload,{
+      secret: process.env.JWT_SECRET_KEY,
+      expiresIn: '60m',
+    });
     const refreshToken = this.generateRefreshToken(user.id);
 
     AuthService.setCookie(response, refreshToken);
@@ -48,19 +51,22 @@ export class AuthService {
   generateRefreshToken(userId: string) {
     const payload = { userId };
     return this.jwtService.sign(payload, {
-      secret: 'JWT_SECRET_KEY',
+      secret: process.env.JWT_SECRET_KEY,
       expiresIn: '1d',
     });
   }
 
   async refreshToken(refreshToken: string) {
 
-      const { userId } = this.jwtService.verify(refreshToken, { secret: 'JWT_SECRET_KEY' });
+      const { userId } = this.jwtService.verify(refreshToken, { secret:  process.env.JWT_SECRET_KEY });
       const user = await this.userService.findByIdForJwt(userId);
 
     try {
-      const payload = { email: user.email, sub: user.id, role: user.role };
-      const newAccessToken = this.jwtService.sign(payload);
+      const payload = { email: user.email,nickname:user.nickname, sub: user.id, role: user.role };
+      const newAccessToken = this.jwtService.sign(payload,{
+        secret: process.env.JWT_SECRET_KEY,
+        expiresIn: '30m',
+      });
 
       return {
         access_token: `Bearer ${newAccessToken}`,

@@ -4,7 +4,6 @@ import { UserModule } from "../modules/user/module";
 import { AuthService } from "./service/AuthService";
 import { PassportModule } from "@nestjs/passport";
 import { JwtModule } from "@nestjs/jwt";
-import * as process from "node:process";
 
 
 @Module({
