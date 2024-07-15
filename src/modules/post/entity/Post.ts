@@ -34,6 +34,9 @@ export class Post extends BaseEntity {
   @Column({ length: 255, nullable: true })
   backGroundImgURL: string;
 
+  @Column({ length: 255, nullable: true })
+  youtubeURL: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

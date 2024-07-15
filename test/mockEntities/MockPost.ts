@@ -9,6 +9,7 @@ export class MockPost extends BaseEntity {
     views = 0;
     thumbnailURL = 'http://example.com/thumbnail.jpg';
     backGroundImgURL  = 'http://example.com/backGround.jpg';
+    youtubeURL = 'http://youtube.com/example'
     createdAt = new Date();
     updatedAt = new Date();
 }
