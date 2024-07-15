@@ -13,6 +13,9 @@ export class PostPostDto {
   @IsString()
   thumbnailURL: string;
 
+  @IsString()
+  backGroundImgURL: string;
+
 }
 
 export class UpdatePostDto {
@@ -51,6 +54,9 @@ export class ResponsePostDto {
 
   @Field
   thumbnailURL: string;
+
+  @Field
+  backGroundImgURL: string;
 
   @Field
   views: number;

@@ -31,6 +31,9 @@ export class Post extends BaseEntity {
   @Column({ length: 255, nullable: true })
   thumbnailURL: string;
 
+  @Column({ length: 255, nullable: true })
+  backGroundImgURL: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

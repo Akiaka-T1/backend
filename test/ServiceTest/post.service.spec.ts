@@ -57,6 +57,7 @@ describe('PostService', () => {
                 title: 'Test Post',
                 content: 'This is a test post',
                 thumbnailURL: 'http://example.com/thumbnail.jpg',
+                backGroundImgURL: 'http://example.com/backGround.jpg'
             };
             const result = await postService.create(postPostDto, 1);
 
@@ -111,12 +112,13 @@ describe('PostService', () => {
 
     describe('update', () => {
         it('should update a post successfully', async () => {
+            mockPost.user = mockUser;
             postRepository.findById.mockResolvedValue(mockPost);
             postRepository.save.mockResolvedValue(mockPost);
 
             const updatePostDto: UpdatePostDto = { title: 'Updated Post' };
 
-            const result = await postService.update(1, updatePostDto, mockPost.user);
+            const result = await postService.update(1, updatePostDto, mockUser);
 
             expect(postRepository.findById).toHaveBeenCalledWith(1);
             expect(postRepository.save).toHaveBeenCalledWith({ ...mockPost, ...updatePostDto });
