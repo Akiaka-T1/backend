@@ -16,6 +16,9 @@ export class PostPostDto {
   @IsString()
   backGroundImgURL: string;
 
+  @IsString()
+  youtubeURL: string;
+
 }
 
 export class UpdatePostDto {
@@ -26,6 +29,10 @@ export class UpdatePostDto {
   @IsOptional()
   @IsString()
   content?: string;
+
+  @IsOptional()
+  @IsString()
+  youtubeURL?: string;
 
 }
 
@@ -57,6 +64,9 @@ export class ResponsePostDto {
 
   @Field
   backGroundImgURL: string;
+
+  @Field
+  youtubeURL: string;
 
   @Field
   views: number;

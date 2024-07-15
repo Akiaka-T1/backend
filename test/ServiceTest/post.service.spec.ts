@@ -57,7 +57,8 @@ describe('PostService', () => {
                 title: 'Test Post',
                 content: 'This is a test post',
                 thumbnailURL: 'http://example.com/thumbnail.jpg',
-                backGroundImgURL: 'http://example.com/backGround.jpg'
+                backGroundImgURL: 'http://example.com/backGround.jpg',
+                youtubeURL: 'http://youtube.com/example'
             };
             const result = await postService.create(postPostDto, 1);
 
