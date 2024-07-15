@@ -8,6 +8,7 @@ export class MockPost extends BaseEntity {
     score = 0;
     views = 0;
     thumbnailURL = 'http://example.com/thumbnail.jpg';
+    backGroundImgURL  = 'http://example.com/backGround.jpg';
     createdAt = new Date();
     updatedAt = new Date();
 }
