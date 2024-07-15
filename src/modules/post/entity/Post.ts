@@ -6,13 +6,13 @@ import {
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany
-} from "typeorm";
+  OneToMany,
+} from 'typeorm';
 import { User } from '../../user/entity/User';
 import { Comment } from '../../comment/entity/Comment';
 
 @Entity()
-export class Post extends BaseEntity{
+export class Post extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -37,10 +37,9 @@ export class Post extends BaseEntity{
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User, user => user.posts)
+  @ManyToOne(() => User, (user) => user.posts)
   user: User;
 
-  @OneToMany(() => Comment, comment => comment.post)
+  @OneToMany(() => Comment, (comment) => comment.post, { cascade: ['remove'] })
   comments: Comment[];
-
 }
