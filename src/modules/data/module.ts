@@ -10,18 +10,22 @@ import {CommentService} from "../comment/service/CommentService";
 import {CommentRepository} from "../comment/repository/CommentRepository";
 import {Post} from "../post/entity/Post";
 import {Comment} from "../comment/entity/Comment";
+import {CategoryService} from "../category/service/CategoryService";
+import {CategoryRepository} from "../category/repository/CategoryRepository";
 
 @Module({
   imports: [TypeOrmModule.forFeature([User,Post,Comment])],
   providers: [
     UserService, UserRepository, AdminService ,
       PostService, PostRepository,
-      CommentService, CommentRepository
+      CommentService, CommentRepository,
+      CategoryService, CategoryRepository,
     ],
   exports: [
     UserService,UserRepository,
     PostService,PostRepository,
-    CommentService,CommentRepository
+    CommentService,CommentRepository,
+    CategoryService, CategoryRepository,
   ],
 })
 export class DataModule {}
