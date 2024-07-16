@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { User } from '../../user/entity/User';
 import { Comment } from '../../comment/entity/Comment';
+import {Category} from "../../category/entity/Category";
 
 @Entity()
 export class Post extends BaseEntity {
@@ -48,4 +49,7 @@ export class Post extends BaseEntity {
 
   @OneToMany(() => Comment, (comment) => comment.post, { cascade: ['remove'] })
   comments: Comment[];
+
+  @ManyToOne(() => Category, (category) => category.posts)
+  category: Category;
 }
