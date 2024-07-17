@@ -9,7 +9,8 @@ import {DataModule} from "./modules/data/module";
 import {AuthModule} from "./auth/module";
 import {PostModule} from "./modules/post/module";
 import {CommentModule} from "./modules/comment/module";
-import {CategoryModule} from "./modules/category/mocule";
+import {CategoryModule} from "./modules/category/module";
+import {InterestModule} from "./modules/interest/module";
 
 dotenv.config();
 
@@ -37,7 +38,8 @@ const config = loadYamlConfig(configFilePath);
     UserModule, AuthModule,
     PostModule,
     CommentModule,
-    CategoryModule
+    CategoryModule,
+    InterestModule
 
   ],
 })
