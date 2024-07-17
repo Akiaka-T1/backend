@@ -67,6 +67,6 @@ export class User extends BaseEntity {
   @OneToMany(() => Comment, (comment) => comment.user, { cascade: ['remove'] })
   comments: Comment[];
 
-  @OneToMany(() => UserInterest, userInterest => userInterest.user)
+  @OneToMany(() => UserInterest, userInterest => userInterest.user, { cascade: ['remove'] })
   userInterests: UserInterest[];
 }

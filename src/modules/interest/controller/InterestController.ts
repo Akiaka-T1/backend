@@ -12,13 +12,6 @@ import {Role} from "../../../auth/authorization/Role";
 export class InterestController {
     constructor(private readonly interestService: InterestService) {}
 
-    @Post()
-    @UseGuards(AuthGuard,RolesGuard)
-    @Roles(Role.Admin)
-    post(@Body() postInterestDto: PostInterestDto): Promise<ResponseInterestDto> {
-        return this.interestService.post(postInterestDto);
-    }
-
     @Get()
     findAll(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ResponseInterestDto>> {
         return this.interestService.findAll(paginationDto);
@@ -36,10 +29,4 @@ export class InterestController {
         return this.interestService.update(id, updateInterestDto);
     }
 
-    @Delete(':id')
-    @UseGuards(AuthGuard,RolesGuard)
-    @Roles(Role.Admin)
-    remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        return this.interestService.remove(id);
-    }
 }
