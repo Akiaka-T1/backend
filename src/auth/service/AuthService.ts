@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
-import { UserService } from "../../modules/user/service/UserService";
+import {Injectable, NotFoundException, UnauthorizedException} from "@nestjs/common";
+import {UserService} from "../../modules/user/service/UserService";
 import * as bcrypt from 'bcrypt';
-import { LoginDto } from "../dto/LoginDto";
-import { JwtService } from '@nestjs/jwt';
+import {LoginDto} from "../dto/LoginDto";
+import {JwtService} from '@nestjs/jwt';
 
 
 @Injectable()
@@ -63,14 +63,10 @@ export class AuthService {
 
     try {
       const payload = { email: user.email,nickname:user.nickname, sub: user.id, role: user.role };
-      const newAccessToken = this.jwtService.sign(payload,{
+      return this.jwtService.sign(payload, {
         secret: process.env.JWT_SECRET_KEY,
         expiresIn: '30m',
       });
-
-      return {
-        access_token: `Bearer ${newAccessToken}`,
-      };
     } catch (e) {
       if (e.name === 'TokenExpiredError') {
         throw new UnauthorizedException('Refresh token expired');

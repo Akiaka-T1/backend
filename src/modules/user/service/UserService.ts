@@ -1,17 +1,23 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "../entity/User";
-import { PostUserDto, ResponseUserDto, UpdateUserDto } from "../dto/UserDto";
+import {PostUserDto, ResponseUserDto, ResponseUserWithInterestsAndCategoriesDto, UpdateUserDto} from "../dto/UserDto";
 import { UserRepository } from "../repository/UserRepository";
 import { mapToDto } from "../../../utils/mapper/Mapper";
 import {PaginationDto} from "../../../utils/pagination/paginationDto";
 import {PaginationResult} from "../../../utils/pagination/pagination";
+import {InterestService} from "../../interest/service/InterestService";
+import {ResponseUserInterestDto} from "../../interest/dto/UserInterestDto";
+import {CategoryService} from "../../category/service/CategoryService";
+import {ResponseUserCategoryDto} from "../../category/dto/UserCategoryDto";
 
 @Injectable()
 export class UserService {
     constructor(
       @InjectRepository(UserRepository)
       private readonly userRepository: UserRepository,
+      private readonly interestService: InterestService,
+      private readonly categoryService: CategoryService
     ) {}
 
     async create(postUserDto: PostUserDto): Promise<ResponseUserDto> {
@@ -27,10 +33,19 @@ export class UserService {
         return mapToDto(user,ResponseUserDto);
     }
 
-    async findMe(email: string): Promise<ResponseUserDto> {
-        const user = await this.userRepository.findByEmail(email);
+    async findMe(email: string): Promise<ResponseUserWithInterestsAndCategoriesDto> {
+        const user = await this.userRepository.findByEmailWithInterestsAndCategories(email);
         this.ensureExists(user, 0);
-        return mapToDto(user,ResponseUserDto);
+
+        await this.interestService.addDefaultInterestsToUser(user);
+        await this.categoryService.addDefaultCategoriesToUser(user);
+
+        const userDto = mapToDto(user, ResponseUserWithInterestsAndCategoriesDto);
+
+        userDto.userInterests = user.userInterests.map(ui => mapToDto(ui, ResponseUserInterestDto));
+        userDto.userCategories = user.userCategories.map(uc => mapToDto(uc, ResponseUserCategoryDto));
+
+        return userDto;
     }
 
     async findByIdForJwt(id: number): Promise<User> {
