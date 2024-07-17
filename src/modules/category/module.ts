@@ -4,7 +4,7 @@ import {Category} from "./entity/Category";
 import {DataModule} from "../data/module";
 import {CategoryService} from "./service/CategoryService";
 import {CategoryRepository} from "./repository/CategoryRepository";
-import {CategoryController} from "./conntroller/CategoryController";
+import {CategoryController} from "./controller/CategoryController";
 
 
 @Module({

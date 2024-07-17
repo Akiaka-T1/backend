@@ -7,7 +7,7 @@ import { Role } from "../../../auth/authorization/Role";
 
 
 @Injectable()
-export class AdminService implements OnModuleInit{
+export class InitAdminService implements OnModuleInit{
   constructor(
     @InjectRepository(User)
     private readonly userRepository: UserRepository,

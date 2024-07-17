@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { Role } from '../../../auth/authorization/Role';
 import { Post } from '../../post/entity/Post';
 import { Comment } from '../../comment/entity/Comment';
+import {UserInterest} from "../../interest/entity/UserInterest";
 
 @Entity()
 export class User extends BaseEntity {
@@ -65,4 +66,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Comment, (comment) => comment.user, { cascade: ['remove'] })
   comments: Comment[];
+
+  @OneToMany(() => UserInterest, userInterest => userInterest.user)
+  userInterests: UserInterest[];
 }
