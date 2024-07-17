@@ -14,6 +14,9 @@ export class InterestRepository extends Repository<Interest> {
     async findByIdsForCreatePost(ids: number[]): Promise<Interest[]> {
         return this.findBy({ id: In(ids) });
     }
+    async findAll(): Promise<Interest[]> {
+        return this.find();
+    }
 
     async paginate(options: PaginationOptions, findOptions?: FindManyOptions<Interest>): Promise<PaginationResult<Interest>> {
         return paginate(this, options, findOptions);
