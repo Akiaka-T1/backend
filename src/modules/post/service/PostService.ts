@@ -44,12 +44,18 @@ export class PostService {
     return mapToDto(post, ResponsePostDto);
   }
 
-  async findOne(id: number): Promise<ResponsePostDto> {
+  async findOne(id: number, user: User | null): Promise<ResponsePostDto> {
     const post = await this.postRepository.findById(id);
     this.ensureExists(post, id);
+
+    if (user) {
+      await this.interestService.incrementUserInterestScore(user.id, post.interests);
+      await this.categoryService.incrementUserCategoryScore(user.id, post.category.id);
+    }
+
     post.views++;
     await this.postRepository.save(post);
-    return mapToDto(post,ResponsePostDto);
+    return mapToDto(post, ResponsePostDto);
   }
 
   async findAll(paginationDto: PaginationDto): Promise<PaginationResult<ResponsePostDto>> {
@@ -73,7 +79,7 @@ export class PostService {
   }
 
   async remove(id: number): Promise<void> {
-    const post = await this.findOne(id);
+    const post = await this.postRepository.findById(id);
     await this.handleErrors(() => this.postRepository.delete(post.id), 'Failed to delete post');
   }
 
@@ -87,7 +93,7 @@ export class PostService {
     if (post.user.email !== userFromRequest.email && userFromRequest.role !== "admin") throw new BadRequestException("Not authorized to update post");
   }
 
-  private async handleErrors<T>(operation: () => Promise<T>, errorMessage: string): Promise<T> {
+  public async handleErrors<T>(operation: () => Promise<T>, errorMessage: string): Promise<T> {
     try {
       return await operation();
     } catch (error) {

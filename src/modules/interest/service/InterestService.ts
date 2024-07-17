@@ -71,6 +71,20 @@ export class InterestService {
         }
     }
 
+    async incrementUserInterestScore(userId: number, interests: Interest[]): Promise<void> {
+        const userInterests = await this.userInterestRepository.findByUserId(userId);
+
+        for (const interest of interests) {
+            const userInterest = userInterests.find(ui => ui.interest.id === interest.id);
+            if (userInterest) {
+                userInterest.score++;
+                await this.userInterestRepository.save(userInterest);
+            } else {
+                await this.userInterestRepository.createUserInterest(userId, interest.id, 1);
+            }
+        }
+    }
+
     private ensureExists(category: Interest, id: number): void {
         if (!category) {
             throw new NotFoundException(`Interest with ID ${id} not found`);

@@ -79,6 +79,18 @@ export class CategoryService {
         }
     }
 
+    async incrementUserCategoryScore(userId: number, categoryId: number): Promise<void> {
+        const userCategories = await this.userCategoryRepository.findByUserId(userId);
+        const userCategory = userCategories.find(uc => uc.category.id === categoryId);
+
+        if (userCategory) {
+            userCategory.score++;
+            await this.userCategoryRepository.save(userCategory);
+        } else {
+            await this.userCategoryRepository.createUserCategory(userId, categoryId ,0);
+        }
+    }
+
     private async handleErrors<T>(operation: () => Promise<T>, errorMessage: string): Promise<T> {
         try {
             return await operation();

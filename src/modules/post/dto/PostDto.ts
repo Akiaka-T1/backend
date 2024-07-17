@@ -3,6 +3,8 @@ import {Transform, Type} from "class-transformer";
 import { AuthorUserDto } from '../../user/dto/UserDto';
 import { Field } from "../../../utils/mapper/FieldNameExtractor";
 import {ResponseInterestDto} from "../../interest/dto/InterestDto";
+import {Category} from "../../category/entity/Category";
+import {ResponseCategoryDto} from "../../category/dto/CategoryDto";
 
 export class PostPostDto {
   @IsString()
@@ -78,6 +80,9 @@ export class ResponsePostDto {
 
   @Field
   views: number;
+
+  @Field
+  category: ResponseCategoryDto;
 
   @Field
   interests: ResponseInterestDto[];
