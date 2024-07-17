@@ -19,6 +19,7 @@ import {Category} from "../category/entity/Category";
 import {UserInterest} from "../interest/entity/UserInterest";
 import {Interest} from "../interest/entity/Interest";
 import {InitInterestService} from "./interest/InitInterestService"
+import {InitCategoryService} from "./category/InitCategoryService";
 
 @Module({
   imports: [TypeOrmModule.forFeature([User,Post,Comment,Category,Interest,UserInterest])],
@@ -26,14 +27,14 @@ import {InitInterestService} from "./interest/InitInterestService"
     UserService, UserRepository, InitAdminService ,
       PostService, PostRepository,
       CommentService, CommentRepository,
-      CategoryService, CategoryRepository,
+      CategoryService, CategoryRepository, InitCategoryService,
       InterestService, InterestRepository,UserInterestRepository, InitInterestService
     ],
   exports: [
     UserService,UserRepository,
     PostService,PostRepository,
     CommentService,CommentRepository,
-    CategoryService, CategoryRepository,
+    CategoryService, CategoryRepository, InitCategoryService,
     InterestService, InterestRepository,UserInterestRepository
   ],
 })

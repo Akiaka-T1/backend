@@ -11,27 +11,32 @@ import { mapToDto } from "../../../utils/mapper/Mapper";
 export class InterestService {
     constructor(
         @InjectRepository(InterestRepository)
-        private readonly categoryRepository: InterestRepository,
+        private readonly interestRepository: InterestRepository,
     ) {
     }
 
     async post(postInterestDto: PostInterestDto): Promise<ResponseInterestDto> {
-        const category = this.categoryRepository.create(postInterestDto);
-        await this.categoryRepository.save(category);
+        const category = this.interestRepository.create(postInterestDto);
+        await this.interestRepository.save(category);
         return mapToDto(category,ResponseInterestDto);
     }
 
     async findOne(id: number): Promise<ResponseInterestDto> {
-        const category = await this.categoryRepository.findById(id);
+        const category = await this.interestRepository.findById(id);
         this.ensureExists(category, id);
         return mapToDto(category,ResponseInterestDto);
     }
+
+    async findByIdsForCreatePost(ids: number[]): Promise<Interest[]> {
+        return this.interestRepository.findByIdsForCreatePost(ids)
+    }
+
 
     async findAll(paginationDto: PaginationDto): Promise<PaginationResult<ResponseInterestDto>> {
         const {page, limit, field, order} = paginationDto;
         const options = {page, limit, field, order};
 
-        const categories = await this.categoryRepository.paginate(options);
+        const categories = await this.interestRepository.paginate(options);
         return {
             ...categories,
             data: categories.data.map(category => mapToDto(category,ResponseInterestDto)),
@@ -39,10 +44,10 @@ export class InterestService {
     }
 
     async update(id: number, updateInterestDto: UpdateInterestDto): Promise<ResponseInterestDto> {
-        const category = await this.categoryRepository.findById(id);
+        const category = await this.interestRepository.findById(id);
         this.ensureExists(category, id);
         Object.assign(category, updateInterestDto);
-        const updatedInterest = await this.handleErrors(() => this.categoryRepository.save(category), 'Failed to update category');
+        const updatedInterest = await this.handleErrors(() => this.interestRepository.save(category), 'Failed to update category');
         return mapToDto(category,ResponseInterestDto);
     }
 

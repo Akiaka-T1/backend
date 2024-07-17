@@ -1,7 +1,8 @@
-import {IsString, IsInt, IsOptional, IsArray} from "class-validator";
-import { Type } from "class-transformer";
+import {IsString, IsInt, IsOptional, IsArray, ArrayNotEmpty} from "class-validator";
+import {Transform, Type} from "class-transformer";
 import { AuthorUserDto } from '../../user/dto/UserDto';
 import { Field } from "../../../utils/mapper/FieldNameExtractor";
+import {ResponseInterestDto} from "../../interest/dto/InterestDto";
 
 export class PostPostDto {
   @IsString()
@@ -19,8 +20,15 @@ export class PostPostDto {
   @IsString()
   youtubeURL: string;
 
-}
+  @IsString()
+  @Transform(({ value }) => parseInt(value))
+  categoryId: number;
 
+  @IsArray()
+  @ArrayNotEmpty()
+  @Transform(({ value }) => value.map((id: string) => parseInt(id)))
+  interestIds: number[];
+}
 export class UpdatePostDto {
   @IsOptional()
   @IsString()
@@ -71,17 +79,24 @@ export class ResponsePostDto {
   @Field
   views: number;
 
+  @Field
+  interests: ResponseInterestDto[];
+
 }
 
 export class ShortPostDto {
   @Field
   id: number;
+
   @Field
   title: string;
+
   @Field
   thumbnailURL: string;
+
   @Field
   views: number;
+
   @Field
   score: number;
 }
