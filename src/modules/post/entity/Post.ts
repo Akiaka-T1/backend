@@ -6,11 +6,12 @@ import {
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
+  OneToMany, ManyToMany, JoinTable,
 } from 'typeorm';
 import { User } from '../../user/entity/User';
 import { Comment } from '../../comment/entity/Comment';
 import {Category} from "../../category/entity/Category";
+import {Interest} from "../../interest/entity/Interest";
 
 @Entity()
 export class Post extends BaseEntity {
@@ -52,4 +53,8 @@ export class Post extends BaseEntity {
 
   @ManyToOne(() => Category, (category) => category.posts)
   category: Category;
+
+  @ManyToMany(() => Interest, interest => interest.posts)
+  @JoinTable()
+  interests: Interest[];
 }
