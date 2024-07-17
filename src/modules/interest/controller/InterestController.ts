@@ -14,7 +14,7 @@ export class InterestController {
 
     @Get()
     findAll(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ResponseInterestDto>> {
-        return this.interestService.findAll(paginationDto);
+        return this.interestService.findAllAndPaginate(paginationDto);
     }
 
     @Get(':id')

@@ -11,7 +11,7 @@ import {
   ParseIntPipe,
   Query,
   UseGuards,
-  Request
+  Request, Req
 } from "@nestjs/common";
 import { PostService } from '../service/PostService';
 import {PostPostDto, ResponsePostDto, ShortPostDto, UpdatePostDto} from '../dto/PostDto';
@@ -21,10 +21,18 @@ import { AuthGuard } from "../../../auth/JwtAuthGuard/JwtAuthGuard";
 import { RolesGuard } from "../../../auth/authorization/RolesGuard";
 import { Roles } from "../../../auth/authorization/decorator";
 import { Role } from "../../../auth/authorization/Role";
+import {JwtService} from "@nestjs/jwt";
+import {UserService} from "../../user/service/UserService";
+import {User} from "../../user/entity/User";
 
 @Controller('api/posts')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+      private readonly postService: PostService,
+      private readonly userService: UserService,
+      private readonly jwtService: JwtService,
+
+  ) {}
 
   @Get()
   async findAll(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
@@ -40,9 +48,23 @@ export class PostController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<ResponsePostDto> {
-    return this.postService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request): Promise<ResponsePostDto> {
+    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+    const token = authHeader?.split(' ')[1];
+    let user: User | null = null;
+
+    if (token) {
+      try {
+        const decoded = this.jwtService.verify(token,{ secret:  process.env.JWT_SECRET_KEY });
+        user = <User>await this.userService.findById(decoded.sub);
+      } catch (error) {
+        await this.postService.handleErrors(error, "error while decoding token");
+      }
+    }
+
+    return this.postService.findOne(id, user);
   }
+
 
   @Patch(':id')
   @UseGuards(AuthGuard,RolesGuard)

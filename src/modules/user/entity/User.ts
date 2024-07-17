@@ -11,6 +11,7 @@ import { Role } from '../../../auth/authorization/Role';
 import { Post } from '../../post/entity/Post';
 import { Comment } from '../../comment/entity/Comment';
 import {UserInterest} from "../../interest/entity/UserInterest";
+import {UserCategory} from "../../category/entity/UserCategory";
 
 @Entity()
 export class User extends BaseEntity {
@@ -69,4 +70,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => UserInterest, userInterest => userInterest.user, { cascade: ['remove'] })
   userInterests: UserInterest[];
+
+  @OneToMany(() => UserCategory, userCategory => userCategory.user)
+  userCategories: UserCategory[];
 }

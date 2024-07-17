@@ -12,6 +12,12 @@ export class UserInterestRepository extends Repository<UserInterest> {
         const userInterest = this.create({ user: { id: userId }, interest: { id: interestId }, score });
         return this.save(userInterest);
     }
+    async findByUserId(userId: number): Promise<UserInterest[]> {
+        return this.find({
+            where: { user: { id: userId } },
+            relations: ['interest'],
+        });
+    }
 
     async deleteUserInterest(userInterestId: number): Promise<void> {
         await this.delete(userInterestId);

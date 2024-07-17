@@ -19,22 +19,25 @@ import {Category} from "../category/entity/Category";
 import {UserInterest} from "../interest/entity/UserInterest";
 import {Interest} from "../interest/entity/Interest";
 import {InitInterestService} from "./interest/InitInterestService"
+import {InitCategoryService} from "./category/InitCategoryService";
+import {UserCategory} from "../category/entity/UserCategory";
+import {UserCategoryRepository} from "../category/repository/UserCatrgoryRepository";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User,Post,Comment,Category,Interest,UserInterest])],
+  imports: [TypeOrmModule.forFeature([User,Post,Comment,Category,Interest,UserInterest,UserCategory])],
   providers: [
     UserService, UserRepository, InitAdminService ,
       PostService, PostRepository,
       CommentService, CommentRepository,
-      CategoryService, CategoryRepository,
+      CategoryService, CategoryRepository, UserCategoryRepository, InitCategoryService,
       InterestService, InterestRepository,UserInterestRepository, InitInterestService
     ],
   exports: [
     UserService,UserRepository,
     PostService,PostRepository,
     CommentService,CommentRepository,
-    CategoryService, CategoryRepository,
-    InterestService, InterestRepository,UserInterestRepository
+    CategoryService, CategoryRepository,UserCategoryRepository, InitCategoryService,
+    InterestService, InterestRepository,UserInterestRepository, InitInterestService
   ],
 })
 export class DataModule {}

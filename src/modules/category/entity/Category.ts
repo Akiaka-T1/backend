@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Post } from '../../post/entity/Post'
+import {UserCategory} from "./UserCategory";
 
 @Entity()
 export class Category {
@@ -14,4 +15,7 @@ export class Category {
 
     @OneToMany(() => Post, post => post.category)
     posts: Post[];
+
+    @OneToMany(() => UserCategory, userCategory => userCategory.category)
+    userCategories: UserCategory[];
 }

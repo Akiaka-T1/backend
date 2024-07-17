@@ -21,7 +21,7 @@ export class CategoryController {
 
     @Get()
     findAll(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ResponseCategoryDto>> {
-        return this.categoryService.findAll(paginationDto);
+        return this.categoryService.findAllAndPaginate(paginationDto);
     }
 
     @Get(':id')

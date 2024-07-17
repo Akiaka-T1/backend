@@ -1,6 +1,8 @@
 import {IsString, IsEmail, IsOptional, MinLength, MaxLength, Matches, IsInt} from 'class-validator';
 import { Field } from "../../../utils/mapper/FieldNameExtractor";
 import {Role} from "../../../auth/authorization/Role";
+import {ResponseUserInterestDto} from "../../interest/dto/UserInterestDto";
+import {ResponseUserCategoryDto} from "../../category/dto/UserCategoryDto";
 
 export class PostUserDto {
     @IsString({ message: 'Name must be contained.' })
@@ -104,4 +106,46 @@ export class AuthorUserDto {
     id: number;
     @Field
     nickname: string;
+}
+
+export class ResponseUserWithInterestsAndCategoriesDto {
+    @Field
+    id: number;
+
+    @Field
+    name: string;
+
+    @Field
+    nickname: string;
+
+    @Field
+    email: string;
+
+    @Field
+    gender: string;
+
+    @Field
+    ageGroup: string;
+
+    @Field
+    mbti: string;
+
+    @Field
+    characterId: number;
+
+    @Field
+    voiceTypeId: number;
+
+    @Field
+    categoryId: number;
+
+    @Field
+    role: Role;
+
+    @Field
+    userInterests: ResponseUserInterestDto[];
+
+    @Field
+    userCategories: ResponseUserCategoryDto[];
+
 }
