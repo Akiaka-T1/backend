@@ -46,11 +46,6 @@ export class InterestService {
         return mapToDto(category,ResponseInterestDto);
     }
 
-    async remove(id: number): Promise<void> {
-        const category = await this.findOne(id);
-        await this.handleErrors(() => this.categoryRepository.delete(category.id), 'Failed to delete category');
-    }
-
     private ensureExists(category: Interest, id: number): void {
         if (!category) {
             throw new NotFoundException(`Interest with ID ${id} not found`);
