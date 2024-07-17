@@ -8,14 +8,14 @@ export class UserInterestRepository extends Repository<UserInterest> {
         super(UserInterest, dataSource.createEntityManager());
     }
 
-    async createUserInterest(userId: number, interestId: number, score: number): Promise<UserInterest> {
-        const userInterest = this.create({ user: { id: userId }, interest: { id: interestId }, score });
+    async createUserInterest(userId: number, interestId: number, score: number, name: string): Promise<UserInterest> {
+        const userInterest = this.create({ user: { id: userId }, interest: { id: interestId }, score ,name});
         return this.save(userInterest);
     }
     async findByUserId(userId: number): Promise<UserInterest[]> {
         return this.find({
             where: { user: { id: userId } },
-            relations: ['interest'],
+            relations: ['interest','user'],
         });
     }
 

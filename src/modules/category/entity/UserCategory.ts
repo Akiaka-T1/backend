@@ -15,4 +15,7 @@ export class UserCategory {
 
     @Column({ type: 'int', default: 0 })
     score: number;
+
+    @Column({nullable:true})
+    name: string;
 }

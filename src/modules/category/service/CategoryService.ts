@@ -8,7 +8,7 @@ import {PaginationResult} from "../../../utils/pagination/pagination";
 import { mapToDto } from "../../../utils/mapper/Mapper";
 import {UserCategoryRepository} from "../repository/UserCatrgoryRepository";
 import {User} from "../../user/entity/User";
-import {Interest} from "../../interest/entity/Interest";
+import {defaultCategoryNames} from "../../../constants/defalutCatrgories";
 
 @Injectable()
 export class CategoryService {
@@ -60,17 +60,20 @@ export class CategoryService {
         await this.handleErrors(() => this.categoryRepository.delete(category.id), 'Failed to delete category');
     }
 
-    async addDefaultCategoriesToUser(user: User): Promise<void> {
-        const categories = await this.findAll();
+    async addDefaultCategoriesToUser(user: User): Promise<User> {
         const userCategories = await this.userCategoryRepository.findByUserId(user.id);
-
-        for (const category of categories) {
-            const userCategoryExists = userCategories.some(uc => uc.category.id === category.id);
-            if (!userCategoryExists) {
-                const userInterest = this.userCategoryRepository.create({ user, category, score: 0 });
-                await this.userCategoryRepository.save(userInterest);
+        if (userCategories.length < defaultCategoryNames.length) {
+            const categories = await this.findAll();
+            for (const category of categories) {
+                const userCategoryExists = userCategories.some(uc => uc.category.id === category.id);
+                if (!userCategoryExists) {
+                    const userCategory = this.userCategoryRepository.create({ user, category, score: 0, name: category.name});
+                    await this.userCategoryRepository.save(userCategory);
+                    user.userCategories.push(userCategory);
+                }
             }
         }
+        return user
     }
 
     private ensureExists(category: Category, id: number): void {
@@ -79,16 +82,17 @@ export class CategoryService {
         }
     }
 
-    async incrementUserCategoryScore(userId: number, categoryId: number): Promise<void> {
+    async incrementUserCategoryScore(userId: number, category: Category): Promise<void> {
         const userCategories = await this.userCategoryRepository.findByUserId(userId);
-        const userCategory = userCategories.find(uc => uc.category.id === categoryId);
 
+        const userCategory = userCategories.find(uc => uc.category.id === category.id);
         if (userCategory) {
             userCategory.score++;
             await this.userCategoryRepository.save(userCategory);
         } else {
-            await this.userCategoryRepository.createUserCategory(userId, categoryId ,0);
+            await this.userCategoryRepository.createUserCategory(userId, category.id, 1, userCategory.category.name);
         }
+
     }
 
     private async handleErrors<T>(operation: () => Promise<T>, errorMessage: string): Promise<T> {

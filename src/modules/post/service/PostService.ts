@@ -50,7 +50,7 @@ export class PostService {
 
     if (user) {
       await this.interestService.incrementUserInterestScore(user.id, post.interests);
-      await this.categoryService.incrementUserCategoryScore(user.id, post.category.id);
+      await this.categoryService.incrementUserCategoryScore(user.id, post.category);
     }
 
     post.views++;
@@ -80,6 +80,7 @@ export class PostService {
 
   async remove(id: number): Promise<void> {
     const post = await this.postRepository.findById(id);
+    await this.postRepository.removeInterestsFromPost(post);
     await this.handleErrors(() => this.postRepository.delete(post.id), 'Failed to delete post');
   }
 
