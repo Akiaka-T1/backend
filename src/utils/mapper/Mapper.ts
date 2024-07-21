@@ -17,3 +17,4 @@ export function mapToDto<Entity, Dto>(entity: Entity, dtoClass: new () => Dto): 
 
   return dto;
 }
+

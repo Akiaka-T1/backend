@@ -8,15 +8,15 @@ export class UserCategoryRepository extends Repository<UserCategory> {
         super(UserCategory, dataSource.createEntityManager());
     }
 
-    async createUserCategory(userId: number, categoryId: number, score: number): Promise<UserCategory> {
-        const userCategory = this.create({ user: { id: userId }, category: { id: categoryId }, score });
+    async createUserCategory(userId: number, categoryId: number, score: number, name: string): Promise<UserCategory> {
+        const userCategory = this.create({ user: { id: userId }, category: { id: categoryId }, score,name});
         return this.save(userCategory);
     }
 
     async findByUserId(userId: number): Promise<UserCategory[]> {
         return this.find({
             where: { user: { id: userId } },
-            relations: ['category'],
+            relations: ['category','user'],
         });
     }
 

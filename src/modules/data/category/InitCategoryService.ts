@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category} from "../../category/entity/Category";
+import {defaultCategoryNames} from "../../../constants/defalutCatrgories";
 
 @Injectable()
 export class InitCategoryService implements OnModuleInit {
@@ -15,13 +16,7 @@ export class InitCategoryService implements OnModuleInit {
     }
 
     private async createInitialCategories(): Promise<void> {
-        const categoryNames = [
-            { name: '영화', description: '영화 관련 카테고리' },
-            { name: '음악', description: '음악 관련 카테고리' },
-            { name: '책', description: '책 관련 카테고리' },
-        ];
-
-        for (const category of categoryNames) {
+        for (const category of defaultCategoryNames) {
             if (await this.checkCategoryNotExists(category.name)) {
                 const newCategory = this.categoryRepository.create(category);
                 await this.categoryRepository.save(newCategory);

@@ -25,4 +25,10 @@ export class PostRepository extends Repository<Post> {
   async paginate(options: PaginationOptions, findOptions?: FindManyOptions<Post>): Promise<PaginationResult<Post>> {
     return paginate(this, options, findOptions);
   }
+  async removeInterestsFromPost(post: Post): Promise<void> {
+    await this.createQueryBuilder()
+        .relation(Post, 'interests')
+        .of(post)
+        .remove(post.interests);
+  }
 }
