@@ -1,9 +1,10 @@
 import { Entity, ManyToOne, PrimaryGeneratedColumn, Column } from 'typeorm';
 import {User} from "../../user/entity/User";
 import {Interest} from "./Interest";
+import {UserAssociation} from "../../user/entity/UserAssociation";
 
 @Entity()
-export class UserInterest {
+export class UserInterest extends UserAssociation {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -12,10 +13,4 @@ export class UserInterest {
 
     @ManyToOne(() => Interest, interest => interest.userInterests)
     interest: Interest;
-
-    @Column({nullable:true})
-    name: string;
-
-    @Column({ type: 'int', default: 0 })
-    score: number;
 }

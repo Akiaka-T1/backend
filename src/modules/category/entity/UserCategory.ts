@@ -1,9 +1,10 @@
 import {Entity, PrimaryGeneratedColumn, ManyToOne, Column} from 'typeorm';
 import { User} from "../../user/entity/User";
 import { Category} from "./Category";
+import {UserAssociation} from "../../user/entity/UserAssociation";
 
 @Entity()
-export class UserCategory {
+export class UserCategory extends UserAssociation {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -12,10 +13,4 @@ export class UserCategory {
 
     @ManyToOne(() => Category, category => category.userCategories)
     category: Category;
-
-    @Column({ type: 'int', default: 0 })
-    score: number;
-
-    @Column({nullable:true})
-    name: string;
 }
