@@ -5,6 +5,7 @@ import { Field } from "../../../utils/mapper/FieldNameExtractor";
 import {ResponseInterestDto} from "../../interest/dto/InterestDto";
 import {Category} from "../../category/entity/Category";
 import {ResponseCategoryDto} from "../../category/dto/CategoryDto";
+import {ResponseCommentDto} from "../../comment/dto/CommentDto";
 
 export class PostPostDto {
   @IsString()
@@ -80,6 +81,9 @@ export class ResponsePostDto {
 
   @Field
   views: number;
+
+  @Field
+  comments: ResponseCommentDto[];
 
   @Field
   category: ResponseCategoryDto;

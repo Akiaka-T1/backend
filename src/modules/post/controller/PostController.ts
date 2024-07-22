@@ -21,16 +21,14 @@ import { AuthGuard } from "../../../auth/JwtAuthGuard/JwtAuthGuard";
 import { RolesGuard } from "../../../auth/authorization/RolesGuard";
 import { Roles } from "../../../auth/authorization/decorator";
 import { Role } from "../../../auth/authorization/Role";
-import {JwtService} from "@nestjs/jwt";
-import {UserService} from "../../user/service/UserService";
 import {User} from "../../user/entity/User";
+import {AuthService} from "../../../auth/service/AuthService";
 
 @Controller('api/posts')
 export class PostController {
   constructor(
       private readonly postService: PostService,
-      private readonly userService: UserService,
-      private readonly jwtService: JwtService,
+      private readonly authService: AuthService,
 
   ) {}
 
@@ -38,7 +36,6 @@ export class PostController {
   async findAll(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
     return this.postService.findAll(paginationDto);
   }
-
 
   @Post()
   @UseGuards(AuthGuard,RolesGuard)
@@ -49,22 +46,12 @@ export class PostController {
 
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request): Promise<ResponsePostDto> {
-    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
-    const token = authHeader?.split(' ')[1];
+    const token = this.authService.getTokenFromRequest(req);
     let user: User | null = null;
-
-    if (token) {
-      try {
-        const decoded = this.jwtService.verify(token,{ secret:  process.env.JWT_SECRET_KEY });
-        user = <User>await this.userService.findById(decoded.sub);
-      } catch (error) {
-        await this.postService.handleErrors(error, "error while decoding token");
-      }
-    }
+    if (token) user = await this.authService.validateUserByToken(token);
 
     return this.postService.findOne(id, user);
   }
-
 
   @Patch(':id')
   @UseGuards(AuthGuard,RolesGuard)

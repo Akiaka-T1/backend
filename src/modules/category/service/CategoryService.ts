@@ -8,7 +8,7 @@ import {PaginationResult} from "../../../utils/pagination/pagination";
 import { mapToDto } from "../../../utils/mapper/Mapper";
 import {UserCategoryRepository} from "../repository/UserCatrgoryRepository";
 import {User} from "../../user/entity/User";
-import {defaultCategoryNames} from "../../../constants/defalutCatrgories";
+import {defaultCategories} from "../../../constants/defalutCatrgories";
 import {UserCategory} from "../entity/UserCategory";
 
 @Injectable()
@@ -80,7 +80,7 @@ export class CategoryService {
     }
 
     private hasMissingMiddleEntities(userCategories: UserCategory[]): boolean {
-        return userCategories.length < defaultCategoryNames.length;
+        return userCategories.length < defaultCategories.length;
     }
 
     private async addMiddleEntityIfNotExists( user:User, category:Category, userCategories:UserCategory[] ): Promise<void> {

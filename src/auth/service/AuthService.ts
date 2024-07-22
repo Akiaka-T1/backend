@@ -3,6 +3,7 @@ import {UserService} from "../../modules/user/service/UserService";
 import * as bcrypt from 'bcrypt';
 import {LoginDto} from "../dto/LoginDto";
 import {JwtService} from '@nestjs/jwt';
+import {User} from "../../modules/user/entity/User";
 
 
 @Injectable()
@@ -65,7 +66,7 @@ export class AuthService {
       const payload = { email: user.email,nickname:user.nickname, sub: user.id, role: user.role };
       return this.jwtService.sign(payload, {
         secret: process.env.JWT_SECRET_KEY,
-        expiresIn: '30m',
+        expiresIn: '60m',
       });
     } catch (e) {
       if (e.name === 'TokenExpiredError') {
@@ -74,4 +75,19 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
+
+  getTokenFromRequest(req: Request): string | null {
+    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+    return authHeader ? authHeader.split(' ')[1] : null;
+  }
+
+  async validateUserByToken(token: string): Promise<User | null> {
+    try {
+      const decoded = this.jwtService.verify(token, { secret: process.env.JWT_SECRET_KEY });
+      return await this.userService.findByToken(decoded.sub);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
 }

@@ -31,6 +31,12 @@ export class UserService {
         return mapToDto(user,ResponseUserDto);
     }
 
+    async findByToken(id: number): Promise<User> {
+        const user = await this.userRepository.findById(id);
+        this.ensureExists(user, id);
+        return user;
+    }
+
     async findMe(email: string): Promise<ResponseUserWithInterestsAndCategoriesDto> {
         let user = await this.userRepository.findByEmailWithInterestsAndCategories(email);
         this.ensureExists(user, 0);

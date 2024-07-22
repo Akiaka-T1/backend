@@ -69,7 +69,11 @@ export class PostService {
     };
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto, jwtUser:User): Promise<ResponsePostDto> {
+  async findByIdForCreateComment(id: number): Promise<Post | undefined> {
+      return this.postRepository.findByIdWithInterestsAndCategoryOnlyWithTitle(id)
+  }
+
+    async update(id: number, updatePostDto: UpdatePostDto, jwtUser:User): Promise<ResponsePostDto> {
     const post = await this.postRepository.findById(id);
     this.ensureExists(post, id);
     this.checkQualified(post, jwtUser);
@@ -82,6 +86,10 @@ export class PostService {
     const post = await this.postRepository.findById(id);
     await this.postRepository.removeInterestsFromPost(post);
     await this.handleErrors(() => this.postRepository.delete(post.id), 'Failed to delete post');
+  }
+
+  async updateScore(postId: number, newScore: { score: number }): Promise<void> {
+    await this.postRepository.update(postId, newScore);
   }
 
   private ensureExists(post: Post, id: number): void {

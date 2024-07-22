@@ -8,7 +8,7 @@ import {PaginationResult} from "../../../utils/pagination/pagination";
 import { mapToDto } from "../../../utils/mapper/Mapper";
 import {User} from "../../user/entity/User";
 import {UserInterestRepository} from "../repository/UserInterestRepository";
-import {defaultInterestNames } from "../../../constants/defaultInterests";
+import {defaultInterests } from "../../../constants/defaultInterests";
 import {UserInterest} from "../entity/UserInterest";
 
 @Injectable()
@@ -73,7 +73,7 @@ export class InterestService {
     }
 
     private hasMissingMiddleEntities(userInterests: UserInterest[]) {
-        return userInterests.length < defaultInterestNames.length;
+        return userInterests.length < defaultInterests.length;
     }
 
     private async addMiddleEntityIfNotExists(user: User, interest: Interest, userInterests: UserInterest[]): Promise<void> {

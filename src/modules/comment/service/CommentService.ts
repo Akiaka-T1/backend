@@ -8,6 +8,9 @@ import { PostRepository } from "../../post/repository/PostRepository";
 import { mapToDto } from "../../../utils/mapper/Mapper";
 import { User } from "../../user/entity/User";
 import { Post } from "../../post/entity/Post";
+import {CategoryService} from "../../category/service/CategoryService";
+import {InterestService} from "../../interest/service/InterestService";
+import {PostService} from "../../post/service/PostService";
 
 
 @Injectable()
@@ -15,17 +18,14 @@ export class CommentService {
   constructor(
     @InjectRepository(CommentRepository)
     private readonly commentRepository: CommentRepository,
-    @InjectRepository(UserRepository)
-    private readonly userRepository: UserRepository,
-    @InjectRepository(PostRepository)
-    private readonly postRepository: PostRepository,
+    private readonly postService: PostService,
+    private readonly interestService: InterestService,
+    private readonly categoryService: CategoryService,
   ) {}
 
-  async create(createCommentDto: PostCommentDto,reqUserEmail:string): Promise<ResponseCommentDto> {
+  async create(createCommentDto: PostCommentDto, user :User): Promise<ResponseCommentDto> {
     const { postId, rating, comment } = createCommentDto;
-
-    const user = await this.userRepository.findByEmailWithSelectedFields(reqUserEmail);
-    const post = await this.postRepository.findByIdWithSelectedFields(postId);
+    const post = await this.postService.findByIdForCreateComment(postId);
 
     CommentService.ensureExists(user, post);
     await this.ensureUnique(user.id, post.id);
@@ -36,8 +36,12 @@ export class CommentService {
       user,
       post,
     });
+
     await this.commentRepository.save(newComment);
+
     await this.updatePostScore(postId);
+    await this.updateUserScores(user.id, post,rating * 10);
+
     return mapToDto(newComment,ResponseCommentDto);
   }
 
@@ -66,17 +70,29 @@ export class CommentService {
   async update(id: number, updateCommentDto: UpdateCommentDto): Promise<ResponseCommentDto> {
     const comment = await this.commentRepository.findById(id);
     this.checkCommentExists(comment, id);
+
+    await this.updateUserScores(comment.user.id, comment.post, (updateCommentDto.rating - comment.rating) * 10);
+
     Object.assign(comment, updateCommentDto);
     await this.commentRepository.save(comment);
+
     await this.updatePostScore(comment.post.id);
+
     return  mapToDto(comment,ResponseCommentDto);
   }
 
   async remove(id: number): Promise<void> {
     const comment = await this.commentRepository.findById(id);
     this.checkCommentExists(comment, id);
+
+    await this.updateUserScores(comment.user.id, comment.post,-comment.rating * 10);
     await this.commentRepository.remove(comment);
     await this.updatePostScore(comment.post.id);
+  }
+
+  private async updateUserScores(userId: number, post: Post, score: number): Promise<void> {
+    await this.interestService.incrementMiddleEntityScore(userId, post.interests, score);
+    await this.categoryService.incrementMiddleEntityScore(userId, post.category, score);
   }
 
 
@@ -102,7 +118,7 @@ export class CommentService {
 
     const averageRating = parseFloat(result.averageRating).toFixed(1);
 
-    await this.postRepository.update(postId, { score: parseFloat(averageRating) });
+    await this.postService.updateScore(postId, { score: parseFloat(averageRating) });
   }
 
 }
