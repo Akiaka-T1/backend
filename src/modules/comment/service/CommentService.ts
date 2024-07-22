@@ -86,8 +86,9 @@ export class CommentService {
     this.checkCommentExists(comment, id);
 
     await this.updateUserScores(comment.user.id, comment.post,-comment.rating * 10);
+    const postId= comment.post.id;
     await this.commentRepository.remove(comment);
-    await this.updatePostScore(comment.post.id);
+    await this.updatePostScore(postId);
   }
 
   private async updateUserScores(userId: number, post: Post, score: number): Promise<void> {
@@ -116,9 +117,11 @@ export class CommentService {
       .where('comment.postId = :postId', { postId })
       .getRawOne();
 
-    const averageRating = parseFloat(result.averageRating).toFixed(1);
+    let averageRating = parseFloat(result.averageRating);
 
-    await this.postService.updateScore(postId, { score: parseFloat(averageRating) });
+    if (isNaN(averageRating)) averageRating = 0;
+
+    await this.postService.updateScore(postId, { score: averageRating });
   }
 
 }

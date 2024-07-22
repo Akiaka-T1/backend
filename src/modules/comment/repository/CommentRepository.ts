@@ -31,8 +31,28 @@ export class CommentRepository extends Repository<Comment> {
     return this.createQueryBuilder('comment')
         .innerJoin('comment.user', 'user')
         .innerJoin('comment.post', 'post')
+        .leftJoinAndSelect('post.interests', 'interests')
+        .leftJoinAndSelect('post.category', 'category')
+        .leftJoinAndSelect('user.userInterests', 'userInterests')
+        .leftJoinAndSelect('user.userCategories', 'userCategories')
         .where('comment.id = :id', { id })
-        .select(['comment.id', 'comment.comment', 'comment.rating', 'user.id', 'user.nickname', 'post.id', 'post.title'])
+        .select([
+          'comment.id',
+          'comment.comment',
+          'comment.rating',
+          'user.id',
+          'user.nickname',
+          'post.id',
+          'post.title',
+          'userInterests.id',
+          'userInterests.score',
+          'userCategories.id',
+          'userCategories.score',
+          'interests.id',
+          'interests.name',
+          'category.id',
+          'category.name',
+        ])
         .getOne();
   }
 
