@@ -49,8 +49,7 @@ export class PostService {
     this.ensureExists(post, id);
 
     if (user) {
-      await this.interestService.incrementUserInterestScore(user.id, post.interests);
-      await this.categoryService.incrementUserCategoryScore(user.id, post.category);
+      await this.categoryService.incrementMiddleEntityScore(user.id, post.category,10);
     }
 
     post.views++;
@@ -69,7 +68,11 @@ export class PostService {
     };
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto, jwtUser:User): Promise<ResponsePostDto> {
+  async findByIdForCreateComment(id: number): Promise<Post | undefined> {
+      return this.postRepository.findByIdWithInterestsAndCategoryOnlyWithTitle(id)
+  }
+
+    async update(id: number, updatePostDto: UpdatePostDto, jwtUser:User): Promise<ResponsePostDto> {
     const post = await this.postRepository.findById(id);
     this.ensureExists(post, id);
     this.checkQualified(post, jwtUser);
@@ -78,10 +81,19 @@ export class PostService {
     return mapToDto(updatedPost,ResponsePostDto);
   }
 
+  async updateScore(postId: number): Promise<void> {
+    const averageRating = await this.postRepository.calculateAverageRating(postId);
+    await this.postRepository.update(postId, { averageRating: parseFloat(averageRating) });
+  }
+
   async remove(id: number): Promise<void> {
     const post = await this.postRepository.findById(id);
     await this.postRepository.removeInterestsFromPost(post);
     await this.handleErrors(() => this.postRepository.delete(post.id), 'Failed to delete post');
+  }
+
+  async updateAverageRating(postId: number, averageRating: { averageRating: number }): Promise<void> {
+    await this.postRepository.update(postId, averageRating);
   }
 
   private ensureExists(post: Post, id: number): void {

@@ -8,7 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   UsePipes,
-  ValidationPipe, UseGuards, Request
+  ValidationPipe, UseGuards, Request, Req
 } from "@nestjs/common";
 import { CommentService } from '../service/CommentService';
 import { PostCommentDto } from '../dto/CommentDto';
@@ -18,18 +18,25 @@ import { AuthGuard } from "../../../auth/JwtAuthGuard/JwtAuthGuard";
 import { RolesGuard } from "../../../auth/authorization/RolesGuard";
 import { Roles } from "../../../auth/authorization/decorator";
 import { Role } from "../../../auth/authorization/Role";
+import {User} from "../../user/entity/User";
+import {AuthService} from "../../../auth/service/AuthService";
 
 @Controller('api/comments')
 @UsePipes(new ValidationPipe())
 export class CommentController {
-  constructor(private readonly commentService: CommentService) {}
+  constructor(
+      private readonly commentService: CommentService,
+      private readonly authService: AuthService,
+      ) {}
 
   @Post()
   @UseGuards(AuthGuard,RolesGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
   @Roles(Role.User,Role.Admin)
-  async create(@Body() postCommentDto: PostCommentDto, @Request() request: any): Promise<ResponseCommentDto> {
-    return this.commentService.create(postCommentDto,request.user.email);
+  async create(@Body() postCommentDto: PostCommentDto, @Req() req: Request): Promise<ResponseCommentDto> {
+    const token = this.authService.getTokenFromRequest(req);
+    const user = await this.authService.validateUserByToken(token);
+    return this.commentService.create(postCommentDto,user);
   }
 
   @Get(':id')

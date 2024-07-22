@@ -3,7 +3,7 @@ import { User} from "../../user/entity/User";
 import { Category} from "./Category";
 
 @Entity()
-export class UserCategory {
+export class UserCategory  {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -13,9 +13,6 @@ export class UserCategory {
     @ManyToOne(() => Category, category => category.userCategories)
     category: Category;
 
-    @Column({ type: 'int', default: 0 })
-    score: number;
-
-    @Column({nullable:true})
-    name: string;
+    @Column({type: 'int', default: 0})
+    views: number;
 }
