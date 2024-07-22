@@ -81,6 +81,11 @@ export class PostService {
     return mapToDto(updatedPost,ResponsePostDto);
   }
 
+  async updateScore(postId: number): Promise<void> {
+    const averageRating = await this.postRepository.calculateAverageRating(postId);
+    await this.postRepository.update(postId, { averageRating: parseFloat(averageRating) });
+  }
+
   async remove(id: number): Promise<void> {
     const post = await this.postRepository.findById(id);
     await this.postRepository.removeInterestsFromPost(post);

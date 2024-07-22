@@ -34,4 +34,13 @@ export class PostRepository extends Repository<Post> {
         .of(post)
         .remove(post.interests);
   }
+  async calculateAverageRating(postId: number): Promise<string> {
+    const result = await this.createQueryBuilder('post')
+        .leftJoinAndSelect(Comment, 'comment', 'comment.postId = post.id')
+        .select('AVG(comment.rating)', 'averageRating')
+        .where('post.id = :postId', { postId })
+        .getRawOne();
+
+    return parseFloat(result.averageRating).toFixed(1);
+  }
 }

@@ -8,10 +8,6 @@ export class UserInterestRepository extends Repository<UserInterest> {
         super(UserInterest, dataSource.createEntityManager());
     }
 
-    // async createUserInterest(userId: number, interestId: number, score: number, name: string): Promise<UserInterest> {
-    //     const userInterest = this.create({ user: { id: userId }, interest: { id: interestId }, score ,name});
-    //     return this.save(userInterest);
-    // }
     async updateRating(userInterest: UserInterest): Promise<void> {
         const result = await this.createQueryBuilder('userInterest')
             .leftJoin('userInterest.user', 'user')

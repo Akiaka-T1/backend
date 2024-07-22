@@ -6,7 +6,7 @@ export class ResponseUserCategoryDto {
     id: number;
 
     @Field
-    name: string;
+    category: ResponseCategoryDto
 
     @Field
     views: number;
