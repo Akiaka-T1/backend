@@ -1,15 +1,13 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "../entity/User";
+import {BadRequestException, Injectable, NotFoundException} from "@nestjs/common";
+import {InjectRepository} from "@nestjs/typeorm";
+import {User} from "../entity/User";
 import {PostUserDto, ResponseUserDto, ResponseUserWithInterestsAndCategoriesDto, UpdateUserDto} from "../dto/UserDto";
-import { UserRepository } from "../repository/UserRepository";
+import {UserRepository} from "../repository/UserRepository";
 import {mapToDto} from "../../../utils/mapper/Mapper";
 import {PaginationDto} from "../../../utils/pagination/paginationDto";
 import {PaginationResult} from "../../../utils/pagination/pagination";
 import {InterestService} from "../../interest/service/InterestService";
 import {CategoryService} from "../../category/service/CategoryService";
-import {ResponseUserInterestDto} from "../../interest/dto/UserInterestDto";
-import {ResponseUserCategoryDto} from "../../category/dto/UserCategoryDto";
 
 @Injectable()
 export class UserService {
@@ -37,15 +35,10 @@ export class UserService {
         let user = await this.userRepository.findByEmailWithInterestsAndCategories(email);
         this.ensureExists(user, 0);
 
-        user = await this.interestService.addDefaultInterestsToUser(user);
-        user = await this.categoryService.addDefaultCategoriesToUser(user);
+        user = await this.interestService.ensureHasEveryMiddleEntities(user);
+        user = await this.categoryService.ensureHasEveryMiddleEntities(user);
 
-        const userDto =  mapToDto(user, ResponseUserWithInterestsAndCategoriesDto);
-
-        userDto.userInterests = user.userInterests.map(ui => mapToDto(ui,ResponseUserInterestDto));
-        userDto.userCategories = user.userCategories.map(uc => mapToDto(uc,ResponseUserCategoryDto));
-
-        return userDto;
+        return mapToDto(user, ResponseUserWithInterestsAndCategoriesDto);
     }
 
     async findByIdForJwt(id: number): Promise<User> {

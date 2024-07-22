@@ -9,6 +9,7 @@ import { mapToDto } from "../../../utils/mapper/Mapper";
 import {User} from "../../user/entity/User";
 import {UserInterestRepository} from "../repository/UserInterestRepository";
 import {defaultInterestNames } from "../../../constants/defaultInterests";
+import {UserInterest} from "../entity/UserInterest";
 
 @Injectable()
 export class InterestService {
@@ -59,34 +60,47 @@ export class InterestService {
         return mapToDto(interest,ResponseInterestDto);
     }
 
-    async addDefaultInterestsToUser(user: User): Promise<User> {
+    async ensureHasEveryMiddleEntities(user: User): Promise<User> {
         let userInterests = await this.userInterestRepository.findByUserId(user.id);
 
-        if(userInterests.length<defaultInterestNames.length) {
-            const interests = await this.findAll();
+        if (this.hasMissingUserInterests(userInterests)) {
+            const interests = await this.interestRepository.findAll();
             for (const interest of interests) {
-                const userInterestExists = userInterests.some(ui => ui.interest.id === interest.id);
-                if (!userInterestExists) {
-                    const userInterest = this.userInterestRepository.create({user, interest, score: 0,  name:  interest.name});
-                    await this.userInterestRepository.save(userInterest);
-                    user.userInterests.push(userInterest);
-                }
+                await this.addMiddleEntityIfNotExists(user, interest, userInterests);
             }
         }
         return user;
+    }
+
+    private hasMissingUserInterests(userInterests: UserInterest[]) {
+        return userInterests.length < defaultInterestNames.length;
+    }
+
+    private async addMiddleEntityIfNotExists(user: User, interest: Interest, userInterests: UserInterest[]): Promise<void> {
+        const userInterestExists = userInterests.some(ui => ui.interest.id === interest.id);
+        if (!userInterestExists) {
+            const userInterest = this.userInterestRepository.create({ user, interest, score: 0, name: interest.name });
+            await this.userInterestRepository.save(userInterest);
+            user.userInterests.push(userInterest);
+        }
     }
 
     async incrementUserInterestScore(userId: number, interests: Interest[]): Promise<void> {
         const userInterests = await this.userInterestRepository.findByUserId(userId);
 
         for (const interest of interests) {
-            const userInterest = userInterests.find(ui => ui.interest.id === interest.id);
-            if (userInterest) {
-                userInterest.score++;
-                await this.userInterestRepository.save(userInterest);
-            } else {
-                await this.userInterestRepository.createUserInterest(userId, interest.id, 1, userInterest.interest.name);
-            }
+            await this.incrementOrCreateNewMiddleEntity(userId, interest, userInterests);
+        }
+    }
+
+    private async incrementOrCreateNewMiddleEntity(userId: number, interest: Interest, userInterests: UserInterest[]): Promise<void> {
+        const userInterest = userInterests.find(ui => ui.interest.id === interest.id);
+        if (userInterest) {
+            userInterest.score++;
+            await this.userInterestRepository.save(userInterest);
+        } else {
+            const newUserInterest = this.userInterestRepository.create({ user: { id: userId }, interest: { id: interest.id }, score: 1, name: interest.name });
+            await this.userInterestRepository.save(newUserInterest);
         }
     }
 

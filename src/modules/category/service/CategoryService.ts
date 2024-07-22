@@ -9,6 +9,7 @@ import { mapToDto } from "../../../utils/mapper/Mapper";
 import {UserCategoryRepository} from "../repository/UserCatrgoryRepository";
 import {User} from "../../user/entity/User";
 import {defaultCategoryNames} from "../../../constants/defalutCatrgories";
+import {UserCategory} from "../entity/UserCategory";
 
 @Injectable()
 export class CategoryService {
@@ -60,39 +61,51 @@ export class CategoryService {
         await this.handleErrors(() => this.categoryRepository.delete(category.id), 'Failed to delete category');
     }
 
-    async addDefaultCategoriesToUser(user: User): Promise<User> {
-        const userCategories = await this.userCategoryRepository.findByUserId(user.id);
-        if (userCategories.length < defaultCategoryNames.length) {
-            const categories = await this.findAll();
-            for (const category of categories) {
-                const userCategoryExists = userCategories.some(uc => uc.category.id === category.id);
-                if (!userCategoryExists) {
-                    const userCategory = this.userCategoryRepository.create({ user, category, score: 0, name: category.name});
-                    await this.userCategoryRepository.save(userCategory);
-                    user.userCategories.push(userCategory);
-                }
-            }
-        }
-        return user
-    }
-
     private ensureExists(category: Category, id: number): void {
         if (!category) {
             throw new NotFoundException(`Category with ID ${id} not found`);
         }
     }
 
+    async ensureHasEveryMiddleEntities(user: User): Promise<User> {
+        let userCategories = await this.userCategoryRepository.findByUserId(user.id);
+
+        if (this.hasMissingUserCategories(userCategories)) {
+            const categories = await this.categoryRepository.findAll();
+            for (const category of categories) {
+                await this.addMiddleEntityIfNotExists(user, category, userCategories);
+            }
+        }
+        return user;
+    }
+
+    private hasMissingUserCategories(userCategories: UserCategory[]): boolean {
+        return userCategories.length < defaultCategoryNames.length;
+    }
+
+    private async addMiddleEntityIfNotExists( user:User, category:Category, userCategories:UserCategory[] ): Promise<void> {
+        const userCategoryExists = userCategories.some(uc => uc.category.id === category.id);
+        if (!userCategoryExists) {
+            const userCategory = this.userCategoryRepository.create({ user, category, score: 0, name: category.name });
+            await this.userCategoryRepository.save(userCategory);
+            user.userCategories.push(userCategory);
+        }
+    }
+
     async incrementUserCategoryScore(userId: number, category: Category): Promise<void> {
         const userCategories = await this.userCategoryRepository.findByUserId(userId);
+            await this.incrementOrCreateNewMiddleEntity(userId, category, userCategories);
+    }
 
+    private async incrementOrCreateNewMiddleEntity( userId:number, category:Category, userCategories:UserCategory[] ): Promise<void> {
         const userCategory = userCategories.find(uc => uc.category.id === category.id);
         if (userCategory) {
             userCategory.score++;
             await this.userCategoryRepository.save(userCategory);
         } else {
-            await this.userCategoryRepository.createUserCategory(userId, category.id, 1, userCategory.category.name);
+            const newUserCategory = this.userCategoryRepository.create({ user: { id: userId }, category: { id: category.id }, score: 1, name: category.name });
+            await this.userCategoryRepository.save(newUserCategory);
         }
-
     }
 
     private async handleErrors<T>(operation: () => Promise<T>, errorMessage: string): Promise<T> {
