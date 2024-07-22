@@ -79,27 +79,26 @@ export class InterestService {
     private async addMiddleEntityIfNotExists(user: User, interest: Interest, userInterests: UserInterest[]): Promise<void> {
         const userInterestExists = userInterests.some(ui => ui.interest.id === interest.id);
         if (!userInterestExists) {
-            const userInterest = this.userInterestRepository.create({ user, interest, score: 0, name: interest.name });
+            const userInterest = this.userInterestRepository.create({ user, interest, rating:0 });
             await this.userInterestRepository.save(userInterest);
             user.userInterests.push(userInterest);
         }
     }
 
-    async incrementMiddleEntityScore(userId: number, interests: Interest[], score: number): Promise<void> {
+    public async updateUserInterests(userId: number, interests: Interest[], rating: number): Promise<void> {
         const userInterests = await this.userInterestRepository.findByUserId(userId);
 
         for (const interest of interests) {
-            await this.incrementOrCreateNewMiddleEntity(userId, interest, userInterests, score);
+            await this.updateOrCreateNewUserInterest(userId, interest, userInterests, rating);
         }
     }
 
-    private async incrementOrCreateNewMiddleEntity(userId: number, interest: Interest, userInterests: UserInterest[], score: number): Promise<void> {
+    public async updateOrCreateNewUserInterest(userId: number, interest: Interest, userInterests: UserInterest[], rating: number): Promise<void> {
         const userInterest = userInterests.find(ui => ui.interest.id === interest.id);
         if (userInterest) {
-            userInterest.score += score;
-            await this.userInterestRepository.save(userInterest);
+            await this.userInterestRepository.updateRating(userInterest);
         } else {
-            const newUserInterest = this.userInterestRepository.create({ user: { id: userId }, interest: { id: interest.id }, score: 10, name: interest.name });
+            const newUserInterest = this.userInterestRepository.create({ user: { id: userId }, interest: { id: interest.id }, rating:rating });
             await this.userInterestRepository.save(newUserInterest);
         }
     }

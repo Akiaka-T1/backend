@@ -20,7 +20,6 @@ export class CommentService {
     private readonly commentRepository: CommentRepository,
     private readonly postService: PostService,
     private readonly interestService: InterestService,
-    private readonly categoryService: CategoryService,
   ) {}
 
   async create(createCommentDto: PostCommentDto, user :User): Promise<ResponseCommentDto> {
@@ -40,7 +39,7 @@ export class CommentService {
     await this.commentRepository.save(newComment);
 
     await this.updatePostScore(postId);
-    await this.updateUserScores(user.id, post,rating * 10);
+    await this.updateUserInterest(user.id, post,rating);
 
     return mapToDto(newComment,ResponseCommentDto);
   }
@@ -71,12 +70,10 @@ export class CommentService {
     const comment = await this.commentRepository.findById(id);
     this.checkCommentExists(comment, id);
 
-    await this.updateUserScores(comment.user.id, comment.post, (updateCommentDto.rating - comment.rating) * 10);
-
     Object.assign(comment, updateCommentDto);
     await this.commentRepository.save(comment);
-
     await this.updatePostScore(comment.post.id);
+    await this.updateUserInterest(comment.user.id, comment.post, comment.rating);
 
     return  mapToDto(comment,ResponseCommentDto);
   }
@@ -85,15 +82,15 @@ export class CommentService {
     const comment = await this.commentRepository.findById(id);
     this.checkCommentExists(comment, id);
 
-    await this.updateUserScores(comment.user.id, comment.post,-comment.rating * 10);
     const postId= comment.post.id;
     await this.commentRepository.remove(comment);
     await this.updatePostScore(postId);
+    await this.updateUserInterest(comment.user.id, comment.post,comment.rating);
+
   }
 
-  private async updateUserScores(userId: number, post: Post, score: number): Promise<void> {
-    await this.interestService.incrementMiddleEntityScore(userId, post.interests, score);
-    await this.categoryService.incrementMiddleEntityScore(userId, post.category, score);
+  private async updateUserInterest(userId: number, post: Post, rating: number): Promise<void> {
+    await this.interestService.updateUserInterests(userId, post.interests, rating);
   }
 
 
@@ -118,7 +115,6 @@ export class CommentService {
       .getRawOne();
 
     let averageRating = parseFloat(result.averageRating);
-
     if (isNaN(averageRating)) averageRating = 0;
 
     await this.postService.updateScore(postId, { score: averageRating });

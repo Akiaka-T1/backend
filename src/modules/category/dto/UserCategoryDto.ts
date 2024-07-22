@@ -9,5 +9,5 @@ export class ResponseUserCategoryDto {
     name: string;
 
     @Field
-    score: number;
+    views: number;
 }

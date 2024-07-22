@@ -8,5 +8,5 @@ export class ResponseUserInterestDto {
     name: string;
 
     @Field
-    score: number;
+    rating: number;
 }

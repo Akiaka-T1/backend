@@ -86,7 +86,7 @@ export class CategoryService {
     private async addMiddleEntityIfNotExists( user:User, category:Category, userCategories:UserCategory[] ): Promise<void> {
         const userCategoryExists = userCategories.some(uc => uc.category.id === category.id);
         if (!userCategoryExists) {
-            const userCategory = this.userCategoryRepository.create({ user, category, score: 10, name: category.name });
+            const userCategory = this.userCategoryRepository.create({ user, category });
             await this.userCategoryRepository.save(userCategory);
             user.userCategories.push(userCategory);
         }
@@ -100,10 +100,10 @@ export class CategoryService {
     private async incrementOrCreateNewMiddleEntity( userId:number, category:Category, userCategories:UserCategory[], score:number ): Promise<void> {
         const userCategory = userCategories.find(uc => uc.category.id === category.id);
         if (userCategory) {
-            userCategory.score += score;
+            userCategory.views++;
             await this.userCategoryRepository.save(userCategory);
         } else {
-            const newUserCategory = this.userCategoryRepository.create({ user: { id: userId }, category: { id: category.id }, score: 10, name: category.name });
+            const newUserCategory = this.userCategoryRepository.create({ user: { id: userId }, category: { id: category.id } });
             await this.userCategoryRepository.save(newUserCategory);
         }
     }
