@@ -87,8 +87,8 @@ export class PostService {
     await this.handleErrors(() => this.postRepository.delete(post.id), 'Failed to delete post');
   }
 
-  async updateScore(postId: number, newScore: { score: number }): Promise<void> {
-    await this.postRepository.update(postId, newScore);
+  async updateAverageRating(postId: number, averageRating: { averageRating: number }): Promise<void> {
+    await this.postRepository.update(postId, averageRating);
   }
 
   private ensureExists(post: Post, id: number): void {

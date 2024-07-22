@@ -38,7 +38,7 @@ export class CommentService {
 
     await this.commentRepository.save(newComment);
 
-    await this.updatePostScore(postId);
+    await this.updatePostAverageRating(postId);
     await this.updateUserInterest(user.id, post,rating);
 
     return mapToDto(newComment,ResponseCommentDto);
@@ -72,7 +72,7 @@ export class CommentService {
 
     Object.assign(comment, updateCommentDto);
     await this.commentRepository.save(comment);
-    await this.updatePostScore(comment.post.id);
+    await this.updatePostAverageRating(comment.post.id);
     await this.updateUserInterest(comment.user.id, comment.post, comment.rating);
 
     return  mapToDto(comment,ResponseCommentDto);
@@ -84,7 +84,7 @@ export class CommentService {
 
     const postId= comment.post.id;
     await this.commentRepository.remove(comment);
-    await this.updatePostScore(postId);
+    await this.updatePostAverageRating(postId);
     await this.updateUserInterest(comment.user.id, comment.post,comment.rating);
 
   }
@@ -107,7 +107,7 @@ export class CommentService {
     }
   }
 
-  async updatePostScore(postId: number): Promise<void> {
+  async updatePostAverageRating(postId: number): Promise<void> {
     const result = await this.commentRepository
       .createQueryBuilder('comment')
       .select('AVG(comment.rating)', 'averageRating')
@@ -117,7 +117,7 @@ export class CommentService {
     let averageRating = parseFloat(result.averageRating);
     if (isNaN(averageRating)) averageRating = 0;
 
-    await this.postService.updateScore(postId, { score: averageRating });
+    await this.postService.updateAverageRating(postId, { averageRating: averageRating });
   }
 
 }
