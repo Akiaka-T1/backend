@@ -49,8 +49,8 @@ export class PostService {
     this.ensureExists(post, id);
 
     if (user) {
-      await this.interestService.incrementUserInterestScore(user.id, post.interests);
-      await this.categoryService.incrementUserCategoryScore(user.id, post.category);
+      await this.interestService.incrementMiddleEntityScore(user.id, post.interests,10);
+      await this.categoryService.incrementMiddleEntityScore(user.id, post.category,10);
     }
 
     post.views++;

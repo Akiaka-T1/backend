@@ -63,7 +63,7 @@ export class InterestService {
     async ensureHasEveryMiddleEntities(user: User): Promise<User> {
         let userInterests = await this.userInterestRepository.findByUserId(user.id);
 
-        if (this.hasMissingUserInterests(userInterests)) {
+        if (this.hasMissingMiddleEntities(userInterests)) {
             const interests = await this.interestRepository.findAll();
             for (const interest of interests) {
                 await this.addMiddleEntityIfNotExists(user, interest, userInterests);
@@ -72,7 +72,7 @@ export class InterestService {
         return user;
     }
 
-    private hasMissingUserInterests(userInterests: UserInterest[]) {
+    private hasMissingMiddleEntities(userInterests: UserInterest[]) {
         return userInterests.length < defaultInterestNames.length;
     }
 
@@ -85,21 +85,21 @@ export class InterestService {
         }
     }
 
-    async incrementUserInterestScore(userId: number, interests: Interest[]): Promise<void> {
+    async incrementMiddleEntityScore(userId: number, interests: Interest[], score: number): Promise<void> {
         const userInterests = await this.userInterestRepository.findByUserId(userId);
 
         for (const interest of interests) {
-            await this.incrementOrCreateNewMiddleEntity(userId, interest, userInterests);
+            await this.incrementOrCreateNewMiddleEntity(userId, interest, userInterests, score);
         }
     }
 
-    private async incrementOrCreateNewMiddleEntity(userId: number, interest: Interest, userInterests: UserInterest[]): Promise<void> {
+    private async incrementOrCreateNewMiddleEntity(userId: number, interest: Interest, userInterests: UserInterest[], score: number): Promise<void> {
         const userInterest = userInterests.find(ui => ui.interest.id === interest.id);
         if (userInterest) {
-            userInterest.score++;
+            userInterest.score += score;
             await this.userInterestRepository.save(userInterest);
         } else {
-            const newUserInterest = this.userInterestRepository.create({ user: { id: userId }, interest: { id: interest.id }, score: 1, name: interest.name });
+            const newUserInterest = this.userInterestRepository.create({ user: { id: userId }, interest: { id: interest.id }, score: 10, name: interest.name });
             await this.userInterestRepository.save(newUserInterest);
         }
     }

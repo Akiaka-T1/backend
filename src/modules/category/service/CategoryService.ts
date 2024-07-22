@@ -70,7 +70,7 @@ export class CategoryService {
     async ensureHasEveryMiddleEntities(user: User): Promise<User> {
         let userCategories = await this.userCategoryRepository.findByUserId(user.id);
 
-        if (this.hasMissingUserCategories(userCategories)) {
+        if (this.hasMissingMiddleEntities(userCategories)) {
             const categories = await this.categoryRepository.findAll();
             for (const category of categories) {
                 await this.addMiddleEntityIfNotExists(user, category, userCategories);
@@ -79,31 +79,31 @@ export class CategoryService {
         return user;
     }
 
-    private hasMissingUserCategories(userCategories: UserCategory[]): boolean {
+    private hasMissingMiddleEntities(userCategories: UserCategory[]): boolean {
         return userCategories.length < defaultCategoryNames.length;
     }
 
     private async addMiddleEntityIfNotExists( user:User, category:Category, userCategories:UserCategory[] ): Promise<void> {
         const userCategoryExists = userCategories.some(uc => uc.category.id === category.id);
         if (!userCategoryExists) {
-            const userCategory = this.userCategoryRepository.create({ user, category, score: 0, name: category.name });
+            const userCategory = this.userCategoryRepository.create({ user, category, score: 10, name: category.name });
             await this.userCategoryRepository.save(userCategory);
             user.userCategories.push(userCategory);
         }
     }
 
-    async incrementUserCategoryScore(userId: number, category: Category): Promise<void> {
+    async incrementMiddleEntityScore(userId: number, category: Category, score: number): Promise<void> {
         const userCategories = await this.userCategoryRepository.findByUserId(userId);
-            await this.incrementOrCreateNewMiddleEntity(userId, category, userCategories);
+            await this.incrementOrCreateNewMiddleEntity(userId, category, userCategories, score);
     }
 
-    private async incrementOrCreateNewMiddleEntity( userId:number, category:Category, userCategories:UserCategory[] ): Promise<void> {
+    private async incrementOrCreateNewMiddleEntity( userId:number, category:Category, userCategories:UserCategory[], score:number ): Promise<void> {
         const userCategory = userCategories.find(uc => uc.category.id === category.id);
         if (userCategory) {
-            userCategory.score++;
+            userCategory.score += score;
             await this.userCategoryRepository.save(userCategory);
         } else {
-            const newUserCategory = this.userCategoryRepository.create({ user: { id: userId }, category: { id: category.id }, score: 1, name: category.name });
+            const newUserCategory = this.userCategoryRepository.create({ user: { id: userId }, category: { id: category.id }, score: 10, name: category.name });
             await this.userCategoryRepository.save(newUserCategory);
         }
     }
