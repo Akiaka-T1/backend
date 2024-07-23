@@ -24,6 +24,19 @@ export class UserRepository extends Repository<User> {
             .leftJoinAndSelect('user.userCategories', 'userCategories')
             .leftJoinAndSelect('userCategories.category', 'category')
             .where('user.email = :email', { email })
+            .select([
+                'user.id',
+                'user.name',
+                'user.nickname',
+                'userInterests.id',
+                'userInterests.rating',
+                'interest.id',
+                'interest.name',
+                'userCategories.id',
+                'userCategories.views',
+                'category.id',
+                'category.name'
+            ])
             .getOne();
     }
 

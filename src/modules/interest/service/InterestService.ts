@@ -10,6 +10,7 @@ import {User} from "../../user/entity/User";
 import {UserInterestRepository} from "../repository/UserInterestRepository";
 import {defaultInterests } from "../../../constants/defaultInterests";
 import {UserInterest} from "../entity/UserInterest";
+import {CommentRepository} from "../../comment/repository/CommentRepository";
 
 @Injectable()
 export class InterestService {
@@ -17,6 +18,8 @@ export class InterestService {
         @InjectRepository(InterestRepository)
         private readonly interestRepository: InterestRepository,
         private readonly userInterestRepository: UserInterestRepository,
+        @InjectRepository(CommentRepository)
+        private readonly commentRepository: CommentRepository
     ) {
     }
 
@@ -40,7 +43,6 @@ export class InterestService {
         return this.interestRepository.findByIdsForCreatePost(ids)
     }
 
-
     async findAllAndPaginate(paginationDto: PaginationDto): Promise<PaginationResult<ResponseInterestDto>> {
         const {page, limit, field, order} = paginationDto;
         const options = {page, limit, field, order};
@@ -60,48 +62,45 @@ export class InterestService {
         return mapToDto(interest,ResponseInterestDto);
     }
 
-    async ensureHasEveryMiddleEntities(user: User): Promise<User> {
-        let userInterests = await this.userInterestRepository.findByUserId(user.id);
+    public async ensureHasEveryMiddleEntities(user: User): Promise<User> {
+        const userInterests = await this.userInterestRepository.findByUserId(user.id);
 
         if (this.hasMissingMiddleEntities(userInterests)) {
-            const interests = await this.interestRepository.findAll();
-            for (const interest of interests) {
-                await this.addMiddleEntityIfNotExists(user, interest, userInterests);
-            }
+            const existingInterestIds = userInterests.map(ui => ui.interest.id);
+            const missingInterests = await this.interestRepository.findMissingInterests(existingInterestIds);
+            await this.addMissingInterestsToUser(user, missingInterests);
         }
         return user;
     }
 
-    private hasMissingMiddleEntities(userInterests: UserInterest[]) {
+    private hasMissingMiddleEntities(userInterests: UserInterest[]): boolean {
         return userInterests.length < defaultInterests.length;
     }
 
-    private async addMiddleEntityIfNotExists(user: User, interest: Interest, userInterests: UserInterest[]): Promise<void> {
-        const userInterestExists = userInterests.some(ui => ui.interest.id === interest.id);
-        if (!userInterestExists) {
-            const userInterest = this.userInterestRepository.create({ user, interest, rating:0 });
-            await this.userInterestRepository.save(userInterest);
-            user.userInterests.push(userInterest);
-        }
+    private async addMissingInterestsToUser(user: User, missingInterests: Interest[]): Promise<void> {
+        const newUserInterests = missingInterests.map(interest =>
+            this.userInterestRepository.create({ user, interest, rating: 0 })
+        );
+        await this.userInterestRepository.save(newUserInterests);
+        user.userInterests.push(...newUserInterests);
     }
 
-    public async updateUserInterests(userId: number, interests: Interest[], rating: number): Promise<void> {
+    public async updateUserInterests(userId: number, interests: Interest[]): Promise<void> {
         const userInterests = await this.userInterestRepository.findByUserId(userId);
+        const existingInterestIds = userInterests.map(ui => ui.interest.id);
 
-        for (const interest of interests) {
-            await this.updateOrCreateNewUserInterest(userId, interest, userInterests, rating);
-        }
+        const newInterests = interests.filter(interest => !existingInterestIds.includes(interest.id));
+
+        const newUserInterests = newInterests.map(interest =>
+            this.userInterestRepository.create({ user: { id: userId }, interest: { id: interest.id }, rating: 0 })
+        );
+
+        await this.userInterestRepository.save(newUserInterests);
+
+        const averageRatings = await this.commentRepository.getAverageRatingsByUserId(userId);
+        await this.userInterestRepository.updateRatings(userId, averageRatings);
     }
 
-    public async updateOrCreateNewUserInterest(userId: number, interest: Interest, userInterests: UserInterest[], rating: number): Promise<void> {
-        const userInterest = userInterests.find(ui => ui.interest.id === interest.id);
-        if (userInterest) {
-            await this.userInterestRepository.updateRating(userInterest);
-        } else {
-            const newUserInterest = this.userInterestRepository.create({ user: { id: userId }, interest: { id: interest.id }, rating:rating });
-            await this.userInterestRepository.save(newUserInterest);
-        }
-    }
 
     private ensureExists(interest: Interest, id: number): void {
         if (!interest) {

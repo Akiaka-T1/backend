@@ -37,7 +37,7 @@ export class UserService {
         return user;
     }
 
-    async findMe(email: string): Promise<ResponseUserWithInterestsAndCategoriesDto> {
+    async findStats(email: string): Promise<ResponseUserWithInterestsAndCategoriesDto> {
         let user = await this.userRepository.findByEmailWithInterestsAndCategories(email);
         this.ensureExists(user, 0);
 
@@ -55,6 +55,11 @@ export class UserService {
 
     async findByEmail(email: string): Promise<User> {
         return await this.userRepository.findByEmail(email);
+    }
+
+    async findMe(email: string): Promise<ResponseUserDto> {
+        const user = await this.userRepository.findByEmail(email);
+        return mapToDto(user,ResponseUserDto);
     }
 
     async findAll(paginationDto: PaginationDto): Promise<PaginationResult<ResponseUserDto>> {

@@ -1,6 +1,7 @@
 import {UserInterest} from "../entity/UserInterest";
 import {Injectable} from "@nestjs/common";
 import {DataSource, FindManyOptions, Repository} from "typeorm";
+import {Interest} from "../entity/Interest";
 
 @Injectable()
 export class UserInterestRepository extends Repository<UserInterest> {
@@ -8,29 +9,34 @@ export class UserInterestRepository extends Repository<UserInterest> {
         super(UserInterest, dataSource.createEntityManager());
     }
 
-    async updateRating(userInterest: UserInterest): Promise<void> {
-        const result = await this.createQueryBuilder('userInterest')
-            .leftJoin('userInterest.user', 'user')
-            .leftJoin('userInterest.interest', 'interest')
-            .leftJoin('user.comments', 'comment')
-            .leftJoin('comment.post', 'post')
-            .leftJoin('post.interests', 'postInterest')
-            .where('userInterest.id = :id', { id: userInterest.id })
-            .andWhere('postInterest.id = interest.id')
-            .select('AVG(comment.rating)', 'averageRating')
-            .getRawOne();
+    async updateRatings(userId: number, averageRatings: { interestId: number; averageRating: number | string }[]): Promise<void> {
+        const userInterests = await this.createQueryBuilder('userInterest')
+            .leftJoinAndSelect('userInterest.interest', 'interest')
+            .where('userInterest.userId = :userId', { userId })
+            .select(['userInterest.id', 'userInterest.rating', 'interest.id'])
+            .getMany();
 
-        let averageRating = parseFloat(result.averageRating);
-        if (isNaN(averageRating)) averageRating = 0;
-        userInterest.rating = averageRating;
-
-        await this.save(userInterest);
-    }
-    async findByUserId(userId: number): Promise<UserInterest[]> {
-        return this.find({
-            where: { user: { id: userId } },
-            relations: ['interest','user'],
+        const updates = userInterests.map(ui => {
+            const rating = averageRatings.find(r => r.interestId === ui.interest.id)?.averageRating ?? 0;
+            ui.rating = typeof rating === "string" ? parseFloat(rating) : rating;
+            return ui;
         });
+
+        await this.save(updates);
+    }
+
+    async findByUserId(userId: number): Promise<UserInterest[]> {
+        return this.createQueryBuilder('userInterest')
+            .leftJoinAndSelect('userInterest.interest', 'interest')
+            .leftJoin('userInterest.user', 'user')
+            .where('userInterest.userId = :userId', { userId })
+            .select([
+                'userInterest.id',
+                'userInterest.rating',
+                'interest.id',
+                'interest.name'
+            ])
+            .getMany();
     }
 
     async deleteUserInterest(userInterestId: number): Promise<void> {

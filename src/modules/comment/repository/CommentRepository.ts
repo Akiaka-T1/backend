@@ -65,4 +65,14 @@ export class CommentRepository extends Repository<Comment> {
         .select(['comment.id'])
         .getOne();
   }
+    async getAverageRatingsByUserId(userId: number): Promise<{ interestId: number; averageRating: number }[]> {
+        return this.createQueryBuilder('comment')
+            .leftJoin('comment.user', 'user')
+            .leftJoin('comment.post', 'post')
+            .leftJoin('post.interests', 'interest')
+            .select(['interest.id AS interestId', 'AVG(comment.rating) AS averageRating'])
+            .where('user.id = :userId', { userId })
+            .groupBy('interest.id')
+            .getRawMany();
+    }
 }

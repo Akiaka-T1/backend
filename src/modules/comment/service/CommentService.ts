@@ -90,7 +90,7 @@ export class CommentService {
     }
 
     private async updateUserInterest(userId: number, post: Post, rating: number): Promise<void> {
-        await this.interestService.updateUserInterests(userId, post.interests, rating);
+        await this.interestService.updateUserInterests(userId, post.interests);
     }
 
 
