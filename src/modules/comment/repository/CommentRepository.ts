@@ -31,8 +31,28 @@ export class CommentRepository extends Repository<Comment> {
     return this.createQueryBuilder('comment')
         .innerJoin('comment.user', 'user')
         .innerJoin('comment.post', 'post')
+        .leftJoinAndSelect('post.interests', 'interests')
+        .leftJoinAndSelect('post.category', 'category')
+        .leftJoinAndSelect('user.userInterests', 'userInterests')
+        .leftJoinAndSelect('user.userCategories', 'userCategories')
         .where('comment.id = :id', { id })
-        .select(['comment.id', 'comment.comment', 'comment.rating', 'user.id', 'user.nickname', 'post.id', 'post.title'])
+        .select([
+          'comment.id',
+          'comment.comment',
+          'comment.rating',
+          'user.id',
+          'user.nickname',
+          'post.id',
+          'post.title',
+          'userInterests.id',
+          'userInterests.rating',
+          'userCategories.id',
+          'userCategories.views',
+          'interests.id',
+          'interests.name',
+          'category.id',
+          'category.name',
+        ])
         .getOne();
   }
 
@@ -45,4 +65,14 @@ export class CommentRepository extends Repository<Comment> {
         .select(['comment.id'])
         .getOne();
   }
+    async getAverageRatingsByUserId(userId: number): Promise<{ interestId: number; averageRating: number }[]> {
+        return this.createQueryBuilder('comment')
+            .leftJoin('comment.user', 'user')
+            .leftJoin('comment.post', 'post')
+            .leftJoin('post.interests', 'interest')
+            .select(['interest.id AS interestId', 'AVG(comment.rating) AS averageRating'])
+            .where('user.id = :userId', { userId })
+            .groupBy('interest.id')
+            .getRawMany();
+    }
 }

@@ -1,8 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {In, Repository} from 'typeorm';
 import { Category} from "../../category/entity/Category";
-import {defaultCategoryNames} from "../../../constants/defalutCatrgories";
+import {defaultCategories} from "../../../constants/defalutCatrgories";
 
 @Injectable()
 export class InitCategoryService implements OnModuleInit {
@@ -16,16 +16,19 @@ export class InitCategoryService implements OnModuleInit {
     }
 
     private async createInitialCategories(): Promise<void> {
-        for (const category of defaultCategoryNames) {
-            if (await this.checkCategoryNotExists(category.name)) {
-                const newCategory = this.categoryRepository.create(category);
-                await this.categoryRepository.save(newCategory);
-            }
+        const existingCategories = await this.checkCategoriesNotExists(defaultCategories.map(category => category.name));
+        const existingCategoryNames = existingCategories.map(category => category.name);
+
+        const newCategories = defaultCategories.filter(category => !existingCategoryNames.includes(category.name));
+
+        for (const category of newCategories) {
+            const newCategory = this.categoryRepository.create(category);
+            await this.categoryRepository.save(newCategory);
         }
     }
 
-    private async checkCategoryNotExists(name: string): Promise<boolean> {
-        const category = await this.categoryRepository.findOne({ where: { name } });
-        return !category;
+    private async checkCategoriesNotExists(names: string[]): Promise<Category[]> {
+        return this.categoryRepository.find({ where: { name: In(names) } });
     }
+
 }

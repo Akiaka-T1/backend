@@ -13,9 +13,6 @@ export class UserInterest {
     @ManyToOne(() => Interest, interest => interest.userInterests)
     interest: Interest;
 
-    @Column({nullable:true})
-    name: string;
-
-    @Column({ type: 'int', default: 0 })
-    score: number;
+    @Column({type: 'double precision', default: 0})
+    rating: number;
 }

@@ -18,10 +18,26 @@ export class UserRepository extends Repository<User> {
     }
 
     async findByEmailWithInterestsAndCategories(email: string): Promise<User | undefined> {
-        return this.findOne({
-            where: { email },
-            relations: ['userInterests','userCategories'],
-        });
+        return this.createQueryBuilder('user')
+            .leftJoinAndSelect('user.userInterests', 'userInterests')
+            .leftJoinAndSelect('userInterests.interest', 'interest')
+            .leftJoinAndSelect('user.userCategories', 'userCategories')
+            .leftJoinAndSelect('userCategories.category', 'category')
+            .where('user.email = :email', { email })
+            .select([
+                'user.id',
+                'user.name',
+                'user.nickname',
+                'userInterests.id',
+                'userInterests.rating',
+                'interest.id',
+                'interest.name',
+                'userCategories.id',
+                'userCategories.views',
+                'category.id',
+                'category.name'
+            ])
+            .getOne();
     }
 
     async findByEmailWithSelectedFields(email: string): Promise<User | undefined> {

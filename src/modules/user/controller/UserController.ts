@@ -41,8 +41,15 @@ export class UserController {
     @Get()
     @UseGuards(AuthGuard,RolesGuard)
     @Roles(Role.Admin,Role.User)
-    async findMe(@Request() request:any): Promise<ResponseUserWithInterestsAndCategoriesDto> {
+    async findMe(@Request() request:any): Promise<ResponseUserDto> {
         return this.userService.findMe(request.user.email);
+    }
+
+    @Get('stats')
+    @UseGuards(AuthGuard,RolesGuard)
+    @Roles(Role.Admin,Role.User)
+    async findStats(@Request() request:any): Promise<ResponseUserWithInterestsAndCategoriesDto> {
+        return this.userService.findStats(request.user.email);
     }
 
     @Get(':id')

@@ -25,7 +25,7 @@ export class Post extends BaseEntity {
   content: string;
 
   @Column({ default: 0 })
-  score: number;
+  averageRating: number;
 
   @Column({ default: 0 })
   views: number;

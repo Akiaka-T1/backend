@@ -11,6 +11,7 @@ import {PostModule} from "./modules/post/module";
 import {CommentModule} from "./modules/comment/module";
 import {CategoryModule} from "./modules/category/module";
 import {InterestModule} from "./modules/interest/module";
+import {JwtModule} from "@nestjs/jwt";
 
 dotenv.config();
 
@@ -35,7 +36,7 @@ const config = loadYamlConfig(configFilePath);
       inject: [ConfigService],
     }),
     DataModule,
-    UserModule, AuthModule,
+    UserModule, AuthModule, JwtModule,
     PostModule,
     CommentModule,
     CategoryModule,
