@@ -8,7 +8,7 @@ import { PostRecommendation } from 'src/modules/recommendation/entity/PostRecomm
 @Injectable()
 export class InitRecommendationService implements OnModuleInit {
     constructor(
-        @InjectRepository(RecommendationRepository)
+        @InjectRepository(Recommendation)
         private readonly recommendationRepository: RecommendationRepository,
     ) {}
 
