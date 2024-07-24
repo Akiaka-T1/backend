@@ -57,14 +57,14 @@ export class PostService {
     return mapToDto(post, ResponsePostDto);
   }
 
-  async findAll(paginationDto: PaginationDto): Promise<PaginationResult<ResponsePostDto>> {
+  async findAll(paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
     const { page, limit, field, order } = paginationDto;
     const options = { page, limit, field, order };
 
     const posts = await this.postRepository.paginate(options);
     return {
       ...posts,
-      data: posts.data.map(post => mapToDto(post, ResponsePostDto)),
+      data: posts.data.map(post => mapToDto(post, ShortPostDto)),
     };
   }
 

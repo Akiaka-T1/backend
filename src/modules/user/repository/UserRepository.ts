@@ -9,8 +9,9 @@ export class UserRepository extends Repository<User> {
     constructor(private dataSource: DataSource) {
         super(User, dataSource.createEntityManager());
     }
+
     async findById(id: number): Promise<User | undefined> {
-        return this.findOne({ where: {id } });
+        return this.findOne({ where: { id } });
     }
 
     async findByEmail(email: string): Promise<User | undefined> {
@@ -19,21 +20,21 @@ export class UserRepository extends Repository<User> {
 
     async findByEmailWithInterestsAndCategories(email: string): Promise<User | undefined> {
         return this.createQueryBuilder('user')
-            .leftJoinAndSelect('user.userInterests', 'userInterests')
-            .leftJoinAndSelect('userInterests.interest', 'interest')
-            .leftJoinAndSelect('user.userCategories', 'userCategories')
-            .leftJoinAndSelect('userCategories.category', 'category')
+            .leftJoinAndSelect('user.userInterests', 'user_interests')
+            .leftJoinAndSelect('user_interests.interest', 'interest')
+            .leftJoinAndSelect('user.userCategories', 'user_categories')
+            .leftJoinAndSelect('user_categories.category', 'category')
             .where('user.email = :email', { email })
             .select([
                 'user.id',
                 'user.name',
                 'user.nickname',
-                'userInterests.id',
-                'userInterests.rating',
+                'user_interests.id',
+                'user_interests.rating',
                 'interest.id',
                 'interest.name',
-                'userCategories.id',
-                'userCategories.views',
+                'user_categories.id',
+                'user_categories.views',
                 'category.id',
                 'category.name'
             ])
@@ -46,6 +47,7 @@ export class UserRepository extends Repository<User> {
             .select(['user.id', 'user.nickname'])
             .getOne();
     }
+
     async paginate(options: PaginationOptions): Promise<PaginationResult<User>> {
         return paginate(this, options);
     }

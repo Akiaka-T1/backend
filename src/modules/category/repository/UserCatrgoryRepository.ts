@@ -8,13 +8,13 @@ export class UserCategoryRepository extends Repository<UserCategory> {
         super(UserCategory, dataSource.createEntityManager());
     }
     async findByUserId(userId: number): Promise<UserCategory[]> {
-        return this.createQueryBuilder('userCategory')
-            .leftJoinAndSelect('userCategory.category', 'category')
-            .leftJoin('userCategory.user', 'user')
-            .where('userCategory.userId = :userId', { userId })
+        return this.createQueryBuilder('user_category')
+            .leftJoinAndSelect('user_category.category', 'category')
+            .leftJoin('user_category.user', 'user')
+            .where('user_category.user_id = :userId', { userId })
             .select([
-                'userCategory.id',
-                'userCategory.views',
+                'user_category.id',
+                'user_category.views',
                 'category.id',
                 'category.name'
             ])

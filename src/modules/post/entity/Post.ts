@@ -14,7 +14,7 @@ import {Category} from "../../category/entity/Category";
 import {Interest} from "../../interest/entity/Interest";
 import { PostRecommendation } from 'src/modules/recommendation/entity/PostRecommendation';
 
-@Entity()
+@Entity('post')
 export class Post extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;

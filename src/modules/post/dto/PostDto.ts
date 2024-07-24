@@ -101,7 +101,7 @@ export class ShortPostDto {
   title: string;
 
   @Field
-  thumbnailURL: string;
+  thumbnail_URL: string;
 
   @Field
   views: number;

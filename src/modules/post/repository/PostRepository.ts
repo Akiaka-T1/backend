@@ -36,9 +36,9 @@ export class PostRepository extends Repository<Post> {
   }
   async calculateAverageRating(postId: number): Promise<string> {
     const result = await this.createQueryBuilder('post')
-        .leftJoinAndSelect(Comment, 'comment', 'comment.postId = post.id')
+        .leftJoinAndSelect(Comment, 'comment', 'comment.post_id = post.id')
         .select('AVG(comment.rating)', 'averageRating')
-        .where('post.id = :postId', { postId })
+        .where('post.id = :post.id', { postId })
         .getRawOne();
 
     return parseFloat(result.averageRating).toFixed(1);

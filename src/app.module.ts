@@ -14,6 +14,9 @@ import {InterestModule} from "./modules/interest/module";
 import {JwtModule} from "@nestjs/jwt";
 import { RecommendationModule } from './modules/recommendation/module';
 
+import {SnakeNamingStrategy} from "typeorm-naming-strategies";
+
+
 dotenv.config();
 
 const ENV = process.env.NODE_ENV || 'dev';
@@ -32,9 +35,11 @@ const config = loadYamlConfig(configFilePath);
       useFactory: async (configService: ConfigService) => ({
         ...getTypeOrmConfig(configService),
         autoLoadEntities: true,
+        namingStrategy: new SnakeNamingStrategy(),
       }),
 
       inject: [ConfigService],
+
     }),
     DataModule,
     UserModule, AuthModule, JwtModule,
