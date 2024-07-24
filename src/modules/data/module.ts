@@ -24,21 +24,20 @@ import {UserCategory} from "../category/entity/UserCategory";
 import {UserCategoryRepository} from "../category/repository/UserCatrgoryRepository";
 import {AuthService} from "../../auth/service/AuthService";
 import { Recommendation } from "../recommendation/entity/Recommendation";
-import { RecommendationCategory } from "../recommendation/entity/RecommendationCategory";
+import { PostRecommendation } from "../recommendation/entity/PostRecommendation";
 import { RecommendationService } from "../recommendation/service/RecommendationService";
 import { RecommendationRepository } from "../recommendation/repository/RecommendationRepository";
-import { RecommendationCategoryRepository } from "../recommendation/repository/RecommendationCategoryRepository";
-import { InitMBTIService } from "./mbti/InitMBTIService";
-import { InitAgegroupService } from "./agegroup/InitAgegroupService";
+import { PostRecommendationRepository } from "../recommendation/repository/PostRecommendationRepository";
+import { InitRecommendationService } from "./recommendation/InitRecommendationService";
 @Module({
-  imports: [TypeOrmModule.forFeature([User,Post,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,RecommendationCategory])],
+  imports: [TypeOrmModule.forFeature([User,Post,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation])],
   providers: [
     UserService, UserRepository, InitAdminService , AuthService,
       PostService, PostRepository,
       CommentService, CommentRepository,
       CategoryService, CategoryRepository, UserCategoryRepository, InitCategoryService,
       InterestService, InterestRepository,UserInterestRepository, InitInterestService,
-      RecommendationService, RecommendationRepository, RecommendationCategoryRepository, InitMBTIService, InitAgegroupService
+      RecommendationService, RecommendationRepository, PostRecommendationRepository, InitRecommendationService 
     ],
   exports: [
     UserService,UserRepository,AuthService,
@@ -46,7 +45,7 @@ import { InitAgegroupService } from "./agegroup/InitAgegroupService";
     CommentService,CommentRepository,
     CategoryService, CategoryRepository,UserCategoryRepository, InitCategoryService,
     InterestService, InterestRepository,UserInterestRepository, InitInterestService, 
-    RecommendationService, RecommendationRepository, RecommendationCategoryRepository, InitMBTIService, InitAgegroupService
+    RecommendationService, RecommendationRepository, PostRecommendationRepository, InitRecommendationService
   ],
 })
 export class DataModule {}
