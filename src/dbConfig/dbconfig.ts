@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import {SnakeNamingStrategy} from "typeorm-naming-strategies";
 
 export const getTypeOrmConfig = (
   configService: ConfigService,
@@ -13,6 +14,7 @@ export const getTypeOrmConfig = (
     logging: configService.get<boolean>('db.logging'),
     entities: [],
     autoLoadEntities: true,
+    namingStrategy: new SnakeNamingStrategy(),
   };
   // 배포환경에서 필요한 추가 설정
   if (dbType === 'mysql') {
