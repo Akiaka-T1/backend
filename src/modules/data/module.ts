@@ -23,22 +23,28 @@ import {InitCategoryService} from "./category/InitCategoryService";
 import {UserCategory} from "../category/entity/UserCategory";
 import {UserCategoryRepository} from "../category/repository/UserCatrgoryRepository";
 import {AuthService} from "../../auth/service/AuthService";
-
+import { Recommendation } from "../recommendation/entity/Recommendation";
+import { RecommendationCategory } from "../recommendation/entity/RecommendationCategory";
+import { RecommendationService } from "../recommendation/service/RecommendationService";
+import { RecommendationRepository } from "../recommendation/repository/RecommendationRepository";
+import { RecommendationCategoryRepository } from "../recommendation/repository/RecommendationCategoryRepository";
 @Module({
-  imports: [TypeOrmModule.forFeature([User,Post,Comment,Category,Interest,UserInterest,UserCategory])],
+  imports: [TypeOrmModule.forFeature([User,Post,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,RecommendationCategory])],
   providers: [
     UserService, UserRepository, InitAdminService , AuthService,
       PostService, PostRepository,
       CommentService, CommentRepository,
       CategoryService, CategoryRepository, UserCategoryRepository, InitCategoryService,
-      InterestService, InterestRepository,UserInterestRepository, InitInterestService
+      InterestService, InterestRepository,UserInterestRepository, InitInterestService,
+      RecommendationService, RecommendationRepository, RecommendationCategoryRepository
     ],
   exports: [
     UserService,UserRepository,AuthService,
     PostService,PostRepository,
     CommentService,CommentRepository,
     CategoryService, CategoryRepository,UserCategoryRepository, InitCategoryService,
-    InterestService, InterestRepository,UserInterestRepository, InitInterestService
+    InterestService, InterestRepository,UserInterestRepository, InitInterestService,
+    RecommendationService, RecommendationRepository, RecommendationCategoryRepository
   ],
 })
 export class DataModule {}
