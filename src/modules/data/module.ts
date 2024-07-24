@@ -28,6 +28,8 @@ import { RecommendationCategory } from "../recommendation/entity/RecommendationC
 import { RecommendationService } from "../recommendation/service/RecommendationService";
 import { RecommendationRepository } from "../recommendation/repository/RecommendationRepository";
 import { RecommendationCategoryRepository } from "../recommendation/repository/RecommendationCategoryRepository";
+import { InitMBTIService } from "./mbti/InitMBTIService";
+import { InitAgegroupService } from "./agegroup/InitAgegroupService";
 @Module({
   imports: [TypeOrmModule.forFeature([User,Post,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,RecommendationCategory])],
   providers: [
@@ -36,15 +38,15 @@ import { RecommendationCategoryRepository } from "../recommendation/repository/R
       CommentService, CommentRepository,
       CategoryService, CategoryRepository, UserCategoryRepository, InitCategoryService,
       InterestService, InterestRepository,UserInterestRepository, InitInterestService,
-      RecommendationService, RecommendationRepository, RecommendationCategoryRepository
+      RecommendationService, RecommendationRepository, RecommendationCategoryRepository, InitMBTIService, InitAgegroupService
     ],
   exports: [
     UserService,UserRepository,AuthService,
     PostService,PostRepository,
     CommentService,CommentRepository,
     CategoryService, CategoryRepository,UserCategoryRepository, InitCategoryService,
-    InterestService, InterestRepository,UserInterestRepository, InitInterestService,
-    RecommendationService, RecommendationRepository, RecommendationCategoryRepository
+    InterestService, InterestRepository,UserInterestRepository, InitInterestService, 
+    RecommendationService, RecommendationRepository, RecommendationCategoryRepository, InitMBTIService, InitAgegroupService
   ],
 })
 export class DataModule {}
