@@ -12,6 +12,7 @@ import { User } from '../../user/entity/User';
 import { Comment } from '../../comment/entity/Comment';
 import {Category} from "../../category/entity/Category";
 import {Interest} from "../../interest/entity/Interest";
+import { PostRecommendation } from 'src/modules/recommendation/entity/PostRecommendation';
 
 @Entity('post')
 export class Post extends BaseEntity {
@@ -57,4 +58,7 @@ export class Post extends BaseEntity {
   @ManyToMany(() => Interest, interest => interest.posts)
   @JoinTable()
   interests: Interest[];
+
+  @OneToMany(() => PostRecommendation, (postRecommendation) => postRecommendation.post)
+  postRecommendations: PostRecommendation[];
 }
