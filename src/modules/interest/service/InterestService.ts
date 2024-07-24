@@ -66,23 +66,19 @@ export class InterestService {
         const userInterests = await this.userInterestRepository.findByUserId(user.id);
 
         if (this.hasMissingMiddleEntities(userInterests)) {
-            const existingInterestIds = userInterests.map(ui => ui.interest.id);
-            const missingInterests = await this.interestRepository.findMissingInterests(existingInterestIds);
-            await this.addMissingInterestsToUser(user, missingInterests);
+            const interests = await this.interestRepository.findAll();
+            const missingInterests = interests.filter(interest => !userInterests.some(ui => ui.interest.id === interest.id));
+
+            const newUserInterests = missingInterests.map(interest => this.userInterestRepository.create({ user, interest }));
+            await this.userInterestRepository.save(newUserInterests);
+
+            user.userInterests.push(...newUserInterests);
         }
         return user;
     }
 
     private hasMissingMiddleEntities(userInterests: UserInterest[]): boolean {
         return userInterests.length < defaultInterests.length;
-    }
-
-    private async addMissingInterestsToUser(user: User, missingInterests: Interest[]): Promise<void> {
-        const newUserInterests = missingInterests.map(interest =>
-            this.userInterestRepository.create({ user, interest, rating: 0 })
-        );
-        await this.userInterestRepository.save(newUserInterests);
-        user.userInterests.push(...newUserInterests);
     }
 
     public async updateUserInterests(userId: number, interests: Interest[]): Promise<void> {

@@ -13,7 +13,7 @@ import { Comment } from '../../comment/entity/Comment';
 import {UserInterest} from "../../interest/entity/UserInterest";
 import {UserCategory} from "../../category/entity/UserCategory";
 
-@Entity()
+@Entity('user')
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;

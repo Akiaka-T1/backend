@@ -10,10 +10,10 @@ export class UserInterestRepository extends Repository<UserInterest> {
     }
 
     async updateRatings(userId: number, averageRatings: { interestId: number; averageRating: number | string }[]): Promise<void> {
-        const userInterests = await this.createQueryBuilder('userInterest')
-            .leftJoinAndSelect('userInterest.interest', 'interest')
-            .where('userInterest.userId = :userId', { userId })
-            .select(['userInterest.id', 'userInterest.rating', 'interest.id'])
+        const userInterests = await this.createQueryBuilder('user_interest')
+            .leftJoinAndSelect('user_interest.interest', 'interest')
+            .where('user_interest.user_id = :userId', { userId })
+            .select(['user_interest.id', 'user_interest.rating', 'interest.id'])
             .getMany();
 
         const updates = userInterests.map(ui => {
@@ -26,13 +26,13 @@ export class UserInterestRepository extends Repository<UserInterest> {
     }
 
     async findByUserId(userId: number): Promise<UserInterest[]> {
-        return this.createQueryBuilder('userInterest')
-            .leftJoinAndSelect('userInterest.interest', 'interest')
-            .leftJoin('userInterest.user', 'user')
-            .where('userInterest.userId = :userId', { userId })
+        return this.createQueryBuilder('user_interest')
+            .leftJoinAndSelect('user_interest.interest', 'interest')
+            .leftJoin('user_interest.user', 'user')
+            .where('user_interest.user_id = :userId', { userId })
             .select([
-                'userInterest.id',
-                'userInterest.rating',
+                'user_interest.id',
+                'user_interest.rating',
                 'interest.id',
                 'interest.name'
             ])

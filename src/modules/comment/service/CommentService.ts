@@ -111,7 +111,7 @@ export class CommentService {
         const result = await this.commentRepository
             .createQueryBuilder('comment')
             .select('AVG(comment.rating)', 'averageRating')
-            .where('comment.postId = :postId', { postId })
+            .where('comment.post.id = :postId', { postId })
             .getRawOne();
 
         let averageRating = parseFloat(result.averageRating);

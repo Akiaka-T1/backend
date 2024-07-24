@@ -119,30 +119,6 @@ export class ResponseUserWithInterestsAndCategoriesDto {
     nickname: string;
 
     @Field
-    email: string;
-
-    @Field
-    gender: string;
-
-    @Field
-    ageGroup: string;
-
-    @Field
-    mbti: string;
-
-    @Field
-    characterId: number;
-
-    @Field
-    voiceTypeId: number;
-
-    @Field
-    categoryId: number;
-
-    @Field
-    role: Role;
-
-    @Field
     userInterests: ResponseUserInterestDto[];
 
     @Field
