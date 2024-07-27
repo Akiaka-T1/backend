@@ -26,17 +26,14 @@ import {AuthService} from "../../../auth/service/AuthService";
 export class CommentController {
   constructor(
       private readonly commentService: CommentService,
-      private readonly authService: AuthService,
       ) {}
 
   @Post()
   @UseGuards(AuthGuard,RolesGuard)
   @UsePipes(new ValidationPipe({ transform: true }))
   @Roles(Role.User,Role.Admin)
-  async create(@Body() postCommentDto: PostCommentDto, @Req() req: Request): Promise<ResponseCommentDto> {
-    const token = this.authService.getTokenFromRequest(req);
-    const user = await this.authService.validateUserByToken(token);
-    return this.commentService.create(postCommentDto,user);
+  async create(@Body() postCommentDto: PostCommentDto, @Request() request:any): Promise<ResponseCommentDto> {
+    return this.commentService.create(postCommentDto,request.user);
   }
 
   @Get(':id')

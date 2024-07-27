@@ -26,11 +26,7 @@ export class AuthService {
     const { email, password } = loginDto;
     const user = await this.validateUser(email, password);
 
-    const payload = { email: user.email,nickname:user.nickname, sub: user.id, role: user.role };
-    const accessToken = this.jwtService.sign(payload,{
-      secret: process.env.JWT_SECRET_KEY,
-      expiresIn: '60m',
-    });
+    const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user.id);
 
     AuthService.setCookie(response, refreshToken);
@@ -40,12 +36,11 @@ export class AuthService {
     };
   }
 
-  private static setCookie(response: any, refreshToken: string) {
-    response.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000
+  private generateAccessToken(user:User) {
+    const payload = {email: user.email, nickname: user.nickname, sub: user.id, role: user.role};
+    return this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET_KEY,
+      expiresIn: '60m',
     });
   }
 
@@ -57,17 +52,22 @@ export class AuthService {
     });
   }
 
+  private static setCookie(response: any, refreshToken: string) {
+    response.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000
+    });
+  }
+
   async refreshToken(refreshToken: string) {
 
       const { userId } = this.jwtService.verify(refreshToken, { secret:  process.env.JWT_SECRET_KEY });
       const user = await this.userService.findByIdForJwt(userId);
 
     try {
-      const payload = { email: user.email,nickname:user.nickname, sub: user.id, role: user.role };
-      return this.jwtService.sign(payload, {
-        secret: process.env.JWT_SECRET_KEY,
-        expiresIn: '60m',
-      });
+      return this.generateAccessToken(user);
     } catch (e) {
       if (e.name === 'TokenExpiredError') {
         throw new UnauthorizedException('Refresh token expired');

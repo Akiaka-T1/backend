@@ -11,6 +11,7 @@ import { Post } from "../../post/entity/Post";
 import {CategoryService} from "../../category/service/CategoryService";
 import {InterestService} from "../../interest/service/InterestService";
 import {PostService} from "../../post/service/PostService";
+import {UserService} from "../../user/service/UserService";
 
 
 @Injectable()
@@ -20,11 +21,13 @@ export class CommentService {
         private readonly commentRepository: CommentRepository,
         private readonly postService: PostService,
         private readonly interestService: InterestService,
+        private readonly userService: UserService,
     ) {}
 
-    async create(createCommentDto: PostCommentDto, user :User): Promise<ResponseCommentDto> {
+    async create(createCommentDto: PostCommentDto, userFromToken :User): Promise<ResponseCommentDto> {
         const { postId, rating, comment } = createCommentDto;
         const post = await this.postService.findByIdForCreateComment(postId);
+        const user = await this.userService.findByEmail(userFromToken.email);
 
         CommentService.ensureExists(user, post);
         await this.ensureUnique(user.id, post.id);
