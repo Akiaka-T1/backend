@@ -67,36 +67,51 @@ export class CategoryService {
         }
     }
 
-    async ensureHasEveryMiddleEntities(user: User): Promise<User> {
+    async ensureHasEveryMiddleEntities(user: User) {
         let userCategories = await this.userCategoryRepository.findByUserId(user.id);
 
         if (this.hasMissingMiddleEntities(userCategories)) {
-            const categories = await this.categoryRepository.findAll();
-            const missingCategories = categories.filter(category => !userCategories.some(uc => uc.category.id === category.id));
-
-            const newUserCategories = missingCategories.map(category => this.userCategoryRepository.create({ user, category }));
-            await this.userCategoryRepository.save(newUserCategories);
-
-            user.userCategories.push(...newUserCategories);
+            await this.addMissingMiddleEntities(userCategories, user);
         }
-        return user;
     }
 
     private hasMissingMiddleEntities(userCategories: UserCategory[]): boolean {
         return userCategories.length < defaultCategories.length;
     }
 
-    async incrementMiddleEntityView(userId: number, category: Category): Promise<void> {
+    private async addMissingMiddleEntities(userCategories: UserCategory[], user: User) {
+        const categories = await this.categoryRepository.findAll();
+        const missingCategories = categories.filter(category => !userCategories.some(uc => uc.category.id === category.id));
+
+        const newUserCategories = missingCategories.map(category => this.userCategoryRepository.create({
+            user,
+            category
+        }));
+        await this.userCategoryRepository.save(newUserCategories);
+
+        user.userCategories.push(...newUserCategories);
+    }
+
+    async createOrIncrementMiddleEntityViews(userId: number, category: Category): Promise<void> {
         const userCategories = await this.userCategoryRepository.findByUserId(userId);
         const userCategory = userCategories.find(uc => uc.category.id === category.id);
 
-        if (userCategory) {
-            userCategory.views++;
-            await this.userCategoryRepository.save(userCategory);
-        } else {
-            const newUserCategory = this.userCategoryRepository.create({ user: { id: userId }, category: { id: category.id }, views: 1 });
-            await this.userCategoryRepository.save(newUserCategory);
-        }
+        if (userCategory) await this.increaseViews(userCategory);
+        else await this.createNewMiddleEntity(userId, category);
+    }
+
+    private async increaseViews(userCategory: UserCategory) {
+        userCategory.views++;
+        await this.userCategoryRepository.save(userCategory);
+    }
+
+    private async createNewMiddleEntity(userId: number, category: Category) {
+        const newUserCategory = this.userCategoryRepository.create({
+            user: {id: userId},
+            category: {id: category.id},
+            views: 1
+        });
+        await this.userCategoryRepository.save(newUserCategory);
     }
 
     private async handleErrors<T>(operation: () => Promise<T>, errorMessage: string): Promise<T> {

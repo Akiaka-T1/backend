@@ -38,13 +38,14 @@ export class UserService {
     }
 
     async findStats(email: string): Promise<ResponseUserWithInterestsAndCategoriesDto> {
-        let user = await this.userRepository.findByEmailWithInterestsAndCategories(email);
+        const user = await this.userRepository.findByEmailWithInterestsAndCategories(email);
         this.ensureExists(user, 0);
 
-        user = await this.interestService.ensureHasEveryMiddleEntities(user);
-        user = await this.categoryService.ensureHasEveryMiddleEntities(user);
+        await this.interestService.ensureHasEveryMiddleEntities(user);
+        await this.categoryService.ensureHasEveryMiddleEntities(user);
 
-        return mapToDto(user, ResponseUserWithInterestsAndCategoriesDto);
+        const updatedUser = await this.userRepository.findByEmailWithInterestsAndCategories(email);
+        return mapToDto(updatedUser, ResponseUserWithInterestsAndCategoriesDto);
     }
 
     async findByIdForJwt(id: number): Promise<User> {

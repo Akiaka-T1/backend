@@ -78,4 +78,15 @@ export class CommentRepository extends Repository<Comment> {
             .groupBy('interest.id')
             .getRawMany();
     }
+
+    async findAverageRatingByPostId(postId: number): Promise<number> {
+        const result = await this
+            .createQueryBuilder('comment')
+            .select('AVG(comment.rating)', 'averageRating')
+            .where('comment.post.id = :postId', { postId })
+            .setParameter('postId', postId)
+            .getRawOne();
+
+        return parseFloat(result.averageRating) || 0;
+    }
 }

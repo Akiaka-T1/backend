@@ -62,26 +62,33 @@ export class InterestService {
         return mapToDto(interest,ResponseInterestDto);
     }
 
-    public async ensureHasEveryMiddleEntities(user: User): Promise<User> {
+    public async ensureHasEveryMiddleEntities(user: User) {
         const userInterests = await this.userInterestRepository.findByUserId(user.id);
 
-        if (this.hasMissingMiddleEntities(userInterests)) {
-            const interests = await this.interestRepository.findAll();
-            const missingInterests = interests.filter(interest => !userInterests.some(ui => ui.interest.id === interest.id));
-
-            const newUserInterests = missingInterests.map(interest => this.userInterestRepository.create({ user, interest }));
-            await this.userInterestRepository.save(newUserInterests);
-
-            user.userInterests.push(...newUserInterests);
-        }
-        return user;
+        if (this.hasMissingMiddleEntities(userInterests)) await this.addMissingMiddleEntities(userInterests, user);
     }
 
     private hasMissingMiddleEntities(userInterests: UserInterest[]): boolean {
         return userInterests.length < defaultInterests.length;
     }
 
+    private async addMissingMiddleEntities(userInterests: UserInterest[], user: User) {
+        const interests = await this.interestRepository.findAll();
+        const missingInterests = interests.filter(interest => !userInterests.some(ui => ui.interest.id === interest.id));
+
+        const newUserInterests = missingInterests.map(interest => this.userInterestRepository.create({user, interest}));
+        await this.userInterestRepository.save(newUserInterests);
+
+        user.userInterests.push(...newUserInterests);
+    }
+
+
     public async updateUserInterests(userId: number, interests: Interest[]): Promise<void> {
+        await this.checkAndAddMissingMiddleEntities(userId, interests);
+        await this.updateUserInterestRatings(userId);
+    }
+
+    private async checkAndAddMissingMiddleEntities(userId: number, interests: Interest[]): Promise<void> {
         const userInterests = await this.userInterestRepository.findByUserId(userId);
         const existingInterestIds = userInterests.map(ui => ui.interest.id);
 
@@ -92,7 +99,9 @@ export class InterestService {
         );
 
         await this.userInterestRepository.save(newUserInterests);
+    }
 
+    private async updateUserInterestRatings(userId: number): Promise<void> {
         const averageRatings = await this.commentRepository.getAverageRatingsByUserId(userId);
         await this.userInterestRepository.updateRatings(userId, averageRatings);
     }
