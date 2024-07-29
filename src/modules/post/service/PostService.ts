@@ -49,7 +49,7 @@ export class PostService {
     this.ensureExists(post, id);
 
     if (user) {
-      await this.categoryService.incrementMiddleEntityView(user.id, post.category);
+      await this.categoryService.createOrIncrementMiddleEntityViews(user.id, post.category);
     }
 
     post.views++;

@@ -96,7 +96,6 @@ export class CommentService {
         await this.interestService.updateUserInterests(userId, post.interests);
     }
 
-
     private checkCommentExists(comment: Comment, id: number): void {
         if (!comment) {
             throw new NotFoundException(`Comment with ID ${id} not found`);
@@ -111,16 +110,8 @@ export class CommentService {
     }
 
     async updatePostAverageRating(postId: number): Promise<void> {
-        const result = await this.commentRepository
-            .createQueryBuilder('comment')
-            .select('AVG(comment.rating)', 'averageRating')
-            .where('comment.post.id = :postId', { postId })
-            .getRawOne();
-
-        let averageRating = parseFloat(result.averageRating);
-        if (isNaN(averageRating)) averageRating = 0;
-
-        await this.postService.updateAverageRating(postId, { averageRating: averageRating });
+        const averageRating = await this.commentRepository.findAverageRatingByPostId(postId);
+        await this.postService.updateAverageRating(postId, { averageRating });
     }
 
 }
