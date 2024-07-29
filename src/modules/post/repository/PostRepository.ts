@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import {DataSource, FindManyOptions, Repository} from "typeorm";
+import {DataSource, FindManyOptions, Like, Repository} from "typeorm";
 import { Post } from "../entity/Post";
 import {PaginationResult,PaginationOptions,paginate} from "../../../utils/pagination/pagination";
 
@@ -20,10 +20,6 @@ export class PostRepository extends Repository<Post> {
     });
   }
 
-  async findByTitle(title: string): Promise<Post | undefined> {
-    return this.findOne({ where: { title } });
-  }
-
   async paginate(options: PaginationOptions, findOptions?: FindManyOptions<Post>): Promise<PaginationResult<Post>> {
     return paginate(this, options, findOptions);
   }
@@ -34,13 +30,27 @@ export class PostRepository extends Repository<Post> {
         .of(post)
         .remove(post.interests);
   }
-  async calculateAverageRating(postId: number): Promise<string> {
-    const result = await this.createQueryBuilder('post')
-        .leftJoinAndSelect(Comment, 'comment', 'comment.post_id = post.id')
-        .select('AVG(comment.rating)', 'averageRating')
-        .where('post.id = :post.id', { postId })
-        .getRawOne();
 
-    return parseFloat(result.averageRating).toFixed(1);
+  async calculateAverageRating(postId: number) {
+    await this.createQueryBuilder()
+        .update(Post)
+        .set({
+          averageRating: () => `(SELECT AVG(comment.rating) FROM comment WHERE comment.post_id = post.id)`,
+        })
+        .where('id = :postId', { postId })
+        .execute();
+  }
+
+  async searchByTitle(title: string, options: PaginationOptions): Promise<PaginationResult<Post>> {
+    const findOptions: FindManyOptions<Post> = {
+      where: {
+        title: Like(`%${title}%`)
+      },
+      order: {
+        title: 'ASC'
+      }
+    };
+
+    return paginate(this, options, findOptions);
   }
 }

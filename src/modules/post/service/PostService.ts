@@ -68,6 +68,17 @@ export class PostService {
     };
   }
 
+  async searchPostsByTitle(title: string, paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+    const { page, limit, field, order } = paginationDto;
+    const options = { page, limit, field, order };
+
+    const posts = await this.postRepository.searchByTitle(title, options);
+    return {
+      ...posts,
+      data: posts.data.map(post => mapToDto(post, ShortPostDto)),
+    };
+  }
+
   async findByIdForCreateComment(id: number): Promise<Post | undefined> {
       return this.postRepository.findByIdWithInterestsAndCategoryOnlyWithTitle(id)
   }
@@ -81,9 +92,8 @@ export class PostService {
     return mapToDto(updatedPost,ResponsePostDto);
   }
 
-  async updateScore(postId: number): Promise<void> {
-    const averageRating = await this.postRepository.calculateAverageRating(postId);
-    await this.postRepository.update(postId, { averageRating: parseFloat(averageRating) });
+  updateScore(postId: number) {
+    this.postRepository.calculateAverageRating(postId);
   }
 
   async remove(id: number): Promise<void> {
