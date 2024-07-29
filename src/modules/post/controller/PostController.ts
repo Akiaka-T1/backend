@@ -44,6 +44,11 @@ export class PostController {
     return this.postService.create(postPostDto, request.user.id);
   }
 
+  @Get('search')
+  async search(@Query() paginationDto: PaginationDto, @Query('title') title: string): Promise<PaginationResult<ShortPostDto>> {
+    return this.postService.searchPostsByTitle(title, paginationDto);
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request): Promise<ResponsePostDto> {
     const token = this.authService.getTokenFromRequest(req);
