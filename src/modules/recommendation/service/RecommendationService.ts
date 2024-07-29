@@ -1,5 +1,3 @@
-/* eslint-disable */
-/* prettier-ignore */
 import { Injectable, NotFoundException, BadRequestException, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Recommendation } from "../entity/Recommendation";
@@ -8,10 +6,12 @@ import { mapToDto } from "../../../utils/mapper/Mapper";
 import { PaginationDto } from "../../../utils/pagination/paginationDto";
 import { PaginationResult } from "../../../utils/pagination/pagination";
 import { PostRecommendationRepository } from "../repository/PostRecommendationRepository";
+import { PostRecommendationService } from './PostRecommendationService';
 import { UserRepository } from '../../user/repository/UserRepository';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../../user/entity/User';
-
+import { UserInterestRepository } from '../../interest/repository/UserInterestRepository'; 
+import { PostRepository } from '../../post/repository/PostRepository'; 
 
 
 @Injectable()
@@ -21,6 +21,12 @@ export class RecommendationService {
         private readonly recommendationRepository: RecommendationRepository,
         @InjectRepository(UserRepository)
         private readonly userRepository: UserRepository,
+        @InjectRepository(UserInterestRepository) 
+        private readonly userInterestRepository: UserInterestRepository,
+        @InjectRepository(PostRepository) 
+        private readonly postRepository: PostRepository, 
+        @InjectRepository(PostRecommendationRepository) 
+        private readonly postRecommendationRepository: PostRecommendationRepository, 
         private readonly jwtService: JwtService,
         private readonly postRecommendationService: PostRecommendationService
     ) {}
@@ -74,7 +80,10 @@ export class RecommendationService {
         }
 
         const postRecommendations = await this.postRecommendationRepository.find({ where: { recommendation: { id: recommendation.id } }, relations: ['post'] });
-        const posts = postRecommendations.map(pr => pr.post).sort((a, b) => b.score - a.score);
+        const posts = postRecommendations.map(pr => ({
+            ...pr.post,
+            score: pr.score
+        })).sort((a, b) => b.score - a.score);
         return posts;
     }
 }
