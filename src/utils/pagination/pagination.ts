@@ -15,7 +15,7 @@ export interface PaginationOptions {
 
 export async function paginate<T>(
   repository: Repository<T>,
-  { page, limit, field, order }: PaginationOptions,
+  { page = 1, limit = 10, field, order }: PaginationOptions,
   options?: FindManyOptions<T>
 ): Promise<PaginationResult<T>> {
   const findOptions: FindManyOptions<T> = {

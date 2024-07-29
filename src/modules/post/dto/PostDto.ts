@@ -83,6 +83,9 @@ export class ResponsePostDto {
   views: number;
 
   @Field
+  averageRating: number;
+
+  @Field
   comments: ResponseCommentDto[];
 
   @Field
