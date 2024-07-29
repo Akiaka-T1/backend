@@ -26,6 +26,7 @@ import {AuthService} from "../../auth/service/AuthService";
 import { Recommendation } from "../recommendation/entity/Recommendation";
 import { PostRecommendation } from "../recommendation/entity/PostRecommendation";
 import { RecommendationService } from "../recommendation/service/RecommendationService";
+import { PostRecommendationService } from "../recommendation/service/PostRecommendationService";
 import { RecommendationRepository } from "../recommendation/repository/RecommendationRepository";
 import { PostRecommendationRepository } from "../recommendation/repository/PostRecommendationRepository";
 import { InitRecommendationService } from "./recommendation/InitRecommendationService";
@@ -35,7 +36,7 @@ import { InitRecommendationService } from "./recommendation/InitRecommendationSe
     UserService, UserRepository, InitAdminService , AuthService,
       PostService, PostRepository,
       CommentService, CommentRepository,
-      CategoryService, CategoryRepository, UserCategoryRepository, InitCategoryService,
+      CategoryService, CategoryRepository, UserCategoryRepository, InitCategoryService,PostRecommendationService,
       InterestService, InterestRepository,UserInterestRepository, InitInterestService,
       RecommendationService, RecommendationRepository, PostRecommendationRepository, InitRecommendationService 
     ],
@@ -45,7 +46,7 @@ import { InitRecommendationService } from "./recommendation/InitRecommendationSe
     CommentService,CommentRepository,
     CategoryService, CategoryRepository,UserCategoryRepository, InitCategoryService,
     InterestService, InterestRepository,UserInterestRepository, InitInterestService, 
-    RecommendationService, RecommendationRepository, PostRecommendationRepository, InitRecommendationService
+    RecommendationService, RecommendationRepository, PostRecommendationRepository, InitRecommendationService, PostRecommendationService
   ],
 })
 export class DataModule {}

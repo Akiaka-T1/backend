@@ -23,6 +23,6 @@ export class ResponseRecommendationDto {
     @Field
     name: string;
 
-    @Field(type => [ResponsePostRecommendationDto])
-    postRecommendations: ResponsePostRecommendationDto[];
+    // @Field(type => [ResponsePostRecommendationDto])
+    // postRecommendations: ResponsePostRecommendationDto[];
 }
