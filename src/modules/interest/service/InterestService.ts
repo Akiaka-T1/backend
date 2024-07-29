@@ -65,7 +65,8 @@ export class InterestService {
     public async ensureHasEveryMiddleEntities(user: User) {
         const userInterests = await this.userInterestRepository.findByUserId(user.id);
 
-        if (this.hasMissingMiddleEntities(userInterests)) await this.addMissingMiddleEntities(userInterests, user);
+        if (this.hasMissingMiddleEntities(userInterests))
+            await this.addMissingMiddleEntities(userInterests, user);
     }
 
     private hasMissingMiddleEntities(userInterests: UserInterest[]): boolean {

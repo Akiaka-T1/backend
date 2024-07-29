@@ -41,8 +41,10 @@ export class CommentService {
 
         await this.commentRepository.save(newComment);
 
-        await this.updatePostAverageRating(postId);
-        await this.updateUserInterest(user.id, post,rating);
+        await Promise.allSettled([
+            this.updatePostAverageRating(postId),
+            this.updateUserInterest(user.id, post, rating)
+        ]);
 
         return mapToDto(newComment,ResponseCommentDto);
     }
@@ -110,8 +112,7 @@ export class CommentService {
     }
 
     async updatePostAverageRating(postId: number): Promise<void> {
-        const averageRating = await this.commentRepository.findAverageRatingByPostId(postId);
-        await this.postService.updateAverageRating(postId, { averageRating });
+        await this.commentRepository.updatePostAverageRating(postId);
     }
 
 }

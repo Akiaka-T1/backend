@@ -41,8 +41,10 @@ export class UserService {
         const user = await this.userRepository.findByEmailWithInterestsAndCategories(email);
         this.ensureExists(user, 0);
 
-        await this.interestService.ensureHasEveryMiddleEntities(user);
-        await this.categoryService.ensureHasEveryMiddleEntities(user);
+        await Promise.allSettled([
+            this.interestService.ensureHasEveryMiddleEntities(user),
+            this.categoryService.ensureHasEveryMiddleEntities(user)
+        ]);
 
         const updatedUser = await this.userRepository.findByEmailWithInterestsAndCategories(email);
         return mapToDto(updatedUser, ResponseUserWithInterestsAndCategoriesDto);
