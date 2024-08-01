@@ -11,15 +11,20 @@ export class RecommendationRepository extends Repository<Recommendation> {
   async getContent(criteria: { userId?: number; ageGroup?: string; mbti?: string }): Promise<any[]> {
     const query = this.createQueryBuilder('post');
 
+    //user의 interest 기반 컨텐츠 조회
     if (criteria.userId) {
       query.leftJoinAndSelect('post.interests', 'interest')
         .where('interest.id IN (SELECT ui.interestId FROM user_interest ui WHERE ui.userId = :userId)', { userId: criteria.userId })
         .orderBy('post.views', 'DESC');
-    } else if (criteria.ageGroup) {
+    } 
+    //user의 ageGroup 기반 컨텐츠 조회
+    else if (criteria.ageGroup) {
       query.leftJoinAndSelect('post.user', 'user')
         .where('user.ageGroup = :ageGroup', { ageGroup: criteria.ageGroup })
         .orderBy('post.views', 'DESC');
-    } else if (criteria.mbti) {
+    } 
+    //user의 MBTI 기반 컨텐츠 조회
+    else if (criteria.mbti) {
       query.leftJoinAndSelect('postRecommendation', 'postRecommendation')
         .leftJoinAndSelect('postRecommendation.recommendation', 'recommendation')
         .where('recommendation.name = :mbti', { mbti: criteria.mbti })
@@ -27,6 +32,7 @@ export class RecommendationRepository extends Repository<Recommendation> {
     }
     return query.getMany();
     }
+
 //   async getContentByInterests(userId: number): Promise<any[]> {
 //     return this.createQueryBuilder('post')
 //       .leftJoinAndSelect('post.interests', 'interest')
