@@ -1,36 +1,7 @@
-import { Field } from '../../../utils/mapper/FieldNameExtractor';
-import { IsInt, IsNotEmpty } from 'class-validator';
+import {Field} from "../../../utils/mapper/FieldNameExtractor";
+import {ShortPostDto} from "../../post/dto/PostDto";
 
-export class CreatePostRecommendationDto {
-    @IsInt()
-    @IsNotEmpty()
-    postId: number;
-
-    @IsInt()
-    @IsNotEmpty()
-    recommendationId: number;
-
-    @IsInt()
-    @IsNotEmpty()
-    score: number;
-}
-
-export class UpdatePostRecommendationDto {
-    @IsInt()
-    @IsNotEmpty()
-    score: number;
-}
-
-export class ResponsePostRecommendationDto {
+export class ResponsePostRecommendationDto{
     @Field
-    id: number;
-
-    @Field
-    postId: number;
-
-    @Field
-    recommendationId: number;
-
-    @Field
-    score: number;
+    posts: ShortPostDto[];
 }

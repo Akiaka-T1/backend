@@ -1,15 +1,10 @@
-import {IsNotEmpty, IsString, IsInt, MaxLength} from 'class-validator'
 import {Field} from "../../../utils/mapper/FieldNameExtractor";
+import {ResponsePostRecommendationDto} from "./PostRecommendationDto";
 
-export class PostRecommendationDto{
+export class ResponseRecommendationDto{
+    @Field
+    name: string;
 
+    @Field
+    postRecommendations: ResponsePostRecommendationDto[]
 }
-
-export class UpdateRecommendationDto{
-
-}
-
-export class ResponseRecommendationDto {
-
-}
-

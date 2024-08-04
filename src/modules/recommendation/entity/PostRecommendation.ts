@@ -13,7 +13,6 @@ export class PostRecommendation {
     @ManyToOne(() => Recommendation, recommendation => recommendation.postRecommendations)
     recommendation: Recommendation;
 
-
     @Column()
     score: number;
 }
