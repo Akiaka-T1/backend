@@ -9,7 +9,7 @@ export class PostRepository extends Repository<Post> {
     super(Post, dataSource.createEntityManager());
   }
   async findById(id: number): Promise<Post | undefined> {
-    return this.findOne({ where: { id }, relations: ['user','category','interests','comments'] });
+    return this.findOne({ where: { id }, relations: ['user','category','interests','comments','postRecommendations'] });
   }
 
   async findByIdWithInterestsAndCategoryOnlyWithTitle (id: number): Promise<Post | undefined> {

@@ -1,6 +1,7 @@
 import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany} from 'typeorm';
 import { PostRecommendation } from './PostRecommendation';
-@Entity()
+
+@Entity('recommendation')
 export class Recommendation {
     @PrimaryGeneratedColumn()
     id : number;
