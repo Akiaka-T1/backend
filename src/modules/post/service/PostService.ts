@@ -10,6 +10,7 @@ import { PostRepository } from "../repository/PostRepository";
 import { User } from "../../user/entity/User";
 import {InterestService} from "../../interest/service/InterestService";
 import {CategoryService} from "../../category/service/CategoryService";
+import {RecommendationService} from "../../recommendation/service/RecommendationService";
 import {DailyViewRepository} from "../repository/DailyViewRepository";
 
 @Injectable()
@@ -20,7 +21,8 @@ export class PostService {
     private readonly categoryService: CategoryService,
     private readonly interestService: InterestService,
     private readonly userService: UserService,
-    private readonly dailyViewRepository: DailyViewRepository
+    private readonly dailyViewRepository: DailyViewRepository,
+    private readonly recommendationService: RecommendationService
   ) {}
 
   async create(postPostDto: PostPostDto, userId: number): Promise<ResponsePostDto> {
@@ -52,6 +54,7 @@ export class PostService {
 
     if (user) {
       await this.categoryService.createOrIncrementMiddleEntityViews(user.id, post.category);
+      await this.recommendationService.createOrIncrementMiddleEntityScore(user, post);
     }
 
     post.views++;

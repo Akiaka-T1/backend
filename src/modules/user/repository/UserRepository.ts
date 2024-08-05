@@ -48,6 +48,22 @@ export class UserRepository extends Repository<User> {
             .getOne();
     }
 
+    async findByIdWithMostInterested(id: number): Promise<string | undefined> {
+        const user = await this.findOne({
+            where: { id },
+            relations: ['userInterests', 'userInterests.interest'],
+        });
+
+        if (!user || user.userInterests.length === 0) {
+            return undefined;
+        }
+
+        const highestRatedInterest = user.userInterests.reduce((max, userInterest) =>
+            userInterest.rating > max.rating ? userInterest : max, user.userInterests[0]);
+
+        return highestRatedInterest.interest.name;
+    }
+
     async paginate(options: PaginationOptions): Promise<PaginationResult<User>> {
         return paginate(this, options);
     }

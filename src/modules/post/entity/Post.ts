@@ -60,7 +60,7 @@ export class Post extends BaseEntity {
   @JoinTable()
   interests: Interest[];
 
-  @OneToMany(() => PostRecommendation, (postRecommendation) => postRecommendation.post)
+  @OneToMany(() => PostRecommendation, postRecommendation => postRecommendation.post)
   postRecommendations: PostRecommendation[];
 
   @OneToMany(() => DailyView, dailyPostView => dailyPostView.post)
