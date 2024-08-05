@@ -10,6 +10,7 @@ import { PostRepository } from "../repository/PostRepository";
 import { User } from "../../user/entity/User";
 import {InterestService} from "../../interest/service/InterestService";
 import {CategoryService} from "../../category/service/CategoryService";
+import {DailyViewRepository} from "../repository/DailyViewRepository";
 
 @Injectable()
 export class PostService {
@@ -19,6 +20,7 @@ export class PostService {
     private readonly categoryService: CategoryService,
     private readonly interestService: InterestService,
     private readonly userService: UserService,
+    private readonly dailyViewRepository: DailyViewRepository
   ) {}
 
   async create(postPostDto: PostPostDto, userId: number): Promise<ResponsePostDto> {
@@ -54,6 +56,9 @@ export class PostService {
 
     post.views++;
     await this.postRepository.save(post);
+
+    await this.dailyViewRepository.incrementViewCount(post.id);
+
     return mapToDto(post, ResponsePostDto);
   }
 
@@ -92,18 +97,10 @@ export class PostService {
     return mapToDto(updatedPost,ResponsePostDto);
   }
 
-  updateScore(postId: number) {
-    this.postRepository.calculateAverageRating(postId);
-  }
-
   async remove(id: number): Promise<void> {
     const post = await this.postRepository.findById(id);
     await this.postRepository.removeInterestsFromPost(post);
     await this.handleErrors(() => this.postRepository.delete(post.id), 'Failed to delete post');
-  }
-
-  async updateAverageRating(postId: number, averageRating: { averageRating: number }): Promise<void> {
-    await this.postRepository.update(postId, averageRating);
   }
 
   private ensureExists(post: Post, id: number): void {
