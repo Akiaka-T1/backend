@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { Post } from '../../post/entity/Post';
 import { Recommendation } from './Recommendation';
+import {Post} from "../../post/entity/Post";
 
 @Entity('post_recommendation')
 export class PostRecommendation {

@@ -89,5 +89,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
   }
+  async validateUserByTokenWithInterests(token: string): Promise<string | null> {
+    try {
+      const decoded = this.jwtService.verify(token, { secret: process.env.JWT_SECRET_KEY });
+      return await this.userService.findWithMostInterest(decoded.sub);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 
 }

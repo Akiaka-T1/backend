@@ -37,6 +37,12 @@ export class UserService {
         return user;
     }
 
+    async findWithMostInterest(id: number): Promise<string> {
+        const name = await this.userRepository.findByIdWithMostInterested(id);
+        if(!name) throw new NotFoundException('Most Interested interest not found')
+        return name;
+    }
+
     async findStats(email: string): Promise<ResponseUserWithInterestsAndCategoriesDto> {
         const user = await this.userRepository.findByEmailWithInterestsAndCategories(email);
         this.ensureExists(user, 0);

@@ -1,4 +1,4 @@
-import {Controller, Get, Query, Request, UseGuards} from "@nestjs/common";
+import {Controller, Get, Query, Req, Request, UseGuards} from "@nestjs/common";
 import {RecommendationService} from "../service/RecommendationService";
 import {PaginationDto} from "../../../utils/pagination/paginationDto";
 import {PaginationResult} from "../../../utils/pagination/pagination";
@@ -14,29 +14,29 @@ export class RecommendationController {
     ) {}
 
     @Get('mbti')
-    async getRecommendationsByMbti(@Request() request: any, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+    async getRecommendationsByMbti(@Req() request: Request, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
         const token = this.authService.getTokenFromRequest(request);
         let user: User | null = null;
         if (token) user = await this.authService.validateUserByToken(token);
 
-        return this.recommendationService.getRecommendationsByType('mbti', user.mbti, paginationDto);
+        return this.recommendationService.getPostsByUser( user.mbti, paginationDto);
     }
 
-    @Get('ageGroup')
-    async getRecommendationsByAgeGroup(@Request() request: any, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+    @Get('age_group')
+    async getRecommendationsByAgeGroup(@Req() request: Request, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
         const token = this.authService.getTokenFromRequest(request);
         let user: User | null = null;
         if (token) user = await this.authService.validateUserByToken(token);
 
-        return this.recommendationService.getRecommendationsByType('ageGroup', user.ageGroup, paginationDto);
+        return this.recommendationService.getPostsByUser( user.ageGroup, paginationDto);
     }
 
     @Get('interest')
-    async getRecommendationsByInterests(@Request() request: any, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+    async getRecommendationsByInterests(@Req() request: Request, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
         const token = this.authService.getTokenFromRequest(request);
-        let user: User | null = null;
-        if (token) user = await this.authService.validateUserByToken(token);
+        let name: string | null = null;
+        if (token) name = await this.authService.validateUserByTokenWithInterests(token);
 
-        return this.recommendationService.getRecommendationsByInterests('interest', user, paginationDto);
+        return this.recommendationService.getPostsByUser( name, paginationDto);
     }
 }
