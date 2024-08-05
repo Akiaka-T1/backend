@@ -39,4 +39,12 @@ export class RecommendationController {
 
         return this.recommendationService.getPostsByUser( name, paginationDto);
     }
+
+    @Get('daily_view')
+    async getTopViewedPosts(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        return this.recommendationService.getTopViewedPosts(today, paginationDto);
+    }
 }

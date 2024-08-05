@@ -9,6 +9,7 @@ import {mapToDto} from "../../../utils/mapper/Mapper";
 import {User} from "../../user/entity/User";
 import {Post} from "../../post/entity/Post";
 import {PostRepository} from "../../post/repository/PostRepository";
+import {DailyViewRepository} from "../../post/repository/DailyViewRepository";
 
 @Injectable()
 export class RecommendationService{
@@ -16,7 +17,9 @@ export class RecommendationService{
         @InjectRepository(RecommendationRepository)
         private readonly recommendationRepository: RecommendationRepository,
         private readonly postRecommendationRepository: PostRecommendationRepository,
-        private readonly postRepository: PostRepository
+        @InjectRepository(DailyViewRepository)
+        private readonly dailyViewRepository: DailyViewRepository,
+
     ){}
 
     async getPostsByUser(name: string, paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
@@ -61,6 +64,23 @@ export class RecommendationService{
 
         await this.postRecommendationRepository.save(postRecommendationsToSave);
         post.postRecommendations = postRecommendationsToSave;
+    }
+
+    async getTopViewedPosts(date: Date, paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+        const paginationOptions = {
+            page: paginationDto.page || 1,
+            limit: paginationDto.limit || 5,
+            field: paginationDto.field || 'views',
+            order: paginationDto.order || 'DESC',
+        };
+
+        const dailyPostViews = await this.dailyViewRepository.findTopViewedPosts(date, paginationOptions);
+        const posts = dailyPostViews.data.map(dpv => dpv.post);
+
+        return {
+            ...dailyPostViews,
+            data: posts.map(post => mapToDto(post, ShortPostDto)),
+        };
     }
 
     public async handleErrors<T>(operation: () => Promise<T>, errorMessage: string): Promise<T> {
