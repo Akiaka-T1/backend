@@ -13,6 +13,7 @@ import { Comment } from '../../comment/entity/Comment';
 import {Category} from "../../category/entity/Category";
 import {Interest} from "../../interest/entity/Interest";
 import { PostRecommendation } from 'src/modules/recommendation/entity/PostRecommendation';
+import {DailyView} from "./Daily";
 
 @Entity('post')
 export class Post extends BaseEntity {
@@ -61,4 +62,7 @@ export class Post extends BaseEntity {
 
   @OneToMany(() => PostRecommendation, postRecommendation => postRecommendation.post)
   postRecommendations: PostRecommendation[];
+
+  @OneToMany(() => DailyView, dailyPostView => dailyPostView.post)
+  dailyViews: DailyView[];
 }
