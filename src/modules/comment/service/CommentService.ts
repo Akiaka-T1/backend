@@ -12,6 +12,8 @@ import {CategoryService} from "../../category/service/CategoryService";
 import {InterestService} from "../../interest/service/InterestService";
 import {PostService} from "../../post/service/PostService";
 import {UserService} from "../../user/service/UserService";
+import { PaginationDto } from "../../../utils/pagination/paginationDto";
+import { PaginationResult } from "../../../utils/pagination/pagination";
 
 
 @Injectable()
@@ -66,9 +68,21 @@ export class CommentService {
         return comments.map(comment =>  mapToDto(comment,ResponseCommentDto));
     }
 
-    async findByUserId(userId: number): Promise<ResponseCommentDto[]> {
-        const comments = await this.commentRepository.findByUserId(userId);
-        return comments.map(comment =>  mapToDto(comment,ResponseCommentDto));
+    async findByUserId(userId: number, paginationDto: PaginationDto): Promise<PaginationResult<ResponseCommentDto>> {
+        const { page, limit, field, order } = paginationDto;
+        const paginationOptions = { page, limit, field, order };
+
+        const paginatedComments = await this.commentRepository.findByUserId(userId, paginationOptions);
+
+        const responseData = paginatedComments.data.map(comment => mapToDto(comment, ResponseCommentDto));
+
+        return {
+            ...paginatedComments,
+            data: responseData,
+            total: paginatedComments.total,
+            limit: paginatedComments.limit,
+            page: paginatedComments.page
+        };
     }
 
     async update(id: number, updateCommentDto: UpdateCommentDto): Promise<ResponseCommentDto> {

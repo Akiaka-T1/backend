@@ -33,7 +33,7 @@ export class UpdateCommentDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @Type(() => Number)
+  @Type(() => String)
   comment?: string;
 }
 

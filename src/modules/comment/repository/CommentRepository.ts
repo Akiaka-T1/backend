@@ -1,6 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import {DataSource, FindManyOptions, FindOneOptions, FindOptionsWhere, Repository} from "typeorm";
 import {Comment} from "../entity/Comment";
+import {
+  PaginationOptions,
+  PaginationResult,
+  paginate,
+  paginateWithQueryBuilder
+} from "../../../utils/pagination/pagination";
 
 
 @Injectable()
@@ -18,15 +24,15 @@ export class CommentRepository extends Repository<Comment> {
             .getMany();
     }
 
+  async findByUserId(userId: number, paginationOptions: PaginationOptions): Promise<PaginationResult<Comment>> {
+    const queryBuilder = this.createQueryBuilder('comment')
+      .innerJoin('comment.user', 'user')
+      .innerJoin('comment.post', 'post')
+      .where('user.id = :userId', { userId })
+      .select(['comment.id', 'comment.comment', 'comment.rating', 'user.id', 'user.nickname', 'post.id', 'post.title']);
 
-    async findByUserId(userId: number): Promise<Comment[]> {
-        return this.createQueryBuilder('comment')
-            .innerJoin('comment.user', 'user')
-            .innerJoin('comment.post', 'post')
-            .where('user.id = :userId', { userId })
-            .select(['comment.id', 'comment.comment', 'comment.rating', 'user.id', 'user.nickname', 'post.id', 'post.title'])
-            .getMany();
-    }
+    return paginateWithQueryBuilder(queryBuilder, paginationOptions);
+  }
 
     async findById(id: number): Promise<Comment | undefined> {
         return this.createQueryBuilder('comment')
@@ -57,7 +63,6 @@ export class CommentRepository extends Repository<Comment> {
             .getOne();
     }
 
-
     async findByUserAndPost(userId: number, postId: number): Promise<Comment | undefined> {
         return this.createQueryBuilder('comment')
             .leftJoinAndSelect('comment.user', 'user')
@@ -87,4 +92,8 @@ export class CommentRepository extends Repository<Comment> {
             .setParameter('postId', postId)
             .execute();
     }
+
+  async paginate(options: PaginationOptions, findOptions?: FindManyOptions<Comment>): Promise<PaginationResult<Comment>> {
+    return paginate(this, options, findOptions);
+  }
 }
