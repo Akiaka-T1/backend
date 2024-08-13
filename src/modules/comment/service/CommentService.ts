@@ -3,18 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Comment } from '../entity/Comment';
 import { PostCommentDto, UpdateCommentDto, ResponseCommentDto } from '../dto/CommentDto';
 import { CommentRepository } from "../repository/CommentRepository";
-import { UserRepository } from "../../user/repository/UserRepository";
-import { PostRepository } from "../../post/repository/PostRepository";
 import { mapToDto } from "../../../utils/mapper/Mapper";
 import { User } from "../../user/entity/User";
 import { Post } from "../../post/entity/Post";
-import {CategoryService} from "../../category/service/CategoryService";
 import {InterestService} from "../../interest/service/InterestService";
 import {PostService} from "../../post/service/PostService";
 import {UserService} from "../../user/service/UserService";
 import { PaginationDto } from "../../../utils/pagination/paginationDto";
 import { PaginationResult } from "../../../utils/pagination/pagination";
-
+import { emotionCategories} from "../../../constants/defaultCommentRelatedness";
+import * as emotions from "../../../constants/defaultCommentRelatedness"
 
 @Injectable()
 export class CommentService {
@@ -34,18 +32,20 @@ export class CommentService {
         CommentService.ensureExists(user, post);
         await this.ensureUnique(user.id, post.id);
 
-        const newComment = this.commentRepository.create({
+        let newComment = this.commentRepository.create({
             rating,
             comment,
             user,
             post,
         });
 
+        newComment = await this.analyze(newComment, post.category.id)
+
         await this.commentRepository.save(newComment);
 
         await Promise.allSettled([
             this.updatePostAverageRating(postId),
-            this.updateUserInterest(user.id, post, rating)
+            this.updateUserInterest(user.id, post, rating),
         ]);
 
         return mapToDto(newComment,ResponseCommentDto);
@@ -127,6 +127,56 @@ export class CommentService {
 
     async updatePostAverageRating(postId: number): Promise<void> {
         await this.commentRepository.updatePostAverageRating(postId);
+    }
+
+    private async analyze(comment: Comment, categoryId: number): Promise<Comment> {
+        const relatedWords = emotionCategories[categoryId];
+
+        if (!relatedWords) {
+            console.error('Invalid category ID');
+            return;
+        }
+
+        const commentWords = comment.comment.split(/[\s.,!?"'()]+/);
+        const emotionScores = {
+            joy: 0,
+            anger: 0,
+            irritation: 0,
+            shyness: 0,
+            sadness: 0
+        };
+
+        commentWords.forEach(word => {
+            relatedWords.forEach((emotionObject, index) => {
+                if (emotionObject[word]) {
+                    switch (index) {
+                        case 0:
+                            emotionScores.joy += emotionObject[word];
+                            break;
+                        case 1:
+                            emotionScores.anger += emotionObject[word];
+                            break;
+                        case 2:
+                            emotionScores.irritation += emotionObject[word];
+                            break;
+                        case 3:
+                            emotionScores.shyness += emotionObject[word];
+                            break;
+                        case 4:
+                            emotionScores.sadness += emotionObject[word];
+                            break;
+                    }
+                }
+            });
+        });
+
+        comment.joyScore = emotionScores.joy;
+        comment.angerScore = emotionScores.anger;
+        comment.irritationScore = emotionScores.irritation;
+        comment.shynessScore = emotionScores.shyness;
+        comment.sadnessScore = emotionScores.sadness;
+
+        return comment;
     }
 
 }

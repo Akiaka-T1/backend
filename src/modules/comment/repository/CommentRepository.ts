@@ -24,42 +24,24 @@ export class CommentRepository extends Repository<Comment> {
             .getMany();
     }
 
-  async findByUserId(userId: number, paginationOptions: PaginationOptions): Promise<PaginationResult<Comment>> {
-    const queryBuilder = this.createQueryBuilder('comment')
-      .innerJoin('comment.user', 'user')
-      .innerJoin('comment.post', 'post')
-      .where('user.id = :userId', { userId })
-      .select(['comment.id', 'comment.comment', 'comment.rating', 'user.id', 'user.nickname', 'post.id', 'post.title']);
+    async findByUserId(userId: number, paginationOptions: PaginationOptions): Promise<PaginationResult<Comment>> {
+        const queryBuilder = this.createQueryBuilder('comment')
+            .innerJoinAndSelect('comment.user', 'user')
+            .innerJoinAndSelect('comment.post', 'post')
+            .where('user.id = :userId', { userId });
 
-    return paginateWithQueryBuilder(queryBuilder, paginationOptions);
-  }
+        return paginateWithQueryBuilder(queryBuilder, paginationOptions);
+    }
 
     async findById(id: number): Promise<Comment | undefined> {
         return this.createQueryBuilder('comment')
-            .innerJoin('comment.user', 'user')
-            .innerJoin('comment.post', 'post')
+            .innerJoinAndSelect('comment.user', 'user')
+            .innerJoinAndSelect('comment.post', 'post')
             .leftJoinAndSelect('post.interests', 'interests')
             .leftJoinAndSelect('post.category', 'category')
             .leftJoinAndSelect('user.userInterests', 'user_interests')
             .leftJoinAndSelect('user.userCategories', 'user_categories')
             .where('comment.id = :id', { id })
-            .select([
-                'comment.id',
-                'comment.comment',
-                'comment.rating',
-                'user.id',
-                'user.nickname',
-                'post.id',
-                'post.title',
-                'user_interests.id',
-                'user_interests.rating',
-                'user_categories.id',
-                'user_categories.views',
-                'interests.id',
-                'interests.name',
-                'category.id',
-                'category.name',
-            ])
             .getOne();
     }
 

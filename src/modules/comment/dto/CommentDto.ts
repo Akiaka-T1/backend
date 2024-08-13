@@ -1,5 +1,5 @@
 import { IsInt, IsString, IsNotEmpty, IsOptional, Min, Max } from "class-validator";
-import { Type } from "class-transformer";
+import { Type} from "class-transformer";
 import { Field } from "../../../utils/mapper/FieldNameExtractor";
 import { AuthorUserDto } from "../../user/dto/UserDto";
 import {  ShortPostDto } from "../../post/dto/PostDto";
@@ -48,4 +48,18 @@ export class ResponseCommentDto {
   rating: number;
   @Field
   comment: string;
+  @Field
+  joyScore: number;
+  @Field
+  angerScore: number;
+  @Field
+  irritationScore: number;
+  @Field
+  shynessScore: number;
+  @Field
+  sadnessScore: number;
+  @Field
+  updatedAt: string;
+  @Field
+  createdAt: string;
 }
