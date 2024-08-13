@@ -12,6 +12,7 @@ import { Post } from '../../post/entity/Post';
 import { Comment } from '../../comment/entity/Comment';
 import {UserInterest} from "../../interest/entity/UserInterest";
 import {UserCategory} from "../../category/entity/UserCategory";
+import { Alarm } from '../../alarm/entity/Alarm';
 
 @Entity('user')
 export class User extends BaseEntity {
@@ -73,4 +74,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => UserCategory, userCategory => userCategory.user)
   userCategories: UserCategory[];
+
+  @OneToMany(() => Alarm, (alarm) => alarm.user, { cascade: ['remove'] }) 
+  alarms: Alarm[];
 }
