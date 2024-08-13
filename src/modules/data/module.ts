@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "../user/entity/User";
+import { Alarm } from "../alarm/entity/Alarm";
 import { UserService } from "../user/service/UserService";
 import {InitAdminService} from "./admin/InitAdminService";
 import {UserRepository} from "../user/repository/UserRepository";
@@ -29,8 +30,10 @@ import { PostRecommendationRepository } from "../recommendation/repository/PostR
 import {InitDataService} from "./initData/InitDataService";
 import {DailyViewRepository} from "../post/repository/DailyViewRepository";
 import {DailyView} from "../post/entity/Daily";
+import { AlarmService } from "../alarm/service/AlarmService";
+import { AlarmRepository } from "../alarm/repository/AlarmRepository";
 @Module({
-  imports: [TypeOrmModule.forFeature([User,Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation])],
+  imports: [TypeOrmModule.forFeature([User,Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation,Alarm])],
   providers: [
     UserService, UserRepository, InitAdminService , AuthService,
       PostService, PostRepository, DailyViewRepository,
@@ -38,6 +41,7 @@ import {DailyView} from "../post/entity/Daily";
       CategoryService, CategoryRepository, UserCategoryRepository,
       InterestService, InterestRepository,UserInterestRepository,
       RecommendationService, RecommendationRepository, PostRecommendationRepository,
+      AlarmService, AlarmRepository,
       InitDataService
     ],
   exports: [
@@ -47,6 +51,7 @@ import {DailyView} from "../post/entity/Daily";
     CategoryService, CategoryRepository,UserCategoryRepository,
     InterestService, InterestRepository,UserInterestRepository,
     RecommendationService, RecommendationRepository, PostRecommendationRepository,
+    AlarmService, AlarmRepository,
     InitDataService
   ],
 })

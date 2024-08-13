@@ -9,8 +9,11 @@ export class CreateAlarmDto {
     @IsString()
     message: string;
 
-    @IsEnum(['recommendation', 'comment'])
-    type: 'recommendation' | 'comment';
+    @IsString()  
+    type: string;
+
+    @IsString()
+    url: string;  
 }
 
 // 알림 상태 업데이트 DTO
@@ -31,7 +34,10 @@ export class ResponseAlarmDto {
     message: string;
 
     @Field
-    type: 'recommendation' | 'comment';
+    type: string;
+
+    @Field
+    url: string; 
 
     @Field
     is_read: boolean;
