@@ -22,7 +22,7 @@ export class Alarm {
   type: string;
 
   @Column({ type: 'varchar', length: 255 })
-  url: string;  // 알람클릭시 이동할 url
+  url: string;  // 알람클릭시 이동할 url_path
 
   @Column({ default: false })
   is_read: boolean;

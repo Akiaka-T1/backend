@@ -4,10 +4,19 @@ import { CreateAlarmDto, ResponseAlarmDto, UpdateAlarmStatusDto } from "../dto/A
 import { Observable } from "rxjs";
 import { MessageEvent } from "@nestjs/common";
 
-@Controller("alarms")
+@Controller('api/alarm')
 export class AlarmController {
     constructor(private readonly alarmService: AlarmService) {}
-
+    //실시간 알람 테스트
+    @Post('trigger')
+    triggerAlarm(
+        @Body('userId') userId: number,
+        @Body('title') title: string,
+        @Body('message') message: string,
+    ): string {
+        this.alarmService.triggerAlarm(userId, title, message);
+        return 'Alarm triggered successfully';
+    }
     // 알림 생성 API
     @Post()
     async createAlarm(@Body() createAlarmDto: CreateAlarmDto): Promise<ResponseAlarmDto> {

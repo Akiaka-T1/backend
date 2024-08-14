@@ -50,16 +50,27 @@ export class AlarmService {
 
     // SSE를 통해 알림 전송
     sendClientAlarm(userId: number): Observable<MessageEvent> {
-        return this.observer.pipe(
-            filter((alarm) => alarm.id === userId),
-            map(() => ({
+        return this.alarms$.pipe(
+            filter(alarm => alarm.userId === userId),
+            map(alarm => ({
                 data: {
-                    message: "새로운 알림이 도착했습니다.",
+                    id: alarm.id,
+                    title: alarm.title,
+                    description: alarm.message,
                 },
             })),
         );
     }
-
+    // 특정 사용자에게 알림을 트리거
+    triggerAlarm(userId: number, title: string, message: string) {
+        const newAlarm = {
+            id: Date.now(), // 임의의 알림 ID 생성
+            userId,
+            title,
+            message,
+        };
+        this.alarms$.next(newAlarm);
+    }
     // 특정 사용자의 알림 목록을 가져오는 함수 
     async getUserAlarms(userId: number): Promise<Alarm[]> {
         return await this.alarmRepository.find({
