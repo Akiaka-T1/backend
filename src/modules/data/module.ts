@@ -29,10 +29,12 @@ import { PostRecommendationRepository } from "../recommendation/repository/PostR
 import {InitDataService} from "./initData/InitDataService";
 import {DailyViewRepository} from "../post/repository/DailyViewRepository";
 import {DailyView} from "../post/entity/Daily";
+import { OAuthIdentifier } from "../user/entity/OAuthIdentifer";
+import { OAuthIdentifierRepository } from "../user/repository/OAuthIdentifierRepository";
 @Module({
-  imports: [TypeOrmModule.forFeature([User,Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation])],
+  imports: [TypeOrmModule.forFeature([User,OAuthIdentifier, Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation])],
   providers: [
-    UserService, UserRepository, InitAdminService , AuthService,
+    UserService, UserRepository, OAuthIdentifierRepository , InitAdminService , AuthService,
       PostService, PostRepository, DailyViewRepository,
       CommentService, CommentRepository,
       CategoryService, CategoryRepository, UserCategoryRepository,
@@ -41,7 +43,7 @@ import {DailyView} from "../post/entity/Daily";
       InitDataService
     ],
   exports: [
-    UserService,UserRepository,AuthService,
+    UserService,UserRepository, OAuthIdentifierRepository, AuthService,
     PostService,PostRepository, DailyViewRepository,
     CommentService,CommentRepository,
     CategoryService, CategoryRepository,UserCategoryRepository,

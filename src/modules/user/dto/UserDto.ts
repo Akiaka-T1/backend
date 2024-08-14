@@ -57,12 +57,12 @@ export class UpdateUserDto {
     nickname?: string;
 
     @IsOptional()
-    @IsString()
+    @IsInt()
     characterId?: number;
 
     @IsOptional()
-    @IsString()
-    voiceTypeId?: number;
+    @IsInt()
+    categoryId?: number;
 
 }
 

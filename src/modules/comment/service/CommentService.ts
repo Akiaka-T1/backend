@@ -39,7 +39,7 @@ export class CommentService {
             post,
         });
 
-        newComment = await this.analyze(newComment, post.category.id)
+        newComment = await this.analyzeEmotions(newComment, post.category.id)
 
         await this.commentRepository.save(newComment);
 
@@ -86,10 +86,11 @@ export class CommentService {
     }
 
     async update(id: number, updateCommentDto: UpdateCommentDto): Promise<ResponseCommentDto> {
-        const comment = await this.commentRepository.findById(id);
+        let comment = await this.commentRepository.findById(id);
         this.checkCommentExists(comment, id);
 
         Object.assign(comment, updateCommentDto);
+        comment = await this.analyzeEmotions(comment, comment.post.category.id)
         await this.commentRepository.save(comment);
         await this.updatePostAverageRating(comment.post.id);
         await this.updateUserInterest(comment.user.id, comment.post, comment.rating);
@@ -129,7 +130,7 @@ export class CommentService {
         await this.commentRepository.updatePostAverageRating(postId);
     }
 
-    private async analyze(comment: Comment, categoryId: number): Promise<Comment> {
+    private async analyzeEmotions (comment: Comment, categoryId: number): Promise<Comment> {
         const relatedWords = emotionCategories[categoryId];
 
         if (!relatedWords) {

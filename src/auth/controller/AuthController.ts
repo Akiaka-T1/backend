@@ -24,4 +24,25 @@ export class AuthController {
     res.setHeader('Authorization', `Bearer ${newAccessToken}`);
     return res.status(200).json({ message: 'Token refreshed' });
   }
+
+  @Post('oauth/kakao')
+  async kakaoLogin(@Body('code') code: string, @Res() res: any) {
+      const accessToken = await this.authService.getKakaoAccessToken(code);
+      const kakaoProfile = await this.authService.getKakaoUserProfile(accessToken);
+      const user = await this.authService.createOrLoginUserFromKakao(kakaoProfile);
+      const result = await this.authService.generateJwtToken(user, res);
+      res.setHeader('Authorization', `${result.access_token}`);
+      return res.status(200).json({ message: 'Login successful' });
+  }
+
+  @Post('oauth/google')
+  async googleLogin(@Body('code') code: string, @Res() res: any) {
+    const accessToken = await this.authService.getGoogleAccessToken(code);
+    const googleProfile = await this.authService.getGoogleUserProfile(accessToken);
+    const user = await this.authService.createOrLoginUserFromGoogle(googleProfile);
+    const result = await this.authService.generateJwtToken(user, res);
+    res.setHeader('Authorization', `${result.access_token}`);
+    return res.status(200).json({ message: 'Login successful' });
+  }
+
 }
