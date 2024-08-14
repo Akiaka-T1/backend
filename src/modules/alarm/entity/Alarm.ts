@@ -16,7 +16,7 @@ export class Alarm {
   user: User;
 
   @Column({ type: 'varchar', length: 255 })
-  message: string;
+  message: string; //추천알림인지 댓글알림인지
 
   @Column({ type: 'varchar', length: 50 })  
   type: string;
