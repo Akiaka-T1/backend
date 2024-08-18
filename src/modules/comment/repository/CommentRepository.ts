@@ -67,11 +67,15 @@ export class CommentRepository extends Repository<Comment> {
     }
 
     async updatePostAverageRating(postId: number) {
-        const result = await this
-            .createQueryBuilder('comment')
+        const result = await this.createQueryBuilder('comment')
             .select('AVG(comment.rating)', 'averageRating')
             .where('comment.post.id = :postId', { postId })
-            .setParameter('postId', postId)
+            .getRawOne();
+
+        await this.createQueryBuilder()
+            .update('post')
+            .set({ averageRating: result.averageRating })
+            .where('id = :postId', { postId })
             .execute();
     }
 

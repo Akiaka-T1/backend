@@ -39,8 +39,8 @@ export class InterestService {
         return mapToDto(interest,ResponseInterestDto);
     }
 
-    async findByIdsForCreatePost(ids: number[]): Promise<Interest[]> {
-        return this.interestRepository.findByIdsForCreatePost(ids)
+    async findByNamesForCreatePost(names: string[]): Promise<Interest[]> {
+        return this.interestRepository.findByNamesForCreatePost(names)
     }
 
     async findAllAndPaginate(paginationDto: PaginationDto): Promise<PaginationResult<ResponseInterestDto>> {

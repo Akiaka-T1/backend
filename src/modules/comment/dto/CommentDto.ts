@@ -2,7 +2,7 @@ import { IsInt, IsString, IsNotEmpty, IsOptional, Min, Max } from "class-validat
 import { Type} from "class-transformer";
 import { Field } from "../../../utils/mapper/FieldNameExtractor";
 import { AuthorUserDto } from "../../user/dto/UserDto";
-import {  ShortPostDto } from "../../post/dto/PostDto";
+import {  ThumbnailPostDto } from "../../post/dto/PostDto";
 
 export class PostCommentDto {
 
@@ -40,26 +40,37 @@ export class UpdateCommentDto {
 export class ResponseCommentDto {
   @Field
   id: number;
+
   @Field
   user: AuthorUserDto;
+
   @Field
-  post: ShortPostDto;
+  post: ThumbnailPostDto;
+
   @Field
   rating: number;
+
   @Field
   comment: string;
+
   @Field
   joyScore: number;
+
   @Field
   angerScore: number;
+
   @Field
   irritationScore: number;
+
   @Field
-  shynessScore: number;
+  fearScore: number;
+
   @Field
   sadnessScore: number;
+
   @Field
   updatedAt: string;
+
   @Field
   createdAt: string;
 }

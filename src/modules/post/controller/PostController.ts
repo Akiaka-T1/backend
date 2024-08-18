@@ -14,7 +14,7 @@ import {
   Request, Req
 } from "@nestjs/common";
 import { PostService } from '../service/PostService';
-import {PostPostDto, ResponsePostDto, ShortPostDto, UpdatePostDto} from '../dto/PostDto';
+import {PostPostDto, ResponsePostDto, ShortContentPostDto, ThumbnailPostDto, UpdatePostDto} from '../dto/PostDto';
 import { PaginationResult } from '../../../utils/pagination/pagination';
 import { PaginationDto } from '../../../utils/pagination/paginationDto';
 import { AuthGuard } from "../../../auth/JwtAuthGuard/JwtAuthGuard";
@@ -33,7 +33,7 @@ export class PostController {
   ) {}
 
   @Get()
-  async findAll(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+  async findAll(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortContentPostDto>> {
     return this.postService.findAll(paginationDto);
   }
 
@@ -45,7 +45,7 @@ export class PostController {
   }
 
   @Get('search')
-  async search(@Query() paginationDto: PaginationDto, @Query('title') title: string): Promise<PaginationResult<ShortPostDto>> {
+  async search(@Query() paginationDto: PaginationDto, @Query('title') title: string): Promise<PaginationResult<ThumbnailPostDto>> {
     return this.postService.searchPostsByTitle(title, paginationDto);
   }
 

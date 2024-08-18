@@ -110,6 +110,11 @@ export class UserService {
         return mapToDto(user,ResponseUserDto);
     }
 
+    async checkNicknameAlreadyExists(nickname: string): Promise<void> {
+        const user = await this.userRepository.findByNickname(nickname);
+        if (user) {throw new BadRequestException('Nickname already exists');}
+    }
+
     async findAll(paginationDto: PaginationDto): Promise<PaginationResult<ResponseUserDto>> {
         const { page, limit, field, order } = paginationDto;
         const options = { page, limit, field, order };
@@ -128,10 +133,12 @@ export class UserService {
 
     async update(id: number, updateUserDto: UpdateUserDto): Promise<ResponseUserDto> {
         const user = await this.findById(id);
+        if(updateUserDto.nickname) await this.checkNicknameAlreadyExists(updateUserDto.nickname);
         Object.assign(user, updateUserDto);
         const updatedUser = await this.checkError(() => this.userRepository.save(user), 'Failed to update user');
         return mapToDto(updatedUser,ResponseUserDto);
     }
+
 
     async remove(id: number): Promise<void> {
         const user = await this.findById(id);

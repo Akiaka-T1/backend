@@ -12,7 +12,7 @@ import {UserService} from "../../user/service/UserService";
 import { PaginationDto } from "../../../utils/pagination/paginationDto";
 import { PaginationResult } from "../../../utils/pagination/pagination";
 import { emotionCategories} from "../../../constants/defaultCommentRelatedness";
-import * as emotions from "../../../constants/defaultCommentRelatedness"
+import {scoreByEmotions} from "../../../utils/scoreEmotions/scoreByEmotions";
 
 @Injectable()
 export class CommentService {
@@ -137,47 +137,29 @@ export class CommentService {
             console.error('Invalid category ID');
             return;
         }
+        const emotionScores = this.scoreEmotions(comment, relatedWords);
 
+        comment.joyScore = emotionScores.joy;
+        comment.angerScore = emotionScores.anger;
+        comment.irritationScore = emotionScores.irritation;
+        comment.fearScore = emotionScores.fear;
+        comment.sadnessScore = emotionScores.sadness;
+
+        return comment;
+    }
+
+    private scoreEmotions(comment: Comment, relatedWords: any[]): { joy: number, anger: number, irritation: number, fear: number, sadness: number } {
         const commentWords = comment.comment.split(/[\s.,!?"'()]+/);
         const emotionScores = {
             joy: 0,
             anger: 0,
             irritation: 0,
-            shyness: 0,
+            fear: 0,
             sadness: 0
         };
 
-        commentWords.forEach(word => {
-            relatedWords.forEach((emotionObject, index) => {
-                if (emotionObject[word]) {
-                    switch (index) {
-                        case 0:
-                            emotionScores.joy += emotionObject[word];
-                            break;
-                        case 1:
-                            emotionScores.anger += emotionObject[word];
-                            break;
-                        case 2:
-                            emotionScores.irritation += emotionObject[word];
-                            break;
-                        case 3:
-                            emotionScores.shyness += emotionObject[word];
-                            break;
-                        case 4:
-                            emotionScores.sadness += emotionObject[word];
-                            break;
-                    }
-                }
-            });
-        });
-
-        comment.joyScore = emotionScores.joy;
-        comment.angerScore = emotionScores.anger;
-        comment.irritationScore = emotionScores.irritation;
-        comment.shynessScore = emotionScores.shyness;
-        comment.sadnessScore = emotionScores.sadness;
-
-        return comment;
+        scoreByEmotions(commentWords, relatedWords, emotionScores);
+        return emotionScores;
     }
 
 }

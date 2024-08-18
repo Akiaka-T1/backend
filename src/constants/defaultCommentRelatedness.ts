@@ -287,7 +287,7 @@ export const movieIrritation = {
     "귀찮아서": 80
 };
 
-export const movieShyness = {
+export const movieFear = {
     "불안": 95,
     "걱정": 94,
     "소심하다": 93,
@@ -752,7 +752,7 @@ export const musicIrritation = {
     "지루해요": 92
 };
 
-export const musicShyness = {
+export const musicFear = {
     "쑥스럽다": 95,
     "부끄럽다": 94,
     "망설이다": 93,
@@ -1232,7 +1232,7 @@ export const bookIrritation = {
     "피곤하다는": 80
 };
 
-export const bookShyness = {
+export const bookFear = {
     "쑥스럽다": 95,
     "부끄럽다": 94,
     "망설이다": 93,
@@ -1427,7 +1427,7 @@ export const bookSadness = {
 };
 
 export const emotionCategories = {
-    1: [movieJoy, movieAnger, movieIrritation, movieShyness, movieSadness], // 영화
-    2: [musicJoy, musicAnger, musicIrritation, musicShyness, musicSadness], // 음악
-    3: [bookJoy, bookAnger, bookIrritation, bookShyness, bookSadness],      // 책
+    1: [movieJoy, movieAnger, movieIrritation, movieFear, movieSadness], // 영화
+    2: [musicJoy, musicAnger, musicIrritation, musicFear, musicSadness], // 음악
+    3: [bookJoy, bookAnger, bookIrritation, bookFear, bookSadness],      // 책
 };

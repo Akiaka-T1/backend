@@ -98,28 +98,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid token');
     }
   }
-  async getKakaoAccessToken(code: string): Promise<string> {
-    const url = 'https://kauth.kakao.com/oauth/token';
-    const params = new URLSearchParams({
-      grant_type: 'authorization_code',
-      client_id: process.env.NEST_KAKAO_CLIENT_ID,
-      client_secret: process.env.NEST_KAKAO_CLIENT_SECRET,
-      redirect_uri: process.env.NEST_KAKAO_REDIRECT_URI,
-      code,
-    });
-
-    try {
-      const response = await axios.post(url, params, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      return response.data.access_token;
-    } catch (error) {
-      console.error('Error getting Kakao access token:', error.response?.data || error.message);
-      throw new UnauthorizedException('Failed to get Kakao access token');
-    }
-  }
 
   async getKakaoUserProfile(accessToken: string): Promise<any> {
     const url = 'https://kapi.kakao.com/v2/user/me';
@@ -149,30 +127,6 @@ export class AuthService {
     } catch (error) {
       console.error('Error creating or logging in user from Kakao profile:', error.message);
       throw new InternalServerErrorException('Failed to create or login user from Kakao profile');
-    }
-  }
-
-
-  async getGoogleAccessToken(code: string): Promise<string> {
-    const url = 'https://oauth2.googleapis.com/token';
-    const params = new URLSearchParams({
-      grant_type: 'authorization_code',
-      client_id: process.env.NEST_GOOGLE_CLIENT_ID,
-      client_secret: process.env.NEST_GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.NEST_GOOGLE_REDIRECT_URI,
-      code,
-    });
-
-    try {
-      const response = await axios.post(url, params, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
-      return response.data.access_token;
-    } catch (error) {
-      console.error('Error getting Google access token:', error.response?.data || error.message);
-      throw new UnauthorizedException('Failed to get Google access token');
     }
   }
 

@@ -45,23 +45,28 @@ export class PostUserDto {
 export class UpdateUserDto {
 
     @IsOptional()
-    @IsInt()
-    ageGroup?: number;
-
-    @IsOptional()
     @IsString()
-    mbti?: string;
+    name?: string;
 
     @IsOptional()
     @IsString()
     nickname?: string;
 
     @IsOptional()
-    @IsInt()
+    @IsString()
+    ageGroup?: string;
+
+    @IsString()
+    gender: string;
+
+    @IsOptional()
+    @IsString()
+    mbti?: string;
+
+    @IsOptional()
     characterId?: number;
 
     @IsOptional()
-    @IsInt()
     categoryId?: number;
 
 }

@@ -16,7 +16,7 @@ import { PostRecommendation } from 'src/modules/recommendation/entity/PostRecomm
 import {DailyView} from "./Daily";
 
 @Entity('post')
-export class Post extends BaseEntity {
+export class Post{
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -25,6 +25,9 @@ export class Post extends BaseEntity {
 
   @Column('text')
   content: string;
+
+  @Column({ length: 255, nullable: true })
+  preview: string;
 
   @Column({ default: 0 })
   averageRating: number;
@@ -57,8 +60,23 @@ export class Post extends BaseEntity {
   category: Category;
 
   @ManyToMany(() => Interest, interest => interest.posts)
-  @JoinTable()
+  @JoinTable({ name: 'post_interest' })
   interests: Interest[];
+
+  @Column({ type: 'integer', default: 0 })
+  joyScore: number;
+
+  @Column({ type: 'integer', default: 0 })
+  angerScore: number;
+
+  @Column({ type: 'integer', default: 0 })
+  irritationScore: number;
+
+  @Column({ type: 'integer', default: 0 })
+  fearScore: number;
+
+  @Column({ type: 'integer', default: 0 })
+  sadnessScore: number;
 
   @OneToMany(() => PostRecommendation, postRecommendation => postRecommendation.post)
   postRecommendations: PostRecommendation[];

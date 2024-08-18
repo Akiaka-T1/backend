@@ -26,18 +26,22 @@ export class AuthController {
   }
 
   @Post('oauth/kakao')
-  async kakaoLogin(@Body('code') code: string, @Res() res: any) {
-      const accessToken = await this.authService.getKakaoAccessToken(code);
-      const kakaoProfile = await this.authService.getKakaoUserProfile(accessToken);
-      const user = await this.authService.createOrLoginUserFromKakao(kakaoProfile);
-      const result = await this.authService.generateJwtToken(user, res);
-      res.setHeader('Authorization', `${result.access_token}`);
-      return res.status(200).json({ message: 'Login successful' });
+  async kakaoLogin(@Req() req: any, @Res() res: any) {
+    const accessToken = req.headers.authorization;
+    if (!accessToken) throw new UnauthorizedException('No Kakao access token found in headers');
+
+    const kakaoProfile = await this.authService.getKakaoUserProfile(accessToken);
+    const user = await this.authService.createOrLoginUserFromKakao(kakaoProfile);
+    const result = await this.authService.generateJwtToken(user, res);
+    res.setHeader('Authorization', `${result.access_token}`);
+    return res.status(200).json({ message: 'Login successful' });
   }
 
   @Post('oauth/google')
-  async googleLogin(@Body('code') code: string, @Res() res: any) {
-    const accessToken = await this.authService.getGoogleAccessToken(code);
+  async googleLogin(@Req() req: any, @Res() res: any) {
+    const accessToken = req.headers.authorization;
+    if (!accessToken) throw new UnauthorizedException('No Google access token found in headers');
+
     const googleProfile = await this.authService.getGoogleUserProfile(accessToken);
     const user = await this.authService.createOrLoginUserFromGoogle(googleProfile);
     const result = await this.authService.generateJwtToken(user, res);

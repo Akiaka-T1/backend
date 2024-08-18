@@ -35,7 +35,7 @@ export class Comment{
   irritationScore: number;
 
   @Column({ type: 'integer', default: 0 })
-  shynessScore: number;
+  fearScore: number;
 
   @Column({ type: 'integer', default: 0 })
   sadnessScore: number;

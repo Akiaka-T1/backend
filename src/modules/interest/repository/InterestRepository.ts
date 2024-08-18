@@ -11,8 +11,8 @@ export class InterestRepository extends Repository<Interest> {
     async findById(id: number): Promise<Interest | undefined> {
         return this.findOne({ where: { id } });
     }
-    async findByIdsForCreatePost(ids: number[]): Promise<Interest[]> {
-        return this.findBy({ id: In(ids) });
+    async findByNamesForCreatePost(names: string[]): Promise<Interest[]> {
+        return this.findBy({ name: In(names) });
     }
     async findAll(): Promise<Interest[]> {
         return this.find();
