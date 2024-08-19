@@ -12,11 +12,8 @@ import { OAuthIdentifierRepository } from "./repository/OAuthIdentifierRepositor
 
 @Module({
     imports: [TypeOrmModule.forFeature([User,OAuthIdentifier]),DataModule],
-    imports: [TypeOrmModule.forFeature([User, UserRepository, AlarmRepository,]),DataModule],
     controllers: [UserController],
-    providers: [UserService,UserRepository,OAuthIdentifierRepository],
+    providers: [UserService,UserRepository,OAuthIdentifierRepository,AlarmService],
     exports: [UserService,UserRepository,OAuthIdentifierRepository],
-    providers: [UserService,UserRepository,AlarmService],
-    exports: [UserService,UserRepository],
 })
 export class UserModule {}
