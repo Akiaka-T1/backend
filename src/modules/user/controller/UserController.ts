@@ -59,11 +59,11 @@ export class UserController {
         return this.userService.findById(id);
     }
 
-    @Patch()
+    @Patch('me')
     @UseGuards(AuthGuard,RolesGuard)
-    @Roles(Role.User)
+    @Roles(Role.User,Role.Admin)
     async updateMe(@Request() request:any, @Body() updateUserDto: UpdateUserDto): Promise<ResponseUserDto> {
-        return this.userService.update(request.user.id, updateUserDto);
+        return this.userService.update(request.user.sub, updateUserDto);
     }
 
     @Patch(':id')

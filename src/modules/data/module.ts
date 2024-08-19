@@ -30,12 +30,15 @@ import { PostRecommendationRepository } from "../recommendation/repository/PostR
 import {InitDataService} from "./initData/InitDataService";
 import {DailyViewRepository} from "../post/repository/DailyViewRepository";
 import {DailyView} from "../post/entity/Daily";
+import { OAuthIdentifier } from "../user/entity/OAuthIdentifer";
+import { OAuthIdentifierRepository } from "../user/repository/OAuthIdentifierRepository";
 import { AlarmService } from "../alarm/service/AlarmService";
 import { AlarmRepository } from "../alarm/repository/AlarmRepository";
 @Module({
+  imports: [TypeOrmModule.forFeature([User,OAuthIdentifier, Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation])],
   imports: [TypeOrmModule.forFeature([User,Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation,Alarm])],
   providers: [
-    UserService, UserRepository, InitAdminService , AuthService,
+    UserService, UserRepository, OAuthIdentifierRepository , InitAdminService , AuthService,
       PostService, PostRepository, DailyViewRepository,
       CommentService, CommentRepository,
       CategoryService, CategoryRepository, UserCategoryRepository,
@@ -45,7 +48,7 @@ import { AlarmRepository } from "../alarm/repository/AlarmRepository";
       InitDataService
     ],
   exports: [
-    UserService,UserRepository,AuthService,
+    UserService,UserRepository, OAuthIdentifierRepository, AuthService,
     PostService,PostRepository, DailyViewRepository,
     CommentService,CommentRepository,
     CategoryService, CategoryRepository,UserCategoryRepository,

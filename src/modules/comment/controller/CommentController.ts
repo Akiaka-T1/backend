@@ -8,7 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   UsePipes,
-  ValidationPipe, UseGuards, Request, Req
+  ValidationPipe, UseGuards, Request, Req, Query
 } from "@nestjs/common";
 import { CommentService } from '../service/CommentService';
 import { PostCommentDto } from '../dto/CommentDto';
@@ -18,8 +18,8 @@ import { AuthGuard } from "../../../auth/JwtAuthGuard/JwtAuthGuard";
 import { RolesGuard } from "../../../auth/authorization/RolesGuard";
 import { Roles } from "../../../auth/authorization/decorator";
 import { Role } from "../../../auth/authorization/Role";
-import {User} from "../../user/entity/User";
-import {AuthService} from "../../../auth/service/AuthService";
+import { PaginationDto } from "../../../utils/pagination/paginationDto";
+import { PaginationResult } from "../../../utils/pagination/pagination";
 
 @Controller('api/comments')
 @UsePipes(new ValidationPipe())
@@ -36,6 +36,19 @@ export class CommentController {
     return this.commentService.create(postCommentDto,request.user);
   }
 
+  @Get('user')
+  async findByUser(@Query() paginationDto: PaginationDto, @Request() request: any): Promise<PaginationResult<ResponseCommentDto>> {
+    return this.commentService.findByUserId(request.user.id, paginationDto);
+  }
+
+  @Get('my')
+  @UseGuards(AuthGuard,RolesGuard)
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @Roles(Role.User,Role.Admin)
+  async findMyComment(@Query() paginationDto: PaginationDto, @Request() request: any): Promise<PaginationResult<ResponseCommentDto>> {
+    return this.commentService.findByUserId(request.user.sub, paginationDto);
+  }
+
   @Get(':id')
   async findById(@Param('id', ParseIntPipe) id: number): Promise<ResponseCommentDto> {
     return this.commentService.findById(id);
@@ -44,11 +57,6 @@ export class CommentController {
   @Get('post/:postId')
   async findByPostId(@Param('postId', ParseIntPipe) postId: number): Promise<ResponseCommentDto[]> {
     return this.commentService.findByPostId(postId);
-  }
-
-  @Get('user')
-  async findByUser(@Request() request: any): Promise<ResponseCommentDto[]> {
-    return this.commentService.findByUserId(request.user.id);
   }
 
   @Patch(':id')

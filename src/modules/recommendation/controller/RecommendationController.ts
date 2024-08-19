@@ -2,7 +2,7 @@ import {Controller, Get, Query, Req, Request, UseGuards} from "@nestjs/common";
 import {RecommendationService} from "../service/RecommendationService";
 import {PaginationDto} from "../../../utils/pagination/paginationDto";
 import {PaginationResult} from "../../../utils/pagination/pagination";
-import {ShortPostDto} from "../../post/dto/PostDto";
+import {ThumbnailPostDto} from "../../post/dto/PostDto";
 import {User} from "../../user/entity/User";
 import {AuthService} from "../../../auth/service/AuthService";
 
@@ -14,7 +14,7 @@ export class RecommendationController {
     ) {}
 
     @Get('mbti')
-    async getRecommendationsByMbti(@Req() request: Request, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+    async getRecommendationsByMbti(@Req() request: Request, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ThumbnailPostDto>> {
         const token = this.authService.getTokenFromRequest(request);
         let user: User | null = null;
         if (token) user = await this.authService.validateUserByToken(token);
@@ -23,7 +23,7 @@ export class RecommendationController {
     }
 
     @Get('age_group')
-    async getRecommendationsByAgeGroup(@Req() request: Request, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+    async getRecommendationsByAgeGroup(@Req() request: Request, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ThumbnailPostDto>> {
         const token = this.authService.getTokenFromRequest(request);
         let user: User | null = null;
         if (token) user = await this.authService.validateUserByToken(token);
@@ -32,7 +32,7 @@ export class RecommendationController {
     }
 
     @Get('interest')
-    async getRecommendationsByInterests(@Req() request: Request, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+    async getRecommendationsByInterests(@Req() request: Request, @Query() paginationDto: PaginationDto): Promise<PaginationResult<ThumbnailPostDto>> {
         const token = this.authService.getTokenFromRequest(request);
         let name: string | null = null;
         if (token) name = await this.authService.validateUserByTokenWithInterests(token);
@@ -41,7 +41,7 @@ export class RecommendationController {
     }
 
     @Get('daily_view')
-    async getTopViewedPosts(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+    async getTopViewedPosts(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ThumbnailPostDto>> {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 

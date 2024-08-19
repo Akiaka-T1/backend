@@ -17,6 +17,9 @@ export class UserRepository extends Repository<User> {
     async findByEmail(email: string): Promise<User | undefined> {
         return this.findOne({ where: { email } });
     }
+    async findByNickname(nickname: string): Promise<User | undefined> {
+        return this.findOne({ where: { nickname } });
+    }
 
     async findByEmailWithInterestsAndCategories(email: string): Promise<User | undefined> {
         return this.createQueryBuilder('user')

@@ -8,6 +8,8 @@ import {PaginationDto} from "../../../utils/pagination/paginationDto";
 import {PaginationResult} from "../../../utils/pagination/pagination";
 import {InterestService} from "../../interest/service/InterestService";
 import {CategoryService} from "../../category/service/CategoryService";
+import { OAuthIdentifierRepository } from "../repository/OAuthIdentifierRepository";
+import { OAuthIdentifier } from "../entity/OAuthIdentifer";
 
 @Injectable()
 export class UserService {
@@ -15,7 +17,8 @@ export class UserService {
       @InjectRepository(UserRepository)
       private readonly userRepository: UserRepository,
       private readonly interestService: InterestService,
-      private readonly categoryService: CategoryService
+      private readonly categoryService: CategoryService,
+      private readonly oauthIdentifierRepository: OAuthIdentifierRepository,
     ) {}
 
     async create(postUserDto: PostUserDto): Promise<ResponseUserDto> {
@@ -23,6 +26,42 @@ export class UserService {
         const user = this.userRepository.create(postUserDto);
         const savedUser = await this.checkError(() => this.userRepository.save(user), 'Failed to create user');
         return mapToDto(savedUser,ResponseUserDto);
+    }
+
+    async createUserFromKakaoProfile(provider: string, profile: any): Promise<User> {
+        const user = new User();
+        user.email = profile.kakao_account.email;
+        user.nickname = profile.kakao_account?.profile?.nickname;
+
+        const savedUser = this.userRepository.create(user);
+
+        const oauthIdentifier = new OAuthIdentifier();
+        oauthIdentifier.provider = provider;
+        oauthIdentifier.providerAccountId = profile.id;
+        oauthIdentifier.user = savedUser;
+
+        await this.oauthIdentifierRepository.save(oauthIdentifier);
+
+        return savedUser;
+    }
+
+    async createUserFromGoogleProfile(provider: string, profile: any): Promise<User> {
+        const user = new User();
+
+        user.email = profile.email;
+        user.nickname = profile.given_name;
+        user.name = profile.name;
+
+        const savedUser = this.userRepository.create(user);
+
+        const oauthIdentifier = new OAuthIdentifier();
+        oauthIdentifier.provider = provider;
+        oauthIdentifier.providerAccountId = profile.id;
+        oauthIdentifier.user = savedUser;
+
+        await this.oauthIdentifierRepository.save(oauthIdentifier);
+
+        return savedUser;
     }
 
     async findById(id: number): Promise<ResponseUserDto> {
@@ -71,6 +110,11 @@ export class UserService {
         return mapToDto(user,ResponseUserDto);
     }
 
+    async checkNicknameAlreadyExists(nickname: string): Promise<void> {
+        const user = await this.userRepository.findByNickname(nickname);
+        if (user) {throw new BadRequestException('Nickname already exists');}
+    }
+
     async findAll(paginationDto: PaginationDto): Promise<PaginationResult<ResponseUserDto>> {
         const { page, limit, field, order } = paginationDto;
         const options = { page, limit, field, order };
@@ -82,12 +126,19 @@ export class UserService {
         };
     }
 
+    async findByOAuthIdentifier(provider: string, providerAccountId: string): Promise<User | undefined> {
+        const oauthIdentifier = await this.oauthIdentifierRepository.findByProviderAndProviderAccountId(provider, providerAccountId);
+        return oauthIdentifier ? oauthIdentifier.user : undefined;
+    }
+
     async update(id: number, updateUserDto: UpdateUserDto): Promise<ResponseUserDto> {
         const user = await this.findById(id);
+        if(updateUserDto.nickname) await this.checkNicknameAlreadyExists(updateUserDto.nickname);
         Object.assign(user, updateUserDto);
         const updatedUser = await this.checkError(() => this.userRepository.save(user), 'Failed to update user');
         return mapToDto(updatedUser,ResponseUserDto);
     }
+
 
     async remove(id: number): Promise<void> {
         const user = await this.findById(id);
