@@ -27,11 +27,8 @@ export class PostPostDto {
   @Transform(({ value }) => parseInt(value))
   categoryId: number;
 
-  @IsArray()
-  @ArrayNotEmpty()
-  @Transform(({ value }) => value.map((id: string) => parseInt(id)))
-  interestIds: number[];
 }
+
 export class UpdatePostDto {
   @IsOptional()
   @IsString()
@@ -47,7 +44,6 @@ export class UpdatePostDto {
 
 }
 
-
 export class ResponsePostDto {
   @Field
   id: number;
@@ -62,10 +58,10 @@ export class ResponsePostDto {
   user: AuthorUserDto;
 
   @Field
-  createdAt: Date;
+  createdAt: string;
 
   @Field
-  updatedAt: Date;
+  updatedAt: string;
 
   @Field
   score: number;
@@ -94,9 +90,24 @@ export class ResponsePostDto {
   @Field
   interests: ResponseInterestDto[];
 
+  @Field
+  joyScore: number;
+
+  @Field
+  angerScore: number;
+
+  @Field
+  irritationScore: number;
+
+  @Field
+  fearScore: number;
+
+  @Field
+  sadnessScore: number;
+
 }
 
-export class ShortPostDto {
+export class ThumbnailPostDto {
   @Field
   id: number;
 
@@ -111,4 +122,55 @@ export class ShortPostDto {
 
   @Field
   score: number;
+}
+
+export class ShortContentPostDto {
+  @Field
+  id: number;
+
+  @Field
+  title: string;
+
+  @Field
+  preview: string;
+
+  @Field
+  user: AuthorUserDto;
+
+  @Field
+  thumbnailURL: string;
+
+  @Field
+  views: number;
+
+  @Field
+  averageRating: number;
+
+  @Field
+  comments: ResponseCommentDto[];
+
+  @Field
+  category: ResponseCategoryDto;
+
+  @Field
+  joyScore: number;
+
+  @Field
+  angerScore: number;
+
+  @Field
+  irritationScore: number;
+
+  @Field
+  fearScore: number;
+
+  @Field
+  sadnessScore: number;
+
+  @Field
+  updatedAt: string;
+
+  @Field
+  createdAt: string;
+
 }

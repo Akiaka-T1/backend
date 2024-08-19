@@ -4,7 +4,7 @@ import {RecommendationRepository} from "../repository/RecommendationRepository";
 import {PostRecommendationRepository} from "../repository/PostRecommendationRepository";
 import {PaginationDto} from "../../../utils/pagination/paginationDto";
 import {PaginationResult} from "../../../utils/pagination/pagination";
-import {ShortPostDto} from "../../post/dto/PostDto";
+import {ThumbnailPostDto} from "../../post/dto/PostDto";
 import {mapToDto} from "../../../utils/mapper/Mapper";
 import {User} from "../../user/entity/User";
 import {Post} from "../../post/entity/Post";
@@ -22,7 +22,7 @@ export class RecommendationService{
 
     ){}
 
-    async getPostsByUser(name: string, paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+    async getPostsByUser(name: string, paginationDto: PaginationDto): Promise<PaginationResult<ThumbnailPostDto>> {
         const paginationOptions = {
             page: paginationDto.page || 1,
             limit: paginationDto.limit || 5,
@@ -33,7 +33,7 @@ export class RecommendationService{
 
         return {
             ...recommendations,
-            data: posts.map(post => mapToDto(post, ShortPostDto)),
+            data: posts.map(post => mapToDto(post, ThumbnailPostDto)),
         };
     }
 
@@ -66,7 +66,7 @@ export class RecommendationService{
         post.postRecommendations = postRecommendationsToSave;
     }
 
-    async getTopViewedPosts(date: Date, paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+    async getTopViewedPosts(date: Date, paginationDto: PaginationDto): Promise<PaginationResult<ThumbnailPostDto>> {
         const paginationOptions = {
             page: paginationDto.page || 1,
             limit: paginationDto.limit || 5,
@@ -79,7 +79,7 @@ export class RecommendationService{
 
         return {
             ...dailyPostViews,
-            data: posts.map(post => mapToDto(post, ShortPostDto)),
+            data: posts.map(post => mapToDto(post, ThumbnailPostDto)),
         };
     }
 

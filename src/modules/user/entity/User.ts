@@ -18,16 +18,16 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 30, nullable: false })
+  @Column({ type: 'varchar', length: 30, nullable: true })
   name: string;
 
-  @Column({ type: 'varchar', length: 30, nullable: false, unique: true })
+  @Column({ type: 'varchar', length: 30, nullable: false })
   nickname: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', default: '', nullable: false })
+  @Column({ type: 'varchar', default: '', nullable: true })
   password: string;
 
   @Column({ type: 'varchar', default: '' })
