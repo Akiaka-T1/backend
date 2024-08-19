@@ -47,7 +47,7 @@ const config = loadYamlConfig(configFilePath);
     PostModule,
     CommentModule,
     CategoryModule,
-    InterestModule, RecommendationModule, AlarmModule
+    InterestModule, RecommendationModule, AlarmModule,
   ],
 })
 export class AppModule {}

@@ -4,18 +4,12 @@ import { Repository } from 'typeorm';
 import { Alarm } from '../entity/Alarm';
 
 @Injectable()
-export class AlarmRepository {
+export class AlarmRepository extends Repository<Alarm> {
     constructor(
         @InjectRepository(Alarm)
         private readonly alarmRepository: Repository<Alarm>,
-    ) {}
-    async create(alarm: Partial<Alarm>): Promise<Alarm> {
-        const newAlarm = this.alarmRepository.create(alarm);
-        return this.alarmRepository.save(newAlarm);
-    }
-
-    async save(alarm: Alarm): Promise<Alarm> {
-        return this.alarmRepository.save(alarm);
+    ) {
+        super(alarmRepository.target, alarmRepository.manager, alarmRepository.queryRunner);
     }
 
     async findAllByUserId(userId: number): Promise<Alarm[]> {
@@ -24,7 +18,11 @@ export class AlarmRepository {
             order: { created_at: 'DESC' },
         });
     }
-
+    async findById(id: number): Promise<Alarm | null> {
+        return await this.alarmRepository.findOne({
+          where: { id },
+        });
+      }
     async findUnreadByUserId(userId: number): Promise<Alarm[]> {
         return this.alarmRepository.find({
             where: { user: { id: userId }, is_read: false },
@@ -32,13 +30,17 @@ export class AlarmRepository {
         });
     }
 
-    async markAsRead(alarmId: number): Promise<void> {
-        await this.alarmRepository.update(alarmId, { is_read: true });
+    async markAsRead(id: number): Promise<void> {
+        await this.alarmRepository.update(id, { is_read: true });
     }
 
-    async deleteAlarmById(alarmId: number): Promise<void> {
-        await this.alarmRepository.delete(alarmId);
+    async deleteAlarmById(id: number): Promise<void> {
+        const result = await this.delete({ id });
+        if (result.affected === 0) {
+            throw new Error(`Alarm with ID ${id} not found`);
+        }
     }
+    
 
     async findCommentsForUser(userId: number): Promise<Alarm[]> {
         return this.alarmRepository.createQueryBuilder('alarm')

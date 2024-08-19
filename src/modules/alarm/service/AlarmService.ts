@@ -1,19 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Observable, Subject, filter, map } from "rxjs";
 import { AlarmRepository } from '../repository/AlarmRepository';
 import { UserRepository } from '../../user/repository/UserRepository';
+import { PostRepository } from '../../post/repository/PostRepository';
 import { Alarm } from '../entity/Alarm';
 import { CreateAlarmDto, UpdateAlarmStatusDto } from '../dto/AlarmDto';
+import { UserService } from 'src/modules/user/service/UserService';
 
 @Injectable()
 export class AlarmService {
    
     constructor(
-        @InjectRepository(AlarmRepository)
         private readonly alarmRepository: AlarmRepository,
-        @InjectRepository(UserRepository)
-        private readonly userRepository: UserRepository,
+        private readonly userService: UserService,
+        private readonly postRepository: PostRepository,
     ) {}
     // triggerAlarm 메서드 추가
     triggerAlarm(userId: number, title: string, message: string): void {
@@ -26,9 +27,7 @@ export class AlarmService {
     }
     // 알림 생성 및 이벤트 발생
     async createAlarm(createAlarmDto: CreateAlarmDto): Promise<Alarm> {
-        const user = await this.userRepository.findOne({
-            where: { id: createAlarmDto.userId },
-        });
+        const user = await this.userService.findById(createAlarmDto.userId);
         const alarm = this.alarmRepository.create({
             user,
             message: createAlarmDto.message,
@@ -40,7 +39,30 @@ export class AlarmService {
         this.emitAlarmEvent(createAlarmDto.userId);
         return savedAlarm;
     }
+    
+    async deleteAlarm(id: number): Promise<void> {
+        const alarm = await this.findAlarmById(id);
+        await this.checkError(() => this.alarmRepository.delete(alarm.id), 'Failed to delete alarm');
+    }
 
+    private async findAlarmById(id: number) {
+        const alarm = await this.alarmRepository.findById(id);
+        this.ensureExists(alarm, id, 'Alarm');
+        return alarm;
+    }
+    private ensureExists(entity: any, id: number, entityName: string): void {
+        if (!entity) {
+            throw new NotFoundException(`${entityName} with ID ${id} not found`);
+        }
+    }
+
+    private async checkError<T>(operation: () => Promise<T>, errorMessage: string): Promise<T> {
+        try {
+            return await operation();
+        } catch (error) {
+            throw new BadRequestException(errorMessage);
+        }
+    }
     // 특정 사용자의 모든 알림 조회
     async getUserAlarms(userId: number): Promise<Alarm[]> {
         return await this.alarmRepository.findAllByUserId(userId);
@@ -58,10 +80,7 @@ export class AlarmService {
         }
     }
 
-    // 알림 삭제
-    async deleteAlarm(alarmId: number): Promise<void> {
-        await this.alarmRepository.deleteAlarmById(alarmId);
-    }
+    
 
     // SSE 이벤트 발생 함수
     private emitAlarmEvent(userId: number): void {
@@ -77,19 +96,23 @@ export class AlarmService {
             observer.next(event as MessageEvent);
         });
     }
-    // 내가 댓글을 단 게시글에 다른 사람이 댓글을 달면 알림 전송
     async handleNewCommentAlarm(postId: number, commenterId: number): Promise<void> {
-        const comments = await this.alarmRepository.findCommentsForUser(commenterId);
-        comments.forEach(async (comment) => {
-            // 알림 생성 로직
+        // 댓글이 달린 게시글의 작성자와 댓글 작성자가 동일하지 않을 경우 알림을 전송합니다.
+        const post = await this.postRepository.findOne({
+            where: { id: postId },
+            relations: ['user'],
+        });
+    
+        if (post.user.id !== commenterId) {
             await this.createAlarm({
-                userId: comment.user.id,
-                message: `새로운 댓글이 달렸습니다: ${comment.comment}`,
+                userId: post.user.id,
+                message: `새로운 댓글이 달렸습니다.`,
                 type: 'comment',
                 url: `/post/${postId}`, // 댓글이 달린 게시글로 이동하는 URL
             });
-        });
+        }
     }
+    
 
     // 새로운 추천 항목 알림 전송
     async handleNewRecommendationAlarm(userId: number, recommendation: string): Promise<void> {

@@ -25,7 +25,7 @@ export class UpdateAlarmStatusDto {
 // 클라이언트로 반환할 알림 DTO
 export class ResponseAlarmDto {
     @Field
-    alarm_id: number;
+    id: number;
 
     @Field
     userId: number;

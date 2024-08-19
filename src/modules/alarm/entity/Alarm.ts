@@ -10,9 +10,9 @@ import { User } from '../../user/entity/User';
 @Entity('alarm')
 export class Alarm {
   @PrimaryGeneratedColumn()
-  alarm_id: number;
+  id: number;
 
-  @ManyToOne(() => User, (user) => user.alarms, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.alarms, { eager: true })
   user: User;
 
   @Column({ type: 'varchar', length: 255 })
