@@ -22,4 +22,17 @@ export class PostRecommendationRepository extends Repository<PostRecommendation>
 
         return paginateWithQueryBuilder(queryBuilder, paginationOptions);
     }
+    // PostRecommendation에서 score가 제일 높은거 알림해줄거 
+    async findPostsByRecommendationForAlarm(recommendationName: string): Promise<PostRecommendation | null> {
+        const queryBuilder = this.createQueryBuilder('postRecommendation')
+            .innerJoinAndSelect('postRecommendation.post', 'post')
+            .innerJoinAndSelect('postRecommendation.recommendation', 'recommendation')
+            .where('recommendation.name = :name', { name: recommendationName })
+            .orderBy('postRecommendation.score', 'DESC');
+            
+        const postRecommendation = await queryBuilder.getOne();
+    
+        return postRecommendation;
+    }
+    
 }

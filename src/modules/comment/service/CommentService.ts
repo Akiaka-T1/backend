@@ -12,6 +12,7 @@ import {CategoryService} from "../../category/service/CategoryService";
 import {InterestService} from "../../interest/service/InterestService";
 import {PostService} from "../../post/service/PostService";
 import {UserService} from "../../user/service/UserService";
+import { AlarmService } from "src/modules/alarm/service/AlarmService";
 
 
 @Injectable()
@@ -22,6 +23,7 @@ export class CommentService {
         private readonly postService: PostService,
         private readonly interestService: InterestService,
         private readonly userService: UserService,
+        private readonly alarmService: AlarmService
     ) {}
 
     async create(createCommentDto: PostCommentDto, userFromToken :User): Promise<ResponseCommentDto> {
@@ -43,8 +45,10 @@ export class CommentService {
 
         await Promise.allSettled([
             this.updatePostAverageRating(postId),
-            this.updateUserInterest(user.id, post, rating)
+            this.updateUserInterest(user.id, post, rating),
+            this.alarmService.createAlarm(postId)
         ]);
+        
 
         return mapToDto(newComment,ResponseCommentDto);
     }

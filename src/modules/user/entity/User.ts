@@ -15,7 +15,7 @@ import {UserCategory} from "../../category/entity/UserCategory";
 import { Alarm } from '../../alarm/entity/Alarm';
 
 @Entity('user')
-export class User extends BaseEntity {
+export class User {
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -12,8 +12,8 @@ export class Alarm {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.alarms, { eager: true })
-  user: User;
+  @Column()
+  postId: number;
 
   @Column({ type: 'varchar', length: 255 })
   message: string; //추천알림인지 댓글알림인지
