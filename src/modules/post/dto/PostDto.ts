@@ -21,6 +21,9 @@ export class PostPostDto {
   backGroundImgURL: string;
 
   @IsString()
+  backGroundColor: string;
+
+  @IsString()
   youtubeURL: string;
 
   @IsString()
@@ -28,7 +31,6 @@ export class PostPostDto {
   categoryId: number;
 
 }
-
 export class UpdatePostDto {
   @IsOptional()
   @IsString()
@@ -73,6 +75,9 @@ export class ResponsePostDto {
   backGroundImgURL: string;
 
   @Field
+  backGroundColor: string;
+
+  @Field
   youtubeURL: string;
 
   @Field
@@ -115,7 +120,7 @@ export class ThumbnailPostDto {
   title: string;
 
   @Field
-  thumbnail_URL: string;
+  thumbnailURL: string;
 
   @Field
   views: number;
