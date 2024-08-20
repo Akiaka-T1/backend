@@ -34,9 +34,9 @@ import { OAuthIdentifier } from "../user/entity/OAuthIdentifer";
 import { OAuthIdentifierRepository } from "../user/repository/OAuthIdentifierRepository";
 import { AlarmService } from "../alarm/service/AlarmService";
 import { AlarmRepository } from "../alarm/repository/AlarmRepository";
+import { AlarmSend } from "../alarm/entity/AlarmSend";
 @Module({
-  imports: [TypeOrmModule.forFeature([User,OAuthIdentifier, Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation])],
-  imports: [TypeOrmModule.forFeature([User,Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation,Alarm])],
+  imports: [TypeOrmModule.forFeature([User,OAuthIdentifier, Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation,Alarm,AlarmSend,])],
   providers: [
     UserService, UserRepository, OAuthIdentifierRepository , InitAdminService , AuthService,
       PostService, PostRepository, DailyViewRepository,

@@ -75,6 +75,4 @@ export class User {
   @OneToMany(() => UserCategory, userCategory => userCategory.user)
   userCategories: UserCategory[];
 
-  @OneToMany(() => Alarm, (alarm) => alarm.user, { cascade: ['remove'] }) 
-  alarms: Alarm[];
 }

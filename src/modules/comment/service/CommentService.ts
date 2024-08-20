@@ -50,9 +50,14 @@ export class CommentService {
             this.updatePostAverageRating(postId),
             this.updateUserInterest(user.id, post, rating),
             this.updateUserInterest(user.id, post, rating),
-            this.alarmService.createAlarm(postId)
+            this.alarmService.createAlarm({
+                type: 'comment',
+                postId: postId,
+            })
         ]);
         
+        // 댓글 작성 후, 해당 포스트에 달린 댓글을 모두 가져와서 알림을 생성 및 전송
+        await this.alarmService.sendUnsentAlarms();
 
         return mapToDto(newComment,ResponseCommentDto);
     }

@@ -1,47 +1,34 @@
-import { IsString, IsEnum, IsInt, IsBoolean } from 'class-validator';
-import { Field } from "../../../utils/mapper/FieldNameExtractor";
+import { IsString, IsInt, IsBoolean } from 'class-validator';
 
 // 알림 생성 DTO
 export class CreateAlarmDto {
+    @IsString()
+    type: string; // 'recommendation' or 'comment'
+
     @IsInt()
-    userId: number;
-
-    @IsString()
-    message: string;
-
-    @IsString()  
-    type: string;
-
-    @IsString()
-    url: string;  
+    postId: number;
 }
 
 // 알림 상태 업데이트 DTO
 export class UpdateAlarmStatusDto {
     @IsBoolean()
-    is_read: boolean;
+    isRead: boolean;
 }
 
 // 클라이언트로 반환할 알림 DTO
 export class ResponseAlarmDto {
-    @Field
+    @IsInt()
     id: number;
 
-    @Field
-    userId: number;
-
-    @Field
-    message: string;
-
-    @Field
+    @IsString()
     type: string;
 
-    @Field
-    url: string; 
+    @IsInt()
+    postId: number;
 
-    @Field
-    is_read: boolean;
+    @IsBoolean()
+    isRead: boolean;
 
-    @Field
-    created_at: Date;
+    @IsBoolean()
+    sendCheck: boolean;
 }
