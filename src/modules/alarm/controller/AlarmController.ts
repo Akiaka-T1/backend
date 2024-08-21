@@ -7,7 +7,11 @@ import { MessageEvent } from "@nestjs/common";
 @Controller('api/alarm')
 export class AlarmController {
     constructor(private readonly alarmService: AlarmService) {}
-
+    
+    @Sse('sse/:userId')
+    sendClientAlarm(@Param('userId') userId: number): Observable<MessageEvent> {
+        return this.alarmService.sendClientAlarm(userId);
+    }
     // 알림 생성 API
     @Post()
     async createAlarm(@Body() createAlarmDto: CreateAlarmDto): Promise<ResponseAlarmDto> {
