@@ -25,7 +25,7 @@ export class RecommendationService{
     async getPostsByUser(name: string, paginationDto: PaginationDto): Promise<PaginationResult<ThumbnailPostDto>> {
         const paginationOptions = {
             page: paginationDto.page || 1,
-            limit: paginationDto.limit || 5,
+            limit: paginationDto.limit || 6,
         };
 
         const recommendations = await this.postRecommendationRepository.findPostsByRecommendationName(name, paginationOptions);

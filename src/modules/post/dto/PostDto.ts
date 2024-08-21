@@ -115,7 +115,7 @@ export class ThumbnailPostDto {
   title: string;
 
   @Field
-  thumbnail_URL: string;
+  thumbnailURL: string;
 
   @Field
   views: number;
