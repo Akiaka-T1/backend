@@ -8,11 +8,18 @@ export function mapToDto<Entity, Dto>(entity: Entity, dtoClass: new () => Dto): 
       const fieldType = fieldTypes[field];
       const fieldValue = (entity as any)[field];
 
-      if (fieldType && fieldType !== Number && fieldType !== String && fieldType !== Boolean && fieldType !== Array) {
-        (dto as any)[field] = mapToDto(fieldValue, fieldType);
-      } else if (fieldValue instanceof Date) {
+      if (fieldType && fieldType !== Number && fieldType !== String && fieldType !== Boolean) {
+        if (Array.isArray(fieldValue) && fieldType.dtoType) {
+          (dto as any)[field] = fieldValue.map((item) => mapToDto(item, fieldType.dtoType));
+        }
+        else {
+          (dto as any)[field] = mapToDto(fieldValue, fieldType);
+        }
+      }
+      else if (fieldValue instanceof Date) {
         (dto as any)[field] = fieldValue.toLocaleString();
-      } else {
+      }
+      else {
         (dto as any)[field] = fieldValue;
       }
     }

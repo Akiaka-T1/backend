@@ -1,8 +1,10 @@
 import {IsString, IsEmail, IsOptional, MinLength, MaxLength, Matches, IsInt} from 'class-validator';
-import { Field } from "../../../utils/mapper/FieldNameExtractor";
+import {ArrayField, Field} from "../../../utils/mapper/FieldNameExtractor";
 import {Role} from "../../../auth/authorization/Role";
 import {ResponseUserInterestDto} from "../../interest/dto/UserInterestDto";
 import {ResponseUserCategoryDto} from "../../category/dto/UserCategoryDto";
+import {UserInterest} from "../../interest/entity/UserInterest";
+import {UserCategory} from "../../category/entity/UserCategory";
 
 export class PostUserDto {
     @IsString({ message: 'Name must be contained.' })
@@ -109,6 +111,7 @@ export class ResponseUserDto {
 export class AuthorUserDto {
     @Field
     id: number;
+
     @Field
     nickname: string;
 }
@@ -123,10 +126,10 @@ export class ResponseUserWithInterestsAndCategoriesDto {
     @Field
     nickname: string;
 
-    @Field
+    @ArrayField(UserInterest,ResponseUserInterestDto)
     userInterests: ResponseUserInterestDto[];
 
-    @Field
+    @ArrayField(UserCategory,ResponseUserCategoryDto)
     userCategories: ResponseUserCategoryDto[];
 
 }

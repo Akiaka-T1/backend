@@ -69,7 +69,7 @@ export class RecommendationService{
     async getTopViewedPosts(date: Date, paginationDto: PaginationDto): Promise<PaginationResult<ThumbnailPostDto>> {
         const paginationOptions = {
             page: paginationDto.page || 1,
-            limit: paginationDto.limit || 5,
+            limit: paginationDto.limit || 6,
             field: paginationDto.field || 'views',
             order: paginationDto.order || 'DESC',
         };
