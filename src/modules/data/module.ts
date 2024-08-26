@@ -18,26 +18,38 @@ import {UserInterestRepository} from "../interest/repository/UserInterestReposit
 import {Category} from "../category/entity/Category";
 import {UserInterest} from "../interest/entity/UserInterest";
 import {Interest} from "../interest/entity/Interest";
-import {InitInterestService} from "./interest/InitInterestService"
-import {InitCategoryService} from "./category/InitCategoryService";
 import {UserCategory} from "../category/entity/UserCategory";
 import {UserCategoryRepository} from "../category/repository/UserCatrgoryRepository";
-
+import {AuthService} from "../../auth/service/AuthService";
+import { Recommendation } from "../recommendation/entity/Recommendation";
+import { PostRecommendation } from "../recommendation/entity/PostRecommendation";
+import { RecommendationService } from "../recommendation/service/RecommendationService";
+import { RecommendationRepository } from "../recommendation/repository/RecommendationRepository";
+import { PostRecommendationRepository } from "../recommendation/repository/PostRecommendationRepository";
+import {InitDataService} from "./initData/InitDataService";
+import {DailyViewRepository} from "../post/repository/DailyViewRepository";
+import {DailyView} from "../post/entity/Daily";
+import { OAuthIdentifier } from "../user/entity/OAuthIdentifer";
+import { OAuthIdentifierRepository } from "../user/repository/OAuthIdentifierRepository";
 @Module({
-  imports: [TypeOrmModule.forFeature([User,Post,Comment,Category,Interest,UserInterest,UserCategory])],
+  imports: [TypeOrmModule.forFeature([User,OAuthIdentifier, Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation])],
   providers: [
-    UserService, UserRepository, InitAdminService ,
-      PostService, PostRepository,
+    UserService, UserRepository, OAuthIdentifierRepository , InitAdminService , AuthService,
+      PostService, PostRepository, DailyViewRepository,
       CommentService, CommentRepository,
-      CategoryService, CategoryRepository, UserCategoryRepository, InitCategoryService,
-      InterestService, InterestRepository,UserInterestRepository, InitInterestService
+      CategoryService, CategoryRepository, UserCategoryRepository,
+      InterestService, InterestRepository,UserInterestRepository,
+      RecommendationService, RecommendationRepository, PostRecommendationRepository,
+      InitDataService
     ],
   exports: [
-    UserService,UserRepository,
-    PostService,PostRepository,
+    UserService,UserRepository, OAuthIdentifierRepository, AuthService,
+    PostService,PostRepository, DailyViewRepository,
     CommentService,CommentRepository,
-    CategoryService, CategoryRepository,UserCategoryRepository, InitCategoryService,
-    InterestService, InterestRepository,UserInterestRepository, InitInterestService
+    CategoryService, CategoryRepository,UserCategoryRepository,
+    InterestService, InterestRepository,UserInterestRepository,
+    RecommendationService, RecommendationRepository, PostRecommendationRepository,
+    InitDataService
   ],
 })
 export class DataModule {}

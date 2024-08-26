@@ -11,6 +11,11 @@ import {PostModule} from "./modules/post/module";
 import {CommentModule} from "./modules/comment/module";
 import {CategoryModule} from "./modules/category/module";
 import {InterestModule} from "./modules/interest/module";
+import {JwtModule} from "@nestjs/jwt";
+import { RecommendationModule } from './modules/recommendation/module';
+
+import {SnakeNamingStrategy} from "typeorm-naming-strategies";
+
 
 dotenv.config();
 
@@ -30,17 +35,18 @@ const config = loadYamlConfig(configFilePath);
       useFactory: async (configService: ConfigService) => ({
         ...getTypeOrmConfig(configService),
         autoLoadEntities: true,
+        namingStrategy: new SnakeNamingStrategy(),
       }),
 
       inject: [ConfigService],
+
     }),
     DataModule,
-    UserModule, AuthModule,
+    UserModule, AuthModule, JwtModule,
     PostModule,
     CommentModule,
     CategoryModule,
-    InterestModule
-
+    InterestModule, RecommendationModule
   ],
 })
 export class AppModule {}

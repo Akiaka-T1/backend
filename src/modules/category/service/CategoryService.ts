@@ -8,7 +8,8 @@ import {PaginationResult} from "../../../utils/pagination/pagination";
 import { mapToDto } from "../../../utils/mapper/Mapper";
 import {UserCategoryRepository} from "../repository/UserCatrgoryRepository";
 import {User} from "../../user/entity/User";
-import {Interest} from "../../interest/entity/Interest";
+import {defaultCategories} from "../../../constants/defalutCatrgories";
+import {UserCategory} from "../entity/UserCategory";
 
 @Injectable()
 export class CategoryService {
@@ -60,35 +61,57 @@ export class CategoryService {
         await this.handleErrors(() => this.categoryRepository.delete(category.id), 'Failed to delete category');
     }
 
-    async addDefaultCategoriesToUser(user: User): Promise<void> {
-        const categories = await this.findAll();
-        const userCategories = await this.userCategoryRepository.findByUserId(user.id);
-
-        for (const category of categories) {
-            const userCategoryExists = userCategories.some(uc => uc.category.id === category.id);
-            if (!userCategoryExists) {
-                const userInterest = this.userCategoryRepository.create({ user, category, score: 0 });
-                await this.userCategoryRepository.save(userInterest);
-            }
-        }
-    }
-
     private ensureExists(category: Category, id: number): void {
         if (!category) {
             throw new NotFoundException(`Category with ID ${id} not found`);
         }
     }
 
-    async incrementUserCategoryScore(userId: number, categoryId: number): Promise<void> {
-        const userCategories = await this.userCategoryRepository.findByUserId(userId);
-        const userCategory = userCategories.find(uc => uc.category.id === categoryId);
+    async ensureHasEveryMiddleEntities(user: User) {
+        let userCategories = await this.userCategoryRepository.findByUserId(user.id);
 
-        if (userCategory) {
-            userCategory.score++;
-            await this.userCategoryRepository.save(userCategory);
-        } else {
-            await this.userCategoryRepository.createUserCategory(userId, categoryId ,0);
+        if (this.hasMissingMiddleEntities(userCategories)) {
+            await this.addMissingMiddleEntities(userCategories, user);
         }
+    }
+
+    private hasMissingMiddleEntities(userCategories: UserCategory[]): boolean {
+        return userCategories.length < defaultCategories.length;
+    }
+
+    private async addMissingMiddleEntities(userCategories: UserCategory[], user: User) {
+        const categories = await this.categoryRepository.findAll();
+        const missingCategories = categories.filter(category => !userCategories.some(uc => uc.category.id === category.id));
+
+        const newUserCategories = missingCategories.map(category => this.userCategoryRepository.create({
+            user,
+            category
+        }));
+        await this.userCategoryRepository.save(newUserCategories);
+
+        user.userCategories.push(...newUserCategories);
+    }
+
+    async createOrIncrementMiddleEntityViews(userId: number, category: Category): Promise<void> {
+        const userCategories = await this.userCategoryRepository.findByUserId(userId);
+        const userCategory = userCategories.find(uc => uc.category.id === category.id);
+
+        if (userCategory) await this.increaseViews(userCategory);
+        else await this.createNewMiddleEntity(userId, category);
+    }
+
+    private async increaseViews(userCategory: UserCategory) {
+        userCategory.views++;
+        await this.userCategoryRepository.save(userCategory);
+    }
+
+    private async createNewMiddleEntity(userId: number, category: Category) {
+        const newUserCategory = this.userCategoryRepository.create({
+            user: {id: userId},
+            category: {id: category.id},
+            views: 1
+        });
+        await this.userCategoryRepository.save(newUserCategory);
     }
 
     private async handleErrors<T>(operation: () => Promise<T>, errorMessage: string): Promise<T> {
