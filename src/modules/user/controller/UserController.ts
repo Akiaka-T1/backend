@@ -41,8 +41,15 @@ export class UserController {
     @Get()
     @UseGuards(AuthGuard,RolesGuard)
     @Roles(Role.Admin,Role.User)
-    async findMe(@Request() request:any): Promise<ResponseUserWithInterestsAndCategoriesDto> {
+    async findMe(@Request() request:any): Promise<ResponseUserDto> {
         return this.userService.findMe(request.user.email);
+    }
+
+    @Get('stats')
+    @UseGuards(AuthGuard,RolesGuard)
+    @Roles(Role.Admin,Role.User)
+    async findStats(@Request() request:any): Promise<ResponseUserWithInterestsAndCategoriesDto> {
+        return this.userService.findStats(request.user.email);
     }
 
     @Get(':id')
@@ -52,11 +59,11 @@ export class UserController {
         return this.userService.findById(id);
     }
 
-    @Patch()
+    @Patch('me')
     @UseGuards(AuthGuard,RolesGuard)
-    @Roles(Role.User)
+    @Roles(Role.User,Role.Admin)
     async updateMe(@Request() request:any, @Body() updateUserDto: UpdateUserDto): Promise<ResponseUserDto> {
-        return this.userService.update(request.user.id, updateUserDto);
+        return this.userService.update(request.user.sub, updateUserDto);
     }
 
     @Patch(':id')

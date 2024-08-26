@@ -1,14 +1,13 @@
 import { Field } from '../../../utils/mapper/FieldNameExtractor';
-import { ResponseInterestDto } from './InterestDto'
-import {Interest} from "../entity/Interest";
+import {ResponseInterestDto} from "./InterestDto";
 
 export class ResponseUserInterestDto {
     @Field
     id: number;
 
     @Field
-    interest: Interest;
+    interest: ResponseInterestDto;
 
     @Field
-    score: number;
+    rating: number;
 }

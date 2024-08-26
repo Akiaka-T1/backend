@@ -14,31 +14,28 @@ import {
   Request, Req
 } from "@nestjs/common";
 import { PostService } from '../service/PostService';
-import {PostPostDto, ResponsePostDto, ShortPostDto, UpdatePostDto} from '../dto/PostDto';
+import {PostPostDto, ResponsePostDto, ShortContentPostDto, ThumbnailPostDto, UpdatePostDto} from '../dto/PostDto';
 import { PaginationResult } from '../../../utils/pagination/pagination';
 import { PaginationDto } from '../../../utils/pagination/paginationDto';
 import { AuthGuard } from "../../../auth/JwtAuthGuard/JwtAuthGuard";
 import { RolesGuard } from "../../../auth/authorization/RolesGuard";
 import { Roles } from "../../../auth/authorization/decorator";
 import { Role } from "../../../auth/authorization/Role";
-import {JwtService} from "@nestjs/jwt";
-import {UserService} from "../../user/service/UserService";
 import {User} from "../../user/entity/User";
+import {AuthService} from "../../../auth/service/AuthService";
 
 @Controller('api/posts')
 export class PostController {
   constructor(
       private readonly postService: PostService,
-      private readonly userService: UserService,
-      private readonly jwtService: JwtService,
+      private readonly authService: AuthService,
 
   ) {}
 
   @Get()
-  async findAll(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortPostDto>> {
+  async findAll(@Query() paginationDto: PaginationDto): Promise<PaginationResult<ShortContentPostDto>> {
     return this.postService.findAll(paginationDto);
   }
-
 
   @Post()
   @UseGuards(AuthGuard,RolesGuard)
@@ -47,24 +44,19 @@ export class PostController {
     return this.postService.create(postPostDto, request.user.id);
   }
 
+  @Get('search')
+  async search(@Query() paginationDto: PaginationDto, @Query('title') title: string): Promise<PaginationResult<ThumbnailPostDto>> {
+    return this.postService.searchPostsByTitle(title, paginationDto);
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request): Promise<ResponsePostDto> {
-    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
-    const token = authHeader?.split(' ')[1];
+    const token = this.authService.getTokenFromRequest(req);
     let user: User | null = null;
-
-    if (token) {
-      try {
-        const decoded = this.jwtService.verify(token,{ secret:  process.env.JWT_SECRET_KEY });
-        user = <User>await this.userService.findById(decoded.sub);
-      } catch (error) {
-        await this.postService.handleErrors(error, "error while decoding token");
-      }
-    }
+    if (token) user = await this.authService.validateUserByToken(token);
 
     return this.postService.findOne(id, user);
   }
-
 
   @Patch(':id')
   @UseGuards(AuthGuard,RolesGuard)

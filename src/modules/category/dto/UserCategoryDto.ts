@@ -1,13 +1,13 @@
 import {Field} from "../../../utils/mapper/FieldNameExtractor";
-import {Category} from "../entity/Category";
+import {ResponseCategoryDto} from "./CategoryDto";
 
 export class ResponseUserCategoryDto {
     @Field
     id: number;
 
     @Field
-    category: Category;
+    category: ResponseCategoryDto
 
     @Field
-    score: number;
+    views: number;
 }

@@ -7,17 +7,18 @@ export class UserCategoryRepository extends Repository<UserCategory> {
     constructor(private dataSource: DataSource) {
         super(UserCategory, dataSource.createEntityManager());
     }
-
-    async createUserCategory(userId: number, categoryId: number, score: number): Promise<UserCategory> {
-        const userCategory = this.create({ user: { id: userId }, category: { id: categoryId }, score });
-        return this.save(userCategory);
-    }
-
     async findByUserId(userId: number): Promise<UserCategory[]> {
-        return this.find({
-            where: { user: { id: userId } },
-            relations: ['category'],
-        });
+        return this.createQueryBuilder('user_category')
+            .leftJoinAndSelect('user_category.category', 'category')
+            .leftJoin('user_category.user', 'user')
+            .where('user_category.user_id = :userId', { userId })
+            .select([
+                'user_category.id',
+                'user_category.views',
+                'category.id',
+                'category.name'
+            ])
+            .getMany();
     }
 
     async deleteUserCategory(userCategoryId: number): Promise<void> {

@@ -2,7 +2,7 @@ import { Entity, ManyToOne, PrimaryGeneratedColumn, Column } from 'typeorm';
 import {User} from "../../user/entity/User";
 import {Interest} from "./Interest";
 
-@Entity()
+@Entity('user_interest')
 export class UserInterest {
     @PrimaryGeneratedColumn()
     id: number;
@@ -13,6 +13,6 @@ export class UserInterest {
     @ManyToOne(() => Interest, interest => interest.userInterests)
     interest: Interest;
 
-    @Column({ type: 'int', default: 0 })
-    score: number;
+    @Column({type: 'double precision', default: 0})
+    rating: number;
 }

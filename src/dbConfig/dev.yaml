@@ -3,3 +3,5 @@ db:
   database: 'database.sqlite'
   synchronize: true
   logging: true
+  namingStrategy: SnakeNamingStrategy
+

@@ -1,10 +1,13 @@
 import {IsString, IsInt, IsOptional, IsArray, ArrayNotEmpty} from "class-validator";
 import {Transform, Type} from "class-transformer";
 import { AuthorUserDto } from '../../user/dto/UserDto';
-import { Field } from "../../../utils/mapper/FieldNameExtractor";
+import {ArrayField, Field} from "../../../utils/mapper/FieldNameExtractor";
 import {ResponseInterestDto} from "../../interest/dto/InterestDto";
-import {Category} from "../../category/entity/Category";
 import {ResponseCategoryDto} from "../../category/dto/CategoryDto";
+import {ResponseCommentDto} from "../../comment/dto/CommentDto";
+import {Comment} from "../../comment/entity/Comment";
+import {Interest} from "../../interest/entity/Interest";
+import {Category} from "../../category/entity/Category";
 
 export class PostPostDto {
   @IsString()
@@ -20,16 +23,15 @@ export class PostPostDto {
   backGroundImgURL: string;
 
   @IsString()
+  backGroundColor: string;
+
+  @IsString()
   youtubeURL: string;
 
   @IsString()
   @Transform(({ value }) => parseInt(value))
   categoryId: number;
 
-  @IsArray()
-  @ArrayNotEmpty()
-  @Transform(({ value }) => value.map((id: string) => parseInt(id)))
-  interestIds: number[];
 }
 export class UpdatePostDto {
   @IsOptional()
@@ -46,7 +48,6 @@ export class UpdatePostDto {
 
 }
 
-
 export class ResponsePostDto {
   @Field
   id: number;
@@ -61,10 +62,10 @@ export class ResponsePostDto {
   user: AuthorUserDto;
 
   @Field
-  createdAt: Date;
+  createdAt: string;
 
   @Field
-  updatedAt: Date;
+  updatedAt: string;
 
   @Field
   score: number;
@@ -76,20 +77,44 @@ export class ResponsePostDto {
   backGroundImgURL: string;
 
   @Field
+  backGroundColor: string;
+
+  @Field
   youtubeURL: string;
 
   @Field
   views: number;
 
   @Field
-  category: ResponseCategoryDto;
+  averageRating: number;
+
+  @ArrayField(Comment,ResponseCommentDto)
+  comments: ResponseCommentDto[];
 
   @Field
+  category: ResponseCategoryDto;
+
+  @ArrayField(Interest,ResponseInterestDto)
   interests: ResponseInterestDto[];
+
+  @Field
+  joyScore: number;
+
+  @Field
+  angerScore: number;
+
+  @Field
+  irritationScore: number;
+
+  @Field
+  fearScore: number;
+
+  @Field
+  sadnessScore: number;
 
 }
 
-export class ShortPostDto {
+export class ThumbnailPostDto {
   @Field
   id: number;
 
@@ -104,4 +129,55 @@ export class ShortPostDto {
 
   @Field
   score: number;
+}
+
+export class ShortContentPostDto {
+  @Field
+  id: number;
+
+  @Field
+  title: string;
+
+  @Field
+  preview: string;
+
+  @Field
+  user: AuthorUserDto;
+
+  @Field
+  thumbnailURL: string;
+
+  @Field
+  views: number;
+
+  @Field
+  averageRating: number;
+
+  @ArrayField(Comment,ResponseCommentDto)
+  comments: ResponseCommentDto[];
+
+  @ArrayField(Category,ResponseCategoryDto)
+  category: ResponseCategoryDto;
+
+  @Field
+  joyScore: number;
+
+  @Field
+  angerScore: number;
+
+  @Field
+  irritationScore: number;
+
+  @Field
+  fearScore: number;
+
+  @Field
+  sadnessScore: number;
+
+  @Field
+  updatedAt: string;
+
+  @Field
+  createdAt: string;
+
 }

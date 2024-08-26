@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { InterestService} from "../../dist/modules/interest/service/InterestService";
-import { InitInterestService} from "../../dist/modules/data/interest/InitInterestService";
 import { InterestRepository} from "../../dist/modules/interest/repository/InterestRepository";
 import { PostInterestDto, UpdateInterestDto} from "../../dist/modules/interest/dto/InterestDto";
 import { NotFoundException, BadRequestException } from '@nestjs/common';
@@ -25,13 +24,11 @@ describe('InterestService', () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 InterestService,
-                InitInterestService,
                 { provide: InterestRepository, useFactory: mockInterestRepository },
             ],
         }).compile();
 
         interestService = module.get<InterestService>(InterestService);
-        initInterestService = module.get<InitInterestService>(InitInterestService);
         interestRepository = module.get<InterestRepository>(InterestRepository);
 
         jest.clearAllMocks();

@@ -1,8 +1,10 @@
 import {IsString, IsEmail, IsOptional, MinLength, MaxLength, Matches, IsInt} from 'class-validator';
-import { Field } from "../../../utils/mapper/FieldNameExtractor";
+import {ArrayField, Field} from "../../../utils/mapper/FieldNameExtractor";
 import {Role} from "../../../auth/authorization/Role";
 import {ResponseUserInterestDto} from "../../interest/dto/UserInterestDto";
 import {ResponseUserCategoryDto} from "../../category/dto/UserCategoryDto";
+import {UserInterest} from "../../interest/entity/UserInterest";
+import {UserCategory} from "../../category/entity/UserCategory";
 
 export class PostUserDto {
     @IsString({ message: 'Name must be contained.' })
@@ -45,12 +47,8 @@ export class PostUserDto {
 export class UpdateUserDto {
 
     @IsOptional()
-    @IsInt()
-    ageGroup?: number;
-
-    @IsOptional()
     @IsString()
-    mbti?: string;
+    name?: string;
 
     @IsOptional()
     @IsString()
@@ -58,11 +56,20 @@ export class UpdateUserDto {
 
     @IsOptional()
     @IsString()
-    characterId?: number;
+    ageGroup?: string;
+
+    @IsString()
+    gender: string;
 
     @IsOptional()
     @IsString()
-    voiceTypeId?: number;
+    mbti?: string;
+
+    @IsOptional()
+    characterId?: number;
+
+    @IsOptional()
+    categoryId?: number;
 
 }
 
@@ -104,6 +111,7 @@ export class ResponseUserDto {
 export class AuthorUserDto {
     @Field
     id: number;
+
     @Field
     nickname: string;
 }
@@ -118,34 +126,10 @@ export class ResponseUserWithInterestsAndCategoriesDto {
     @Field
     nickname: string;
 
-    @Field
-    email: string;
-
-    @Field
-    gender: string;
-
-    @Field
-    ageGroup: string;
-
-    @Field
-    mbti: string;
-
-    @Field
-    characterId: number;
-
-    @Field
-    voiceTypeId: number;
-
-    @Field
-    categoryId: number;
-
-    @Field
-    role: Role;
-
-    @Field
+    @ArrayField(UserInterest,ResponseUserInterestDto)
     userInterests: ResponseUserInterestDto[];
 
-    @Field
+    @ArrayField(UserCategory,ResponseUserCategoryDto)
     userCategories: ResponseUserCategoryDto[];
 
 }

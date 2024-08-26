@@ -2,7 +2,7 @@ import {Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable
 import { Post } from '../../post/entity/Post'
 import {UserInterest} from "./UserInterest";
 
-@Entity()
+@Entity('interest')
 export class Interest {
     @PrimaryGeneratedColumn()
     id: number;

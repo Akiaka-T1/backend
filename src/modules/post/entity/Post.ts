@@ -12,9 +12,11 @@ import { User } from '../../user/entity/User';
 import { Comment } from '../../comment/entity/Comment';
 import {Category} from "../../category/entity/Category";
 import {Interest} from "../../interest/entity/Interest";
+import { PostRecommendation } from 'src/modules/recommendation/entity/PostRecommendation';
+import {DailyView} from "./Daily";
 
-@Entity()
-export class Post extends BaseEntity {
+@Entity('post')
+export class Post{
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,11 +26,17 @@ export class Post extends BaseEntity {
   @Column('text')
   content: string;
 
+  @Column({ length: 255, nullable: true })
+  preview: string;
+
   @Column({ default: 0 })
-  score: number;
+  averageRating: number;
 
   @Column({ default: 0 })
   views: number;
+
+  @Column({default: '#1E1F22'})
+  backGroundColor: string;
 
   @Column({ length: 255, nullable: true })
   thumbnailURL: string;
@@ -55,6 +63,27 @@ export class Post extends BaseEntity {
   category: Category;
 
   @ManyToMany(() => Interest, interest => interest.posts)
-  @JoinTable()
+  @JoinTable({ name: 'post_interest' })
   interests: Interest[];
+
+  @Column({ type: 'integer', default: 0 })
+  joyScore: number;
+
+  @Column({ type: 'integer', default: 0 })
+  angerScore: number;
+
+  @Column({ type: 'integer', default: 0 })
+  irritationScore: number;
+
+  @Column({ type: 'integer', default: 0 })
+  fearScore: number;
+
+  @Column({ type: 'integer', default: 0 })
+  sadnessScore: number;
+
+  @OneToMany(() => PostRecommendation, postRecommendation => postRecommendation.post)
+  postRecommendations: PostRecommendation[];
+
+  @OneToMany(() => DailyView, dailyPostView => dailyPostView.post)
+  dailyViews: DailyView[];
 }
