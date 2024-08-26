@@ -1,23 +1,31 @@
 import { Injectable } from "@nestjs/common";
-import {DataSource, FindManyOptions, Like, Repository} from "typeorm";
+import { DataSource, FindManyOptions, Like, Repository } from "typeorm";
 import { Post } from "../entity/Post";
 import {
-  PaginationResult,
-  PaginationOptions,
   paginate,
-  paginateWithQueryBuilder
+  paginateWithQueryBuilder,
+  PaginationOptions,
+  PaginationResult
 } from "../../../utils/pagination/pagination";
-import {mapToDto} from "../../../utils/mapper/Mapper";
-import {ShortContentPostDto} from "../dto/PostDto";
 
 @Injectable()
 export class PostRepository extends Repository<Post> {
   constructor(private dataSource: DataSource) {
     super(Post, dataSource.createEntityManager());
   }
-    async findById(id: number): Promise<Post | undefined> {
-    return this.findOne({ where: { id }, relations: ['user','category','interests','comments','postRecommendations'] });
-    }
+  async findById(id: number): Promise<Post | undefined> {
+    return this.createQueryBuilder('post')
+      .leftJoinAndSelect('post.user', 'user')
+      .leftJoinAndSelect('post.category', 'category')
+      .leftJoinAndSelect('post.interests', 'interests')
+      .leftJoin('post.comments', 'comments')
+      .leftJoin('comments.user', 'commentUser')
+      .leftJoinAndSelect('post.postRecommendations', 'postRecommendations')
+      .addSelect(['comments.id', 'comments.rating', 'comments.comment', 'comments.joyScore', 'comments.angerScore', 'comments.irritationScore', 'comments.fearScore', 'comments.sadnessScore', 'comments.createdAt', 'comments.updatedAt'])
+      .addSelect(['commentUser.id', 'commentUser.nickname'])
+      .where('post.id = :id', { id })
+      .getOne();
+  }
 
     async findByIdWithInterestsAndCategoryOnlyWithTitle (id: number): Promise<Post | undefined> {
     return this.findOne({

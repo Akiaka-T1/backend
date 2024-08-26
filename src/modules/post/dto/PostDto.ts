@@ -1,11 +1,13 @@
 import {IsString, IsInt, IsOptional, IsArray, ArrayNotEmpty} from "class-validator";
 import {Transform, Type} from "class-transformer";
 import { AuthorUserDto } from '../../user/dto/UserDto';
-import { Field } from "../../../utils/mapper/FieldNameExtractor";
+import {ArrayField, Field} from "../../../utils/mapper/FieldNameExtractor";
 import {ResponseInterestDto} from "../../interest/dto/InterestDto";
-import {Category} from "../../category/entity/Category";
 import {ResponseCategoryDto} from "../../category/dto/CategoryDto";
 import {ResponseCommentDto} from "../../comment/dto/CommentDto";
+import {Comment} from "../../comment/entity/Comment";
+import {Interest} from "../../interest/entity/Interest";
+import {Category} from "../../category/entity/Category";
 
 export class PostPostDto {
   @IsString()
@@ -86,13 +88,13 @@ export class ResponsePostDto {
   @Field
   averageRating: number;
 
-  @Field
+  @ArrayField(Comment,ResponseCommentDto)
   comments: ResponseCommentDto[];
 
   @Field
   category: ResponseCategoryDto;
 
-  @Field
+  @ArrayField(Interest,ResponseInterestDto)
   interests: ResponseInterestDto[];
 
   @Field
@@ -151,10 +153,10 @@ export class ShortContentPostDto {
   @Field
   averageRating: number;
 
-  @Field
+  @ArrayField(Comment,ResponseCommentDto)
   comments: ResponseCommentDto[];
 
-  @Field
+  @ArrayField(Category,ResponseCategoryDto)
   category: ResponseCategoryDto;
 
   @Field
