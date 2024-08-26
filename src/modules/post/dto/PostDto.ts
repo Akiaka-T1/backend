@@ -1,11 +1,13 @@
 import {IsString, IsInt, IsOptional, IsArray, ArrayNotEmpty} from "class-validator";
 import {Transform, Type} from "class-transformer";
 import { AuthorUserDto } from '../../user/dto/UserDto';
-import { Field } from "../../../utils/mapper/FieldNameExtractor";
+import {ArrayField, Field} from "../../../utils/mapper/FieldNameExtractor";
 import {ResponseInterestDto} from "../../interest/dto/InterestDto";
-import {Category} from "../../category/entity/Category";
 import {ResponseCategoryDto} from "../../category/dto/CategoryDto";
 import {ResponseCommentDto} from "../../comment/dto/CommentDto";
+import {Comment} from "../../comment/entity/Comment";
+import {Interest} from "../../interest/entity/Interest";
+import {Category} from "../../category/entity/Category";
 
 export class PostPostDto {
   @IsString()
@@ -21,6 +23,9 @@ export class PostPostDto {
   backGroundImgURL: string;
 
   @IsString()
+  backGroundColor: string;
+
+  @IsString()
   youtubeURL: string;
 
   @IsString()
@@ -28,7 +33,6 @@ export class PostPostDto {
   categoryId: number;
 
 }
-
 export class UpdatePostDto {
   @IsOptional()
   @IsString()
@@ -73,6 +77,9 @@ export class ResponsePostDto {
   backGroundImgURL: string;
 
   @Field
+  backGroundColor: string;
+
+  @Field
   youtubeURL: string;
 
   @Field
@@ -81,13 +88,13 @@ export class ResponsePostDto {
   @Field
   averageRating: number;
 
-  @Field
+  @ArrayField(Comment,ResponseCommentDto)
   comments: ResponseCommentDto[];
 
   @Field
   category: ResponseCategoryDto;
 
-  @Field
+  @ArrayField(Interest,ResponseInterestDto)
   interests: ResponseInterestDto[];
 
   @Field
@@ -115,7 +122,7 @@ export class ThumbnailPostDto {
   title: string;
 
   @Field
-  thumbnail_URL: string;
+  thumbnailURL: string;
 
   @Field
   views: number;
@@ -146,10 +153,10 @@ export class ShortContentPostDto {
   @Field
   averageRating: number;
 
-  @Field
+  @ArrayField(Comment,ResponseCommentDto)
   comments: ResponseCommentDto[];
 
-  @Field
+  @ArrayField(Category,ResponseCategoryDto)
   category: ResponseCategoryDto;
 
   @Field

@@ -30,7 +30,7 @@ export class DailyViewRepository extends Repository<DailyView> {
     }
 
     async findTopViewedPosts(date: Date, paginationOptions: PaginationOptions): Promise<PaginationResult<DailyView>> {
-        const queryBuilder = this.createQueryBuilder('dailyPostView')
+        const queryBuilder = this.createQueryBuilder('dailyView')
             .innerJoinAndSelect('dailyView.post', 'post')
             .where('dailyView.date = :date', { date })
             .orderBy('dailyView.views', 'DESC');
