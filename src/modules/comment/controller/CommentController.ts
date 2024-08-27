@@ -20,12 +20,14 @@ import { Roles } from "../../../auth/authorization/decorator";
 import { Role } from "../../../auth/authorization/Role";
 import { PaginationDto } from "../../../utils/pagination/paginationDto";
 import { PaginationResult } from "../../../utils/pagination/pagination";
+import { AlarmService } from '../../alarm/service/AlarmService'; 
 
 @Controller('api/comments')
 @UsePipes(new ValidationPipe())
 export class CommentController {
   constructor(
       private readonly commentService: CommentService,
+      private readonly alarmService: AlarmService 
       ) {}
 
   @Post()
@@ -35,6 +37,21 @@ export class CommentController {
   async create(@Body() postCommentDto: PostCommentDto, @Request() request:any): Promise<ResponseCommentDto> {
     return this.commentService.create(postCommentDto,request.user);
   }
+
+  async createWithAlarm(@Body() postCommentDto: PostCommentDto, @Request() request: any): Promise<ResponseCommentDto> {
+    const newComment = await this.commentService.create(postCommentDto, request.user);
+    
+    // postId를 기준으로 모든 댓글을 가져오기
+    const comments = await this.commentService.findByPostId(postCommentDto.postId);
+
+    // 각 댓글 작성자의 userId를 가져오기
+    const userIds = comments.map(comment => comment.user.id);
+
+    // 알림 생성 및 전송
+    await this.alarmService.createAndSendAlarms(postCommentDto.postId, userIds);
+
+    return newComment;
+}
 
   @Get('user')
   async findByUser(@Query() paginationDto: PaginationDto, @Request() request: any): Promise<PaginationResult<ResponseCommentDto>> {
