@@ -58,7 +58,14 @@ export class AlarmController {
 
     // SSE를 통한 실시간 알림 전송 API
     @Sse("sse/:userId")
-    sendClientAlarm(@Param("userId") userId: string): Observable<MessageEvent> {
+    sendClientAlarm(@Param("userId") userId: number): Observable<MessageEvent> {
         return this.alarmService.sendClientAlarm(+userId);
+    }
+
+    // 테스트 이벤트를 발생시키는 엔드포인트
+    @Get('test/:userId')
+    testEvent(@Param('userId') userId: number): string {
+        this.alarmService.broadcastTestEventToUser(userId);
+        return 'Test event sent!';
     }
 }

@@ -35,6 +35,9 @@ export class Post{
   @Column({ default: 0 })
   views: number;
 
+  @Column({default: '#1E1F22'})
+  backGroundColor: string;
+
   @Column({ length: 255, nullable: true })
   thumbnailURL: string;
 
