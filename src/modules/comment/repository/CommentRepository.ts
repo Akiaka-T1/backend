@@ -74,7 +74,7 @@ export class CommentRepository extends Repository<Comment> {
 
         await this.createQueryBuilder()
             .update('post')
-            .set({ averageRating: result.averageRating })
+            .set({ averageRating: result.averageRating||0 })
             .where('id = :postId', { postId })
             .execute();
     }
