@@ -7,7 +7,11 @@ import { MessageEvent } from "@nestjs/common";
 @Controller('api/alarm')
 export class AlarmController {
     constructor(private readonly alarmService: AlarmService) {}
-    
+    @Post('test-trigger')
+    async triggerTestAlarm(@Body('postId') postId: number, @Body('nicknames') nicknames: string[]) {
+        await this.alarmService.createAndSendAlarms(postId, nicknames);
+        return { message: 'Alarms triggered successfully' };
+    }
     // 알림 생성 API
     @Post()
     async createAlarm(@Body() createAlarmDto: CreateAlarmDto): Promise<ResponseAlarmDto> {

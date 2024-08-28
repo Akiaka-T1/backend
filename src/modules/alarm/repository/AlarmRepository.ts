@@ -31,8 +31,12 @@ export class AlarmRepository {
     }
 
     async findAllAlarmSendsByUserId(userId: number): Promise<AlarmSend[]> {
-        return this.alarmSendRepository.find({ where: { user: { id: userId }, isRead: false } });
+        return this.alarmSendRepository.find({
+            where: { user: { id: userId }, isRead: false },
+            relations: ['alarm'], 
+        });
     }
+    
 
     async markAlarmSendAsRead(alarmSendId: number): Promise<void> {
         await this.alarmSendRepository.update(alarmSendId, { isRead: true });
