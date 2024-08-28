@@ -12,7 +12,7 @@ import { User } from '../../user/entity/User';
 import { Comment } from '../../comment/entity/Comment';
 import {Category} from "../../category/entity/Category";
 import {Interest} from "../../interest/entity/Interest";
-import { PostRecommendation } from 'src/modules/recommendation/entity/PostRecommendation';
+import { PostRecommendation } from '../../recommendation/entity/PostRecommendation';
 import {DailyView} from "./Daily";
 
 @Entity('post')

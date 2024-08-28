@@ -8,10 +8,6 @@ import { MessageEvent } from "@nestjs/common";
 export class AlarmController {
     constructor(private readonly alarmService: AlarmService) {}
     
-    @Sse('sse/:userId')
-    sendClientAlarm(@Param('userId') userId: number): Observable<MessageEvent> {
-        return this.alarmService.sendClientAlarm(userId);
-    }
     // 알림 생성 API
     @Post()
     async createAlarm(@Body() createAlarmDto: CreateAlarmDto): Promise<ResponseAlarmDto> {
@@ -25,10 +21,10 @@ export class AlarmController {
         };
     }
 
-    // 특정 사용자의 알림 목록 조회 API
-    @Get("user/:userId")
-    async getUserAlarms(@Param("userId") userId: string): Promise<ResponseAlarmDto[]> {
-        const alarms = await this.alarmService.getAlarmsForUser(+userId);
+    // 특정 사용자의 알림 목록 조회 API (닉네임 기반으로 수정)
+    @Get("user/:nickname")
+    async getUserAlarms(@Param("nickname") nickname: string): Promise<ResponseAlarmDto[]> {
+        const alarms = await this.alarmService.getAlarmsForUser(nickname);
         return alarms.map(alarmSend => ({
             id: alarmSend.id,
             type: alarmSend.alarm.type,
@@ -56,16 +52,16 @@ export class AlarmController {
         await this.alarmService.deleteAlarm(id);
     }
 
-    // SSE를 통한 실시간 알림 전송 API
-    @Sse("sse/:userId")
-    sendClientAlarm(@Param("userId") userId: number): Observable<MessageEvent> {
-        return this.alarmService.sendClientAlarm(+userId);
+    // SSE를 통한 실시간 알림 전송 API (닉네임 기반)
+    @Sse("sse/:nickname")
+    sendClientAlarm(@Param("nickname") nickname: string): Observable<MessageEvent> {
+        return this.alarmService.sendClientAlarm(nickname);
     }
 
-    // 테스트 이벤트를 발생시키는 엔드포인트
-    @Get('test/:userId')
-    testEvent(@Param('userId') userId: number): string {
-        this.alarmService.broadcastTestEventToUser(userId);
+    // 테스트 이벤트를 발생시키는 엔드포인트 (닉네임 기반)
+    @Get('test/:nickname')
+    testEvent(@Param('nickname') nickname: string): string {
+        this.alarmService.broadcastTestEventToUser(nickname);
         return 'Test event sent!';
     }
 }

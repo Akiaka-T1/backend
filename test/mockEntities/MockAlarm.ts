@@ -16,5 +16,4 @@ export class MockAlarmSend extends BaseEntity {
     user = new MockUser();  // 알림을 받는 사용자
     isRead = false;  // 읽지 않은 상태
     createdAt = new Date();
-    updatedAt = new Date();
 }

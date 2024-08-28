@@ -13,7 +13,7 @@ import { PaginationDto } from "../../../utils/pagination/paginationDto";
 import { PaginationResult } from "../../../utils/pagination/pagination";
 import { emotionCategories} from "../../../constants/defaultCommentRelatedness";
 import {scoreByEmotions} from "../../../utils/scoreEmotions/scoreByEmotions";
-import { AlarmService } from "src/modules/alarm/service/AlarmService";
+import { AlarmService } from "../../alarm/service/AlarmService";
 
 
 @Injectable()
