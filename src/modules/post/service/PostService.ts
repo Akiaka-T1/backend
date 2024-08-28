@@ -105,11 +105,12 @@ export class PostService {
   }
 
   async update(id: number, updatePostDto: UpdatePostDto, jwtUser:User): Promise<ResponsePostDto> {
-    const post = await this.postRepository.findById(id);
+    let post = await this.postRepository.findById(id);
     this.ensureExists(post, id);
     this.checkQualified(post, jwtUser);
     Object.assign(post, updatePostDto);
     post.preview = (await this.stripHtml(post.content)).substring(0, 255);
+    post = await this.analyzeEmotions(post, post.category.id)
     const updatedPost = await this.handleErrors(() => this.postRepository.save(post), 'Failed to update post');
     return mapToDto(updatedPost,ResponsePostDto);
   }
