@@ -1,13 +1,19 @@
-import { Controller, Post, Body, Param, Sse, Get, Patch, Delete } from "@nestjs/common";
+import { Controller, Post, Body, Param, Sse, Get, Patch, Delete, UseGuards, Request } from "@nestjs/common";
 import { AlarmService } from "../service/AlarmService";
 import { CreateAlarmDto, ResponseAlarmDto, UpdateAlarmStatusDto } from "../dto/AlarmDto";
 import { Observable } from "rxjs";
 import { MessageEvent } from "@nestjs/common";
+import { AuthGuard } from "../../../auth/JwtAuthGuard/JwtAuthGuard";
+import { RolesGuard } from "../../../auth/authorization/RolesGuard";
+import { Roles } from "../../../auth/authorization/decorator";
+import { Role } from "../../../auth/authorization/Role";
 
 @Controller('api/alarm')
 export class AlarmController {
     constructor(private readonly alarmService: AlarmService) {}
     @Post('test-trigger')
+    @UseGuards(AuthGuard,RolesGuard)
+    @Roles(Role.User,Role.Admin)
     async triggerTestAlarm(@Body('postId') postId: number, @Body('nicknames') nicknames: string[]) {
         await this.alarmService.createAndSendAlarms(postId, nicknames);
         return { message: 'Alarms triggered successfully' };
