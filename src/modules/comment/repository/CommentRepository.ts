@@ -82,7 +82,7 @@ export class CommentRepository extends Repository<Comment> {
     async findCommentsByPostId(postId: number): Promise<Comment[]> {
       return this.createQueryBuilder("comment")
           .leftJoinAndSelect("comment.user", "user")
-          .where("comment.postId = :postId", { postId })
+          .where("comment.post.id = :postId", { postId })
           .getMany();
     }
   async paginate(options: PaginationOptions, findOptions?: FindManyOptions<Comment>): Promise<PaginationResult<Comment>> {

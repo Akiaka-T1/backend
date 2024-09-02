@@ -72,7 +72,7 @@ export class AlarmService {
         const unreadAlarms = await this.alarmRepository.findUnreadAlarms();
 
         for (const alarm of unreadAlarms) {
-            const comments = await this.commentRepository.findCommentsByPostId(alarm.postId);
+            const comments = await this.commentRepository.findByPostId(alarm.postId);
             const uniqueNicknames = new Set(comments.map(comment => comment.user.nickname)); // 닉네임을 사용
 
             for (const nickname of uniqueNicknames) {
@@ -125,6 +125,7 @@ export class AlarmService {
 
             // SSE 연결이 닫힐 때 스트림 제거
             return () => {
+                console.log(`SSE disconnection: ${nickname}`);
                 this.alarmStreams.delete(nickname);
             };
         });

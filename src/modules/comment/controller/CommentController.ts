@@ -38,20 +38,21 @@ export class CommentController {
     return this.commentService.create(postCommentDto,request.user);
   }
 
-  async createWithAlarm(@Body() postCommentDto: PostCommentDto, @Request() request: any): Promise<ResponseCommentDto> {
-    const newComment = await this.commentService.create(postCommentDto, request.user);
+
+//   async createWithAlarm(@Body() postCommentDto: PostCommentDto, @Request() request: any): Promise<ResponseCommentDto> {
+//     const newComment = await this.commentService.create(postCommentDto, request.user);
     
-    // postId를 기준으로 모든 댓글을 가져오기
-    const comments = await this.commentService.findByPostId(postCommentDto.postId);
+//     // postId를 기준으로 모든 댓글을 가져오기
+//     const comments = await this.commentService.findByPostId(postCommentDto.postId);
 
-    // 각 댓글 작성자의 nickname을 가져오기
-    const nicknames = comments.map(comment => comment.user.nickname);
+//     // 각 댓글 작성자의 nickname을 가져오기
+//     const nicknames = comments.map(comment => comment.user.nickname);
 
-    // 알림 생성 및 전송 (닉네임 기반으로 변경)
-    await this.alarmService.createAndSendAlarms(postCommentDto.postId, nicknames);
+//     // 알림 생성 및 전송 (닉네임 기반으로 변경)
+//     await this.alarmService.createAndSendAlarms(postCommentDto.postId, nicknames);
 
-    return newComment;
-}
+//     return newComment;
+// }
 
   @Get('user')
   async findByUser(@Query() paginationDto: PaginationDto, @Request() request: any): Promise<PaginationResult<ResponseCommentDto>> {
