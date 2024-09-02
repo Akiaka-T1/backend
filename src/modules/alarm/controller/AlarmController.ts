@@ -56,6 +56,7 @@ export class AlarmController {
     // 알림 삭제 API
     @Delete(":id")
     async deleteAlarm(@Param("id") id: number): Promise<void> {
+        console.log(`Attempting to delete alarm with id: ${id}`);
         if (!id) {
             throw new Error('Alarm ID is required');
         }
