@@ -116,6 +116,18 @@ export class AuthorUserDto {
     nickname: string;
 }
 
+export class CharacterUserDto {
+    @Field
+    id: number;
+
+    @Field
+    nickname: string;
+
+    @Field
+    characterId: number;
+}
+
+
 export class ResponseUserWithInterestsAndCategoriesDto {
     @Field
     id: number;

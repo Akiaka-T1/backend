@@ -1,7 +1,13 @@
 import {BadRequestException, Injectable, NotFoundException} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "../entity/User";
-import {PostUserDto, ResponseUserDto, ResponseUserWithInterestsAndCategoriesDto, UpdateUserDto} from "../dto/UserDto";
+import {
+    CharacterUserDto,
+    PostUserDto,
+    ResponseUserDto,
+    ResponseUserWithInterestsAndCategoriesDto,
+    UpdateUserDto
+} from "../dto/UserDto";
 import {UserRepository} from "../repository/UserRepository";
 import {mapToDto} from "../../../utils/mapper/Mapper";
 import {PaginationDto} from "../../../utils/pagination/paginationDto";
@@ -108,6 +114,11 @@ export class UserService {
     async findMe(email: string): Promise<ResponseUserDto> {
         const user = await this.userRepository.findByEmail(email);
         return mapToDto(user,ResponseUserDto);
+    }
+
+    async findMyCharacter(email: string): Promise<CharacterUserDto> {
+        const user = await this.userRepository.findCharacterByEmail(email);
+        return mapToDto(user,CharacterUserDto);
     }
 
     async checkNicknameAlreadyExists(nickname: string): Promise<void> {
