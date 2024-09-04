@@ -31,7 +31,7 @@ export class CommentService {
         const { postId, rating, comment } = createCommentDto;
         const post = await this.postService.findByIdForCreateComment(postId);
         const user = await this.userService.findByEmail(userFromToken.email);
-
+        const currentUserNickname = user.nickname;
         CommentService.ensureExists(user, post);
         await this.ensureUnique(user.id, post.id);
 
@@ -48,10 +48,12 @@ export class CommentService {
 
         // 댓글 작성 후, 해당 포스트에 달린 댓글을 모두 가져오기
         const comments = await this.findByPostId(postId);
-        const nicknames = comments.map(comment => comment.user.nickname);
+        const nicknames = comments
+            .map(comment => comment.user.nickname)
+            .filter(nickname => nickname !== user.nickname);
         
         // 알림 생성 및 전송
-        await this.alarmService.createAndSendAlarms(postId, nicknames,user.nickname);
+        await this.alarmService.createAndSendAlarms(postId, nicknames,currentUserNickname);
 
         await Promise.allSettled([
             this.updatePostAverageRating(postId),

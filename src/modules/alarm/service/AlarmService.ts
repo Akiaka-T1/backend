@@ -88,10 +88,13 @@ export class AlarmService {
             // 알림 전송 시 postTitle을 포함하여 전송
             this.sendAlarmToUser(nickname, {
                 data: JSON.stringify({
-                    message: '새로운 댓글이 달렸습니다.',
+                    message: `${post.title}에 새로운 댓글이 달렸습니다.`,
                     postTitle: post.title, // postTitle을 전송
                 }),
             });
+            // 알림을 전송한 후 sendCheck를 true로 변경
+            await this.alarmRepository.markAlarmAsConsumed(alarm.id);
+
         }
     }
 
@@ -117,7 +120,7 @@ export class AlarmService {
 
                 this.sendAlarmToUser(nickname, {
                     data: JSON.stringify({
-                        message: `New alarm for postId ${alarm.post.id}`, // 수정
+                        message: '새로운 댓글이 달렸습니다.', // 수정
                         alarmId: alarmSend.id,
                         postTitle: alarm.post.title, // postTitle 추가
                     }),
