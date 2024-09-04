@@ -3,7 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  UpdateDateColumn, CreateDateColumn,
+  UpdateDateColumn, CreateDateColumn, 
 } from 'typeorm';
 import { User } from '../../user/entity/User';
 import { Post } from '../../post/entity/Post';

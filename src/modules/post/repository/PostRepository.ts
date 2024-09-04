@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { DataSource, FindManyOptions, Like, Repository } from "typeorm";
 import { Post } from "../entity/Post";
+import { Comment } from "../../comment/entity/Comment"; 
 import {
   paginate,
   paginateWithQueryBuilder,
@@ -34,6 +35,9 @@ export class PostRepository extends Repository<Post> {
       select: ['id', 'title']
     });
     }
+
+  
+
     async findAll(paginationDto: PaginationOptions): Promise<PaginationResult<Post>> {
         const queryBuilder = this.createQueryBuilder("post")
             .leftJoinAndSelect("post.user", "user")
@@ -81,6 +85,8 @@ export class PostRepository extends Repository<Post> {
             title: 'ASC'
           }
         };
+
+
 
     return paginate(this, options, findOptions);
     }

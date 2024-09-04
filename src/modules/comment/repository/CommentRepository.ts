@@ -78,7 +78,13 @@ export class CommentRepository extends Repository<Comment> {
             .where('id = :postId', { postId })
             .execute();
     }
-
+    // 특정 포스트에 달린 댓글을 조회하는 메서드
+    async findCommentsByPostId(postId: number): Promise<Comment[]> {
+      return this.createQueryBuilder("comment")
+          .leftJoinAndSelect("comment.user", "user")
+          .where("comment.post.id = :postId", { postId })
+          .getMany();
+    }
   async paginate(options: PaginationOptions, findOptions?: FindManyOptions<Comment>): Promise<PaginationResult<Comment>> {
     return paginate(this, options, findOptions);
   }

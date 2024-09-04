@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { loadYamlConfig } from "./dbConfig/yamlConfig";
 import {UserModule} from "./modules/user/module";
 import {DataModule} from "./modules/data/module";
+import {AlarmModule} from "./modules/alarm/module";
 import {AuthModule} from "./auth/module";
 import {PostModule} from "./modules/post/module";
 import {CommentModule} from "./modules/comment/module";
@@ -46,7 +47,7 @@ const config = loadYamlConfig(configFilePath);
     PostModule,
     CommentModule,
     CategoryModule,
-    InterestModule, RecommendationModule
+    InterestModule, RecommendationModule, AlarmModule,
   ],
 })
 export class AppModule {}
