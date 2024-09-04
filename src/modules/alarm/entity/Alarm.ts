@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { User } from '../../user/entity/User';
+import { Post } from '../../post/entity/Post'; // Post 엔티티를 가져옵니다.
 
 @Entity('alarm')
 export class Alarm {
@@ -15,11 +16,11 @@ export class Alarm {
   @Column({ type: 'varchar', length: 50 })
   type: string; // 'recommendation' or 'comment'
 
-  @Column()
-  postId: number;
-
-  // @Column({ type: 'varchar', length: 4 })
-  // mbti: string;
+  // @Column()
+  // postId: number;
+  // Post와 ManyToOne 관계 설정
+  @ManyToOne(() => Post, (post) => post.alarms, { onDelete: 'CASCADE' })
+  post: Post;
 
   @Column({ default: false })
   sendCheck: boolean;

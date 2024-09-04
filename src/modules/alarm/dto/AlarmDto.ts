@@ -23,8 +23,9 @@ export class ResponseAlarmDto {
     @IsString()
     type: string;
 
-    @IsInt()
-    postId: number;
+    // postId 대신 postTitle 반환
+    @IsString()
+    postTitle: string; // 게시물 제목을 추가
 
     @IsBoolean()
     isRead: boolean;

@@ -1,44 +1,38 @@
-import { Controller, Post, Body, Param, Sse, Get, Patch, Delete, UseGuards, Request } from "@nestjs/common";
+import { Controller, Post, Body, Param, Sse, Get, Patch, Delete } from "@nestjs/common";
 import { AlarmService } from "../service/AlarmService";
 import { CreateAlarmDto, ResponseAlarmDto, UpdateAlarmStatusDto } from "../dto/AlarmDto";
 import { Observable } from "rxjs";
 import { MessageEvent } from "@nestjs/common";
-import { AuthGuard } from "../../../auth/JwtAuthGuard/JwtAuthGuard";
-import { RolesGuard } from "../../../auth/authorization/RolesGuard";
-import { Roles } from "../../../auth/authorization/decorator";
-import { Role } from "../../../auth/authorization/Role";
 
 @Controller('api/alarm')
 export class AlarmController {
     constructor(private readonly alarmService: AlarmService) {}
-    @Post('test-trigger')
-    @UseGuards(AuthGuard,RolesGuard)
-    @Roles(Role.User,Role.Admin)
-    async triggerTestAlarm(@Body('postId') postId: number, @Body('nicknames') nicknames: string[]) {
-        await this.alarmService.createAndSendAlarms(postId, nicknames);
-        return { message: 'Alarms triggered successfully' };
-    }
+
     // 알림 생성 API
     @Post()
     async createAlarm(@Body() createAlarmDto: CreateAlarmDto): Promise<ResponseAlarmDto> {
         const alarm = await this.alarmService.createAlarm(createAlarmDto);
+
+        // postId로 연결된 post의 title 가져옴
+        const post = await this.alarmService.getPostById(alarm.post.id);
+
         return {
             id: alarm.id,
             type: alarm.type,
-            postId: alarm.postId,
+            postTitle: post.title, // postTitle을 반환
             isRead: false,
-            sendCheck: false,
+            sendCheck: alarm.sendCheck,
         };
     }
 
-    // 특정 사용자의 알림 목록 조회 API (닉네임 기반으로 수정)
+    // 특정 사용자의 알림 목록 조회 API (닉네임 기반)
     @Get("user/:nickname")
     async getUserAlarms(@Param("nickname") nickname: string): Promise<ResponseAlarmDto[]> {
         const alarms = await this.alarmService.getAlarmsForUser(nickname);
         return alarms.map(alarmSend => ({
             id: alarmSend.id,
             type: alarmSend.alarm.type,
-            postId: alarmSend.alarm.postId,
+            postTitle: alarmSend.alarm.post?.title || 'No title', // postTitle로 변경
             isRead: alarmSend.isRead,
             sendCheck: alarmSend.alarm.sendCheck,
         }));
@@ -69,10 +63,9 @@ export class AlarmController {
         return this.alarmService.sendClientAlarm(nickname);
     }
 
-    // 테스트 이벤트를 발생시키는 엔드포인트 (닉네임 기반)
-    @Get('test/:nickname')
-    testEvent(@Param('nickname') nickname: string): string {
-        this.alarmService.broadcastTestEventToUser(nickname);
-        return 'Test event sent!';
+    // 사용자별 전체 알림 삭제 API
+    @Delete("user/:nickname")
+    async deleteUserAlarms(@Param("nickname") nickname: string): Promise<void> {
+        await this.alarmService.deleteUserAlarms(nickname);
     }
 }

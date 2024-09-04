@@ -49,9 +49,9 @@ export class CommentService {
         // 댓글 작성 후, 해당 포스트에 달린 댓글을 모두 가져오기
         const comments = await this.findByPostId(postId);
         const nicknames = comments.map(comment => comment.user.nickname);
-
+        
         // 알림 생성 및 전송
-        await this.alarmService.createAndSendAlarms(postId, nicknames);
+        await this.alarmService.createAndSendAlarms(postId, nicknames,user.nickname);
 
         await Promise.allSettled([
             this.updatePostAverageRating(postId),

@@ -12,6 +12,7 @@ import { User } from '../../user/entity/User';
 import { Comment } from '../../comment/entity/Comment';
 import {Category} from "../../category/entity/Category";
 import {Interest} from "../../interest/entity/Interest";
+import { Alarm } from '../../alarm/entity/Alarm';
 import { PostRecommendation } from '../../recommendation/entity/PostRecommendation';
 import {DailyView} from "./Daily";
 
@@ -86,4 +87,7 @@ export class Post{
 
   @OneToMany(() => DailyView, dailyPostView => dailyPostView.post)
   dailyViews: DailyView[];
+
+  @OneToMany(() => Alarm, (alarm) => alarm.post)
+  alarms: Alarm[];
 }
