@@ -13,7 +13,13 @@ import {
     ValidationPipe
 } from "@nestjs/common";
 import { UserService } from "../service/UserService";
-import {PostUserDto, ResponseUserDto, ResponseUserWithInterestsAndCategoriesDto, UpdateUserDto} from "../dto/UserDto";
+import {
+    CharacterUserDto,
+    PostUserDto,
+    ResponseUserDto,
+    ResponseUserWithInterestsAndCategoriesDto,
+    UpdateUserDto
+} from "../dto/UserDto";
 import { AuthGuard } from "../../../auth/JwtAuthGuard/JwtAuthGuard";
 import { Role } from "../../../auth/authorization/Role";
 import { Roles } from "../../../auth/authorization/decorator";
@@ -43,6 +49,13 @@ export class UserController {
     @Roles(Role.Admin,Role.User)
     async findMe(@Request() request:any): Promise<ResponseUserDto> {
         return this.userService.findMe(request.user.email);
+    }
+
+    @Get('character')
+    @UseGuards(AuthGuard,RolesGuard)
+    @Roles(Role.Admin,Role.User)
+    async findMyProfile(@Request() request:any): Promise<CharacterUserDto> {
+        return this.userService.findMyCharacter(request.user.email);
     }
 
     @Get('stats')

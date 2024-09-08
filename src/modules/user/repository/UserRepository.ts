@@ -17,6 +17,14 @@ export class UserRepository extends Repository<User> {
     async findByEmail(email: string): Promise<User | undefined> {
         return this.findOne({ where: { email } });
     }
+
+  async findCharacterByEmail(email: string): Promise<{ characterId: number } | undefined> {
+    return this.findOne({
+      where: { email },
+      select: ['characterId','nickname','role'],
+    });
+  }
+
     async findByNickname(nickname: string): Promise<User | undefined> {
         return this.findOne({ where: { nickname } });
     }
