@@ -21,7 +21,7 @@ export class UserRepository extends Repository<User> {
   async findCharacterByEmail(email: string): Promise<{ characterId: number } | undefined> {
     return this.findOne({
       where: { email },
-      select: ['characterId','nickname'],
+      select: ['characterId','nickname','role'],
     });
   }
 

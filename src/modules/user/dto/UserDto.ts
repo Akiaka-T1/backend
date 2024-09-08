@@ -125,6 +125,9 @@ export class CharacterUserDto {
 
     @Field
     characterId: number;
+
+    @Field
+    role: Role;
 }
 
 
