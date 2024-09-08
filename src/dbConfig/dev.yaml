@@ -2,6 +2,6 @@ db:
   type: sqlite
   database: 'database.sqlite'
   synchronize: true
-  logging: true
+  logging: false
   namingStrategy: SnakeNamingStrategy
 

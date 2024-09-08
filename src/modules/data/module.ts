@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "../user/entity/User";
+import { Alarm } from "../alarm/entity/Alarm";
 import { UserService } from "../user/service/UserService";
 import {InitAdminService} from "./admin/InitAdminService";
 import {UserRepository} from "../user/repository/UserRepository";
@@ -31,8 +32,11 @@ import {DailyViewRepository} from "../post/repository/DailyViewRepository";
 import {DailyView} from "../post/entity/Daily";
 import { OAuthIdentifier } from "../user/entity/OAuthIdentifer";
 import { OAuthIdentifierRepository } from "../user/repository/OAuthIdentifierRepository";
+import { AlarmService } from "../alarm/service/AlarmService";
+import { AlarmRepository } from "../alarm/repository/AlarmRepository";
+import { AlarmSend } from "../alarm/entity/AlarmSend";
 @Module({
-  imports: [TypeOrmModule.forFeature([User,OAuthIdentifier, Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation])],
+  imports: [TypeOrmModule.forFeature([User,OAuthIdentifier, Post,DailyView,Comment,Category,Interest,UserInterest,UserCategory,Recommendation,PostRecommendation,Alarm,AlarmSend,])],
   providers: [
     UserService, UserRepository, OAuthIdentifierRepository , InitAdminService , AuthService,
       PostService, PostRepository, DailyViewRepository,
@@ -40,6 +44,7 @@ import { OAuthIdentifierRepository } from "../user/repository/OAuthIdentifierRep
       CategoryService, CategoryRepository, UserCategoryRepository,
       InterestService, InterestRepository,UserInterestRepository,
       RecommendationService, RecommendationRepository, PostRecommendationRepository,
+      AlarmService, AlarmRepository,
       InitDataService
     ],
   exports: [
@@ -49,6 +54,7 @@ import { OAuthIdentifierRepository } from "../user/repository/OAuthIdentifierRep
     CategoryService, CategoryRepository,UserCategoryRepository,
     InterestService, InterestRepository,UserInterestRepository,
     RecommendationService, RecommendationRepository, PostRecommendationRepository,
+    AlarmService, AlarmRepository,
     InitDataService
   ],
 })

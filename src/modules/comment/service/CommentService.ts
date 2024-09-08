@@ -13,6 +13,8 @@ import { PaginationDto } from "../../../utils/pagination/paginationDto";
 import { PaginationResult } from "../../../utils/pagination/pagination";
 import { emotionCategories} from "../../../constants/defaultCommentRelatedness";
 import {scoreByEmotions} from "../../../utils/scoreEmotions/scoreByEmotions";
+import { AlarmService } from "../../alarm/service/AlarmService";
+
 
 @Injectable()
 export class CommentService {
@@ -22,13 +24,14 @@ export class CommentService {
         private readonly postService: PostService,
         private readonly interestService: InterestService,
         private readonly userService: UserService,
+        private readonly alarmService: AlarmService
     ) {}
 
     async create(createCommentDto: PostCommentDto, userFromToken :User): Promise<ResponseCommentDto> {
         const { postId, rating, comment } = createCommentDto;
         const post = await this.postService.findByIdForCreateComment(postId);
         const user = await this.userService.findByEmail(userFromToken.email);
-
+        const currentUserNickname = user.nickname;
         CommentService.ensureExists(user, post);
         await this.ensureUnique(user.id, post.id);
 
@@ -43,10 +46,27 @@ export class CommentService {
 
         await this.commentRepository.save(newComment);
 
+        // 댓글 작성 후, 해당 포스트에 달린 댓글을 모두 가져오기
+        const comments = await this.findByPostId(postId);
+        const nicknames = comments
+            .map(comment => comment.user.nickname)
+            .filter(nickname => nickname !== user.nickname);
+        
+        // 알림 생성 및 전송
+        await this.alarmService.createAndSendAlarms(postId, nicknames,currentUserNickname);
+
         await Promise.allSettled([
             this.updatePostAverageRating(postId),
             this.updateUserInterest(user.id, post, rating),
+            this.updateUserInterest(user.id, post, rating),
+            this.alarmService.createAlarm({
+                type: 'comment',
+                postId: postId,
+            })
         ]);
+        
+        // 댓글 작성 후, 해당 포스트에 달린 댓글을 모두 가져와서 알림을 생성 및 전송
+        await this.alarmService.sendUnsentAlarms();
 
         return mapToDto(newComment,ResponseCommentDto);
     }
