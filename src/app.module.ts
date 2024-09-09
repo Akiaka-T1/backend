@@ -16,6 +16,7 @@ import {JwtModule} from "@nestjs/jwt";
 import { RecommendationModule } from './modules/recommendation/module';
 
 import {SnakeNamingStrategy} from "typeorm-naming-strategies";
+import {ChatModule} from "./modules/socket/module";
 
 
 dotenv.config();
@@ -47,7 +48,9 @@ const config = loadYamlConfig(configFilePath);
     PostModule,
     CommentModule,
     CategoryModule,
-    InterestModule, RecommendationModule, AlarmModule,
+    InterestModule, RecommendationModule, 
+    AlarmModule,
+    ChatModule
   ],
 })
 export class AppModule {}
