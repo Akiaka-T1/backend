@@ -56,6 +56,9 @@ export class ResponsePostDto {
   title: string;
 
   @Field
+  preview: string;
+
+  @Field
   content: string;
 
   @Field
