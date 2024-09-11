@@ -68,12 +68,6 @@ export class ChatGateway implements OnGatewayDisconnect {
 
         this.userMap.set(client.id, { nickname, team, room });
 
-        if (team === 'red') {
-            this.redTeamMembers.push(nickname);
-        } else {
-            this.blueTeamMembers.push(nickname);
-        }
-
         client.join(room);
 
         this.server.to(room).emit('updateTeamMembers', {
@@ -103,11 +97,8 @@ export class ChatGateway implements OnGatewayDisconnect {
             const { nickname, team, room } = user;
             console.log(user);
 
-            if (team === 'red') {
-                this.redTeamMembers = this.redTeamMembers.filter(name => name !== nickname);
-            } else {
-                this.blueTeamMembers = this.blueTeamMembers.filter(name => name !== nickname);
-            }
+            this.redTeamMembers = this.redTeamMembers.filter(name => name !== nickname);
+            this.blueTeamMembers = this.blueTeamMembers.filter(name => name !== nickname);
 
             this.userMap.set(client.id, { ...user, team: data.team });
             if (data.team === 'red') {
@@ -147,11 +138,8 @@ export class ChatGateway implements OnGatewayDisconnect {
         if (user) {
             const { nickname, team, room } = user;
 
-            if (team === 'red') {
-                this.redTeamMembers = this.redTeamMembers.filter((name) => name !== nickname);
-            } else {
-                this.blueTeamMembers = this.blueTeamMembers.filter((name) => name !== nickname);
-            }
+            this.redTeamMembers = this.redTeamMembers.filter((name) => name !== nickname);
+            this.blueTeamMembers = this.blueTeamMembers.filter((name) => name !== nickname);
 
             client.leave(room);
 
@@ -180,11 +168,8 @@ export class ChatGateway implements OnGatewayDisconnect {
         if (user) {
             const { nickname, team, room } = user;
 
-            if (team === 'red') {
-                this.redTeamMembers = this.redTeamMembers.filter((name) => name !== nickname);
-            } else {
-                this.blueTeamMembers = this.blueTeamMembers.filter((name) => name !== nickname);
-            }
+            this.redTeamMembers = this.redTeamMembers.filter((name) => name !== nickname);
+            this.blueTeamMembers = this.blueTeamMembers.filter((name) => name !== nickname);
 
             this.server.to(room).emit('updateTeamMembers', {
                 redTeam: this.redTeamMembers,
