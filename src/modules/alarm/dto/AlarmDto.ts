@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsBoolean } from 'class-validator';
+import { IsString, IsInt, IsBoolean, IsDate } from 'class-validator';
 
 // 알림 생성 DTO
 export class CreateAlarmDto {
@@ -32,4 +32,7 @@ export class ResponseAlarmDto {
 
     @IsBoolean()
     sendCheck: boolean;
+
+    @IsDate()  // createdAt 필드 추가
+    createdAt: Date;  // 알림 생성 날짜 및 시간
 }

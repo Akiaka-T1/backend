@@ -22,6 +22,7 @@ export class AlarmController {
             postTitle: post.title, // postTitle을 반환
             isRead: false,
             sendCheck: alarm.sendCheck,
+            createdAt: alarm.createdAt,
         };
     }
 
@@ -33,8 +34,10 @@ export class AlarmController {
             id: alarmSend.id,
             type: alarmSend.alarm.type,
             postTitle: alarmSend.alarm.post?.title || 'No title', // postTitle로 변경
+            postId: alarmSend.alarm.post?.id,
             isRead: alarmSend.isRead,
             sendCheck: alarmSend.alarm.sendCheck,
+            createdAt: alarmSend.createdAt,
         }));
     }
 
