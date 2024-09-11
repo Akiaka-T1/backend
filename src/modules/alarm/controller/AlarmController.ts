@@ -22,6 +22,7 @@ export class AlarmController {
             postTitle: post.title, // postTitle을 반환
             isRead: false,
             sendCheck: alarm.sendCheck,
+            createdAt: alarm.createdAt,
         };
     }
 
@@ -36,6 +37,7 @@ export class AlarmController {
             postId: alarmSend.alarm.post?.id,
             isRead: alarmSend.isRead,
             sendCheck: alarmSend.alarm.sendCheck,
+            createdAt: alarmSend.createdAt,
         }));
     }
 
