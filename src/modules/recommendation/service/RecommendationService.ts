@@ -76,11 +76,20 @@ export class RecommendationService{
 
         const dailyPostViews = await this.dailyViewRepository.findTopViewedPosts(date, paginationOptions);
 
-        const postsWithViews = dailyPostViews.data.map(dpv => ({
-            ...mapToDto(dpv.post, ThumbnailPostDto),
-            dailyViews: dpv.views,
-            totalViews: dpv.post.views
-        }));
+        let postsWithViews: Array<ThumbnailPostDto & { dailyViews: number }> = [];
+
+        dailyPostViews.data.forEach(dpv => {
+            let existingPost = postsWithViews.find(post => post.id === dpv.post.id);
+
+            if (existingPost) {
+                return;
+            } else {
+                postsWithViews.push({
+                    ...mapToDto(dpv.post, ThumbnailPostDto),
+                    dailyViews: dpv.views,
+                });
+            }
+        });
 
         return {
             ...dailyPostViews,
