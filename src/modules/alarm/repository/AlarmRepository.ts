@@ -40,7 +40,7 @@ export class AlarmRepository {
     async findAllAlarmSendsByUserId(userId: number): Promise<AlarmSend[]> {
         return this.alarmSendRepository.find({
             where: { user: { id: userId }, isRead: false },
-            relations: ['alarm', 'alarm.post'], // Post 정보를 포함하여 알림 전송 조회
+            relations: ['alarm', 'post'], // Post 정보를 포함하여 알림 전송 조회
         });
     }
 

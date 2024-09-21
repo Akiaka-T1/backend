@@ -16,9 +16,6 @@ export class Alarm {
   @Column({ type: 'varchar', length: 50 })
   type: string; // 'recommendation' or 'comment'
 
-  // @Column()
-  // postId: number;
-  // Post와 ManyToOne 관계 설정
   @ManyToOne(() => Post, (post) => post.alarms, { onDelete: 'CASCADE' })
   post: Post;
 

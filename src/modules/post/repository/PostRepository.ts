@@ -78,16 +78,11 @@ export class PostRepository extends Repository<Post> {
 
     async searchByTitle(title: string, options: PaginationOptions): Promise<PaginationResult<Post>> {
         const findOptions: FindManyOptions<Post> = {
-          where: {
-            title: Like(`%${title}%`)
-          },
-          order: {
-            title: 'ASC'
-          }
+            where: [
+                { title: Like(`%${title}%`) },
+                { preview: Like(`%${title}%`) }
+            ],
         };
-
-
-
     return paginate(this, options, findOptions);
     }
 }

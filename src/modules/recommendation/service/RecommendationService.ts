@@ -75,11 +75,16 @@ export class RecommendationService{
         };
 
         const dailyPostViews = await this.dailyViewRepository.findTopViewedPosts(date, paginationOptions);
-        const posts = dailyPostViews.data.map(dpv => dpv.post);
+
+        const postsWithViews = dailyPostViews.data.map(dpv => ({
+            ...mapToDto(dpv.post, ThumbnailPostDto),
+            dailyViews: dpv.views,
+            totalViews: dpv.post.views
+        }));
 
         return {
             ...dailyPostViews,
-            data: posts.map(post => mapToDto(post, ThumbnailPostDto)),
+            data: postsWithViews,
         };
     }
 

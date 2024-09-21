@@ -89,14 +89,14 @@ export class PostService {
     };
   }
 
-  async searchPostsByTitle(title: string, paginationDto: PaginationDto): Promise<PaginationResult<ThumbnailPostDto>> {
+  async searchPostsByTitle(title: string, paginationDto: PaginationDto): Promise<PaginationResult<ShortContentPostDto>> {
     const { page, limit, field, order } = paginationDto;
     const options = { page, limit, field, order };
 
     const posts = await this.postRepository.searchByTitle(title, options);
     return {
       ...posts,
-      data: posts.data.map(post => mapToDto(post, ThumbnailPostDto)),
+      data: posts.data.map(post => mapToDto(post, ShortContentPostDto)),
     };
   }
 

@@ -45,7 +45,7 @@ export class PostController {
   }
 
   @Get('search')
-  async search(@Query() paginationDto: PaginationDto, @Query('title') title: string): Promise<PaginationResult<ThumbnailPostDto>> {
+  async search(@Query() paginationDto: PaginationDto, @Query('title') title: string): Promise<PaginationResult<ShortContentPostDto>> {
     return this.postService.searchPostsByTitle(title, paginationDto);
   }
 
